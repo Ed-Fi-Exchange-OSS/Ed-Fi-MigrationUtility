@@ -421,7 +421,7 @@ https://github.com/featurist/coypu
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
-Dapper
+## Dapper
 https://github.com/StackExchange/Dapper/blob/master/License.txt
 Copyright © 2011 Dapper
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
@@ -429,9 +429,9 @@ You may obtain a copy of the License at
 http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-
-DatabaseSchemaReader
+## DatabaseSchemaReader
 https://github.com/martinjw/dbschemareader
+	
 A simple, cross-database facade over .Net 2.0 DbProviderFactories to read database metadata.
 
 Microsoft Public License (Ms-PL)
@@ -473,7 +473,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Document Format Open XML  
+## Document Format Open XML  
 https://www.nuget.org/packages/DocumentFormat.OpenXml/  
 Unofficial packaging of Microsoft's OpenXML SDK 2.5  
 Microsoft Public License (Ms-PL)  
@@ -493,7 +493,7 @@ If you distribute any portion of the software, you must retain all copyright, pa
 If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.  
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
  	  
-DotNetOpenAuth  
+## DotNetOpenAuth  
 http://dotnetopenauth.net/  
 A C# implementation of the OpenID, OAuth and InfoCard protocols  
 This software is a composite of source code contributed by several authors and binary dependencies that have their own copyright and license agreements.  Every file is bound by the following copyright and license unless explicitly indicated otherwise in and/or for any individual file.  
@@ -515,7 +515,7 @@ If you distribute any portion of the software, you must retain all copyright, pa
 If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.  
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
 
-FakeItEasy
+## FakeItEasy
 https://github.com/FakeItEasy/FakeItEasy
 A .NET dynamic fake library for creating all types of fake objects, mocks, stubs etc.
 The MIT License (MIT)
@@ -528,8 +528,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-Fluent Command Line Parser 
+## Fluent Command Line Parser 
 A simple, strongly typed .NET C# command line parser library using a fluent easy to use interface http://fclp.github.com/fluent-command-line-parser  https://github.com/fclp/fluent-command-line-parser/blob/develop/LICENCE.txt  
 FreeBSD License 
 Fluent Command Line Parser 
@@ -545,14 +544,14 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITEDTO,
 PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 
-FluentValidation  
+## FluentValidation  
 https://fluentvalidation.codeplex.com/
 A small validation library for .NET that uses a fluent interface and lambda expressions for building validation rules for your business objects.    
 Copyright © 2014, Licensed under the Apache License, Version 2.0, (the "License"); you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0   
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.  
 
-Font Awesome  
+## Font Awesome  
 https://www.nuget.org/packages/FontAwesome/ https://github.com/FortAwesome/Font-Awesome  "Font Awesome by Dave Gandy - http://fontawesome.io".  An iconic font and CSS toolkit  The MIT License  
 Copyright © 2014 Dave Gandy  
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
@@ -562,7 +561,7 @@ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PA
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE  
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.   
 
-HangFire 
+## HangFire 
 http://hangfire.io/  
 An easy and reliable way to perform fire-and-forget, delayed and recurring long-running, short-running, CPU or I/O intensive tasks inside ASP.NET application. No Windows Service / Task Scheduler required. Even ASP.NET is not required. 
 Copyright © 2013-2016 Sergey Odinokov. 
@@ -581,9 +580,8 @@ THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDEN
 SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,  
 PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS  
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
-  	  
 
-Iesi.collections
+## Iesi.collections
 https://github.com/nhibernate/iesi.collections 
 Some additional ISet<T> implementations for .Net 4.
 Copyright � 2002-2004 by Aidant Systems, Inc., and by Jason Smith.
@@ -592,7 +590,7 @@ Copied from http://www.codeproject.com/csharp/sets.asp#xx703510xx that was poste
 If you do use the code in a commercial product, I would appreciate hearing about it. This message serves as legal notice that I won't be suing you for royalties!  The code is in the public domain.
 On the other hand, I don't provide support. The code is actually simple enough that it shouldn't need it.
 
-Invoke-MsBuild
+## Invoke-MsBuild
 https://github.com/deadlydog/Invoke-MsBuild/blob/master/license.md 
 deadlydog/Invoke-MsBuild is licensed under the 
 MIT License
@@ -603,7 +601,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-JQuery  
+## JQuery  
 http://jquery.com/  
 jQuery is a fast, small, and feature-rich JavaScript library jQuery projects are released under the terms of the MIT License.  
 Copyright © 2014 jQuery.  
@@ -617,7 +615,7 @@ The MIT License is simple and easy to understand and it places almost no restric
 You are free to use any jQuery project in any other project (even commercial projects) as long as the copyright header is left intact.  
 The Sizzle selector engine (http://sizzlejs.com/), which is included inside the jQuery library, is held by the Dojo Foundation and is licensed under either the New BSD or AFL (Academic Free License) licenses.  Copyright ©2011, Dojo Foundation.  http://dojotoolkit.org/license    
 
-JQuery.Validation  
+## JQuery.Validation  
 http://jqueryvalidation.org/   
 This jQuery plugin makes simple client side form validation easy, whilst still offering plenty of customization options jQuery projects are released under the terms of the MIT License.  
 Copyright © 2014 jQuery.  
@@ -630,7 +628,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRA
 The MIT License is simple and easy to understand and it places almost no restrictions on what you can do with a jQuery project.  
 You are free to use any jQuery project in any other project (even commercial projects) as long as the copyright header is left intact.  
 
-LevelDB.Net 
+## LevelDB.Net 
 https://github.com/AntShares/leveldb  
 LevelDB is a fast key-value storage library written at Google that provides an ordered mapping from string keys to string values. 
 Copyright (c) 2011 The LevelDB Authors. All rights reserved. 
@@ -644,15 +642,14 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 [This is the BSD license, see http://opensource.org/licenses/BSD-3-Clause ] 
- 
 
-Log4net   
+## Log4net   
 http://logging.apache.org/log4net/
 Copyright © 2007, Licensed under the Apache License, Version 2.0, (the "License"); you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0   
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.  
  	 
-Modernizr  
+## Modernizr  
 http://modernizr.com/  
 Modernizr is a JavaScript library that detects HTML5 and CSS3 features in the user’s browser.  
 Copyright © 2009-2014 Modernizr  
@@ -661,13 +658,16 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
-MS Asp.Net  
+
+
+## Microsoft ASP.Net 
 Distributed pursuant to Microsoft Software License Terms, Microsoft .Net Library: http://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_enu.htm.    
-MS Data EDM  
   
+    
+## MS Data EDM  
 Distributed pursuant to Microsoft Software License Terms, Microsoft .Net Library:  https://www.nuget.org/packages/Microsoft.Data.Edm/.  
  	 
-Newtonsoft.Json   
+## Newtonsoft.Json   
 https://github.com/JamesNK/Newtonsoft.Json http://james.newtonking.com/projects/json-net.aspx  
 Newtonsoft.Json is a Json.Net serializer.  
 The MIT License (MIT)  
@@ -678,7 +678,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
 
-Npgsql
+## Npgsql
 https://github.com/npgsql/npgsql
 Npgsql is a .NET data provider for PostgreSQL. It allows you to connect and interact with PostgreSQL server using .NET.
   
@@ -700,7 +700,7 @@ PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND Npgsql
 HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS,
 OR MODIFICATIONS.
 
-NUnit  
+## NUnit  
 http://www.nunit.org/  
 NUnit is Open Source software. NUnit 2.6.3 is released under the NUnit license while NUnit 3.0 uses the MIT license. Both of these licenses allow the use of NUnit in free and commercial applications and libraries without restrictions.   
 NUnit license, NUnit 2.6.3  
@@ -722,7 +722,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR  
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
 
-Nustache
+## Nustache
 #Nustache - Logic-less templates for .NET
 https://github.com/jdiamond/Nustache
 https://github.com/jdiamond/Nustache/blob/master/LICENSE.txt
@@ -747,7 +747,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-PhantomJS 
+## PhantomJS 
 http://phantomjs.org/  
 PhantomJS is a headless WebKit scriptable with a JavaScript API. It has fast and native support for various web standards: DOM handling, CSS selector, JSON, Canvas, and SVG. 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:  
@@ -762,7 +762,7 @@ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CA
 ANDON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OFTHIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 [This is the BSD license, see http://opensource.org/licenses/BSD-3-Clause ] 
 
-Pkcs12ProtectedConfigurationProvider   
+## Pkcs12ProtectedConfigurationProvider   
 https://www.nuget.org/packages/Pkcs12ProtectedConfigurationProvider  
 A protected configuration provider that works in Windows Azure.   
 Microsoft Limited Public License (Ms-LPL)   
@@ -781,7 +781,7 @@ If you distribute any portion of the software in source code form, you may do so
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees, or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
  4. (F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend only to the software or derivative works that you create that run on a Microsoft Windows operating system product.  
           
-QuickGraph  
+## QuickGraph  
 https://quickgraph.codeplex.com/
 Generic Graph Data Structures and Algorithms for .NET.  
 Microsoft Public License (Ms-PL)  
@@ -801,7 +801,7 @@ If you distribute any portion of the software, you must retain all copyright, pa
 If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.   
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
 
-OctoPack 
+## OctoPack 
 Octopus Deploy is an automated deployment tool powered by NuGet. This tool adds a post-build activity to your Visual Studio project, so that an Octopus-compatible NuGet package is produced in the Bin directory whenever a Release build completes. 
 http://octopusdeploy.com/  https://github.com/OctopusDeploy/OctoPack/blob/master/LICENSE.txt  
 Copyright (c) Octopus Deploy and contributors. All rights reserved.  
@@ -813,23 +813,23 @@ https://www.ncrunch.net/
 Automated concurrent testing tool for Visual Studio.
 https://www.ncrunch.net/legal/eula
 
-NHibernate  
+## NHibernate  
 http://nhforge.org/  
 Open source object-relational mapper for the .NET framework GNU Library or Lesser General Public 
 License version 2.0 (LGPLv2) https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html#SEC1  
 
-Owin-hosting
+## Owin-hosting
 https://github.com/owin-contrib/owin-hosting/
 OWIN hosting components.   Licensed under the Apache License 2.0
 http://www.apache.org/licenses/
 
-RazorGenerator
+## RazorGenerator
 https://github.com/RazorGenerator/RazorGenerator
 A Custom Tool for Visual Studio that allows processing Razor files at design time instead of runtime, allowing them to be built into an assembly for simpler reuse and distribution.
 
 RazorGenerator is licensed under the Apache License 2.0: http://www.apache.org/licenses/
 
-Respawn
+## Respawn
 https://github.com/jbogard/Respawn/blob/master/LICENSE
 Copyright © 2015 Respawn
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
@@ -837,7 +837,7 @@ You may obtain a copy of the License at
 http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-Respond JS 
+## Respond JS 
 https://github.com/scottjehl/Respond  
 The goal of this script is to provide a fast and lightweight (3kb minified / 1kb gzipped) script to enable responsive web designs in browsers that don't support CSS3 Media Queries - in particular, Internet Explorer 8 and under. It's written in such a way that it will probably patch support for other non-supporting browsers as well (more information on that soon). https://github.com/scottjehl/Respond/blob/master/LICENSE-MIT  
 Copyright (c) 2012 Scott Jehl 
@@ -848,14 +848,14 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  
 
-RestSharp  
+## RestSharp  
 http://restsharp.org/  
 Simple REST and HTTP API Client for .NET  
 Copyright © 2014, Licensed under the Apache License, Version 2.0, (the "License"); you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0   
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.  
   	  	 
-Rhino Mocks  
+## Rhino Mocks  
 http://hibernatingrhinos.com/open-source/rhino-mocks  
 BSD License  
 Copyright (c) 2014, Hibernating Rhinos LTD.  
@@ -871,7 +871,7 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR B
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
  
 
-Sandwych.QuickGraph.Core
+## Sandwych.QuickGraph.Core
 https://github.com/oldrev/Sandwych.QuickGraph
 Generic Graph Data Structures and Algorithms for .NET
 Microsoft Public License (MS-PL)
@@ -902,13 +902,13 @@ A "contributor" is any person that distributes its contribution under this licen
 
 (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
 
-Selenium  
+## Selenium  
 http://seleniumhq.org/  
 Copyright © 2014, Licensed under the Apache License, Version 2.0, (the "License"); you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0   
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.  
   	  	 
-shouldly
+## shouldly
 https://github.com/shouldly/shouldly
 Shouldly is an assertion framework which focuses on giving great error messages when the assertion fails while being simple and terse.
 Redistribution and use in source and binary forms, with or without modification,
@@ -936,7 +936,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [ http://www.opensource.org/licenses/bsd-license.php ]
 
-SimpleInjector  
+## SimpleInjector  
 https://simpleinjector.codeplex.com/
 Dependency injection library  
 The MIT License (MIT)  
@@ -947,7 +947,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
 
-SolutionScripts   
+## SolutionScripts   
 http://www.nuget.org/packages/solutionscripts
 Sources custom initialization scripts and includes custom PowerShell modules in the package manager console  
 The MIT License  
@@ -959,7 +959,7 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
   	  
 
-SpecFlow  
+## SpecFlow  
 http://specflow.org/    
 SpecFlow aims at bridging the communication gap between domain experts and developers by binding business readable behavior specifications to the underlying implementation  
 Copyright (c) 2009, TechTalk Disclaimer:  
@@ -979,7 +979,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 SpecFlow is open source and provided under a BSD license. 
   
 
-Stubble 
+## Stubble 
 https://github.com/stubbleorg/stubble
 Trimmed down {{mustache}} templates in .NET
 The MIT License (MIT)
@@ -992,8 +992,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Markdig
-
+## Markdig
 Copyright (c) 2016, Alexandre Mutel All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification , are permitted provided that the following conditions are met:
@@ -1004,7 +1003,7 @@ Redistributions in binary form must reproduce the above copyright notice, this l
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Swagger code-gen
+## Swagger code-gen
 https://github.com/swagger-api/swagger-codegen
 swagger-codegen contains a template-driven engine to generate documentation, API clients and server stubs in different languages by parsing your OpenAPI / Swagger definition. http://swagger.io
 
@@ -1020,7 +1019,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-Swagger UI 
+
+## Swagger UI 
 https://github.com/swagger-api/swagger-ui
 Swagger UI is a collection of HTML, Javascript, and CSS assets that dynamically generate beautiful documentation from a Swagger-compliant API. 
 
@@ -1037,7 +1037,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Swashbuckle 
+## Swashbuckle 
 https://github.com/domaindrivendev/Swashbuckle  
 Copyright (c) 2013, Richard Morris 
 All rights reserved. 
@@ -1053,9 +1053,8 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR B
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE 
 [This is the BSD license, see http://opensource.org/licenses/BSD-3-Clause ] 
- 
 
-System.Spatial   
+## System.Spatial   
 https://www.nuget.org/packages/System.Spatial/5.2.0
 Contains a number of classes and canonical methods that facilitate geography and geometry spatial operations.  
 Microsoft Public License (Ms-PL)  
@@ -1075,7 +1074,7 @@ If you distribute any portion of the software, you must retain all copyright, pa
 If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.  
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
 
-Topshelf 
+## Topshelf 
 https://github.com/Topshelf/Topshelf  
 Topshelf is an open source project for hosting services without friction. By referencing Topshelf, your console application *becomes* a service installer with a comprehensive set of command-line options for installing, configuring, and running your application as a service. 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  
@@ -1085,7 +1084,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the 
 License.  	 
  	  
-Underscore.JS  
+## Underscore.JS  
 http://underscorejs.org/  
 JavaScript library that provides a whole mess of useful functional programming helpers without extending any built-in objects  
 Copyright © 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors Underscore may be freely distributed under the MIT license.  
@@ -1096,7 +1095,7 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
   	  
 
-WebActivator   
+## WebActivator   
 https://github.com/davidebbo/WebActivator  
 WebActivator is a NuGet package that allows other packages to easily bring in Startup and Shutdown code into a web application. This gives a much cleaner solution than having to modify global.asax with the startup logic from many packages.  
 Microsoft Public License (Ms-PL)  
@@ -1116,7 +1115,7 @@ If you distribute any portion of the software, you must retain all copyright, pa
 If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.  
 The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and noninfringement.  
   	  
-WebConfigTransformRunner   
+## WebConfigTransformRunner   
 https://github.com/erichexter/WebConfigTransformRunner  
 Command line tool to run ASP.Net web.config transformations  
 Copyright © 2014 Eric Hexter, Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  
@@ -1125,7 +1124,8 @@ http://www.apache.org/licenses/LICENSE-2.0
   
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the 
 License.   
-WebGrease  
+
+## WebGrease  
 https://webgrease.codeplex.com/
 Suite of tools for optimizing javascript, css files and images.  
 Copyright © 2014, Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0  
