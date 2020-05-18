@@ -1,0 +1,19 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Licensed to the Ed-Fi Alliance under one or more agreements.
+-- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+-- See the LICENSE and NOTICES files in the project root for more information.
+
+PRINT N'Creating [edfi].[SectionCourseLevelCharacteristic]'
+GO
+
+CREATE TABLE [edfi].[SectionCourseLevelCharacteristic] (
+    [CourseLevelCharacteristicDescriptorId] [INT] NOT NULL,
+    [LocalCourseCode] [NVARCHAR](60) NOT NULL,
+    [SchoolId] [INT] NOT NULL,
+    [SchoolYear] [SMALLINT] NOT NULL,
+    [SectionIdentifier] [NVARCHAR](255) NOT NULL,
+    [SessionName] [NVARCHAR](60) NOT NULL,
+    [CreateDate] [DATETIME] NOT NULL    
+)
+GO
+

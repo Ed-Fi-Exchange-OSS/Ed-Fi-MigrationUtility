@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>EdFi.Ods.Utilities.Migration</AssemblyName>
+    <RootNamespace>EdFi.Ods.Utilities.Migration</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RestorePackages>true</RestorePackages>
+    <Copyright>Copyright © 2020 Ed-Fi Alliance, LLC and Contributors</Copyright>
+    <Version>0.0.0</Version>
+    <FileVersion>0.0.0</FileVersion>
+    <Authors>Ed-Fi Alliance</Authors>
+    <Company>Ed-Fi Alliance</Company>
+    <Product>Ed-Fi Ods Migration Utility</Product>
+    <Description>Database migration utility for the Ed-Fi ODS/API solution.</Description>
+    <Copyright>Copyright © 2020 Ed-Fi Alliance, LLC and contributors</Copyright>
+    <PackageId>EdFi.Ods.Utilities.Migration</PackageId>
+    <PackageProjectUrl>https://github.com/Ed-Fi-Alliance/Ed-Fi-MigrationUtility/tree/master</PackageProjectUrl>
+    <License>https://www.ed-fi.org/license</License>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <PackageType>DotnetTool</PackageType>
+    <PackAsTool>true</PackAsTool>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="7.0.1" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
+    <PackageReference Include="dbup-core" Version="4.3.1" />
+    <PackageReference Include="dbup-sqlserver" Version="4.3.1" />
+    <PackageReference Include="EdFi.Standard.Descriptors" Version="1.0.0-b10000" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DatabaseReference/Readme.md" />
+    <None Include="DatabaseReference/**/*.sql" CopyToOutputDirectory="Always" />
+    <None Include="Scripts/**" CopyToOutputDirectory="Always" />
+    <None Include="Sample Calendar Config/**" CopyToOutputDirectory="Always" />
+    <None Update="log4net.config" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+</Project>

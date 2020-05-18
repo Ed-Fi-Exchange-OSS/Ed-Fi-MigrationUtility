@@ -1,0 +1,44 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Licensed to the Ed-Fi Alliance under one or more agreements.
+-- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+-- See the LICENSE and NOTICES files in the project root for more information.
+
+PRINT N'Creating primary key [StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_PK] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+ALTER TABLE [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ADD CONSTRAINT [StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_PK] PRIMARY KEY CLUSTERED  ([BeginDate], [EducationOrganizationId], [ProgramEducationOrganizationId], [ProgramName], [ProgramTypeDescriptorId], [SchoolYear], [StudentUSI])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_StudentLanguageInstructionProgramAssociation] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_StudentLanguageInstructionProgramAssociation] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([BeginDate], [EducationOrganizationId], [ProgramEducationOrganizationId], [ProgramName], [ProgramTypeDescriptorId], [StudentUSI])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_MonitoredDescriptor] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_MonitoredDescriptor] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([MonitoredDescriptorId])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ParticipationDescriptor] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ParticipationDescriptor] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([ParticipationDescriptorId])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ProficiencyDescriptor] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ProficiencyDescriptor] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([ProficiencyDescriptorId])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ProgressDescriptor] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_ProgressDescriptor] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([ProgressDescriptorId])
+GO
+
+PRINT N'Creating index [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_SchoolYearType] on [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+CREATE NONCLUSTERED INDEX [FK_StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_SchoolYearType] ON [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ([SchoolYear])
+GO
+
+PRINT N'Adding constraints to [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment]'
+GO
+ALTER TABLE [edfi].[StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment] ADD CONSTRAINT [StudentLanguageInstructionProgramAssociationEnglishLanguageProficiencyAssessment_DF_CreateDate] DEFAULT (getdate()) FOR [CreateDate]
+GO
