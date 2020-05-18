@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.Ods.Utilities.Migratio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.Ods.Utilities.Migration.Tests", "EdFi.Ods.Utilities.Migration.Tests\EdFi.Ods.Utilities.Migration.Tests.csproj", "{F5A46373-C26B-4EB2-8163-4C2D7DCBA457}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{7ABB90F4-354C-4B94-86BC-88B96345C98A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Project Information", "_Project Information", "{7ABB90F4-354C-4B94-86BC-88B96345C98A}"
 	ProjectSection(SolutionItems) = preProject
 		CONTRIBUTORS.md = CONTRIBUTORS.md
 		NOTICES.md = NOTICES.md
