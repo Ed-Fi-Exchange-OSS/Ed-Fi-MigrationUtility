@@ -4,7 +4,7 @@ The migration utility is a command-line tool built to upgrade the schema of an O
 
 For more information, see:
 
-* For more information, [Migration Utility](https://techdocs.ed-fi.org/display/ODSAPI34/Migration+Utility) in Tech Docs.
+* For more information, [Migration Utility](https://techdocs.ed-fi.org/display/EDFITOOLS/Migration+Utility) in Tech Docs.
 * [How to Submit an Issue](https://techdocs.ed-fi.org/display/ETKB/How+To%3A+Submit+an+Issue)
 * [How Submit a Feature Request](https://techdocs.ed-fi.org/display/ETKB/How+To%3A+Submit+a+Feature+Request)
 * Review on-going development work at [Tracker] (https://tracker.ed-fi.org/issues/?filter=14105)
