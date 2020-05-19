@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>EdFi.Ods.Utilities.Migration.Console</id>
+    <version>$PackageVersion$</version>
+    <authors>Ed-Fi Alliance</authors>
+    <owners>Ed-Fi Alliance</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Migration utility for the Ed-Fi ODS/API solution.</description>
+    <releaseNotes></releaseNotes>
+
+  </metadata>
+  <files>
+    <file src="Descriptors\**" target="Descriptors" /> 
+    <file src="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$\net48\**\*.*" target="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$" /> 
+    <file src="Sample Calendar Config\*.*" target="Sample Calendar Config" />
+    <file src="Scripts\**" target="Scripts" />
+  </files>
+</package>

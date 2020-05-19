@@ -1,0 +1,804 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Licensed to the Ed-Fi Alliance under one or more agreements.
+-- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+-- See the LICENSE and NOTICES files in the project root for more information.
+
+DROP TRIGGER edfi.edfi_AbsenceEventCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AcademicHonorCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AcademicSubjectDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AcademicWeek_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AccommodationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Account_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AccountabilityRating_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AccountClassificationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AccountCode_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AchievementCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Actual_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AdditionalCreditTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AddressTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AdministrationEnvironmentDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AdministrativeFundingControlDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Assessment_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentIdentificationSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentItem_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentItemCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentItemResultDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentPeriodDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AssessmentReportingMethodDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AttemptStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_AttendanceEventCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_BehaviorDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_BellSchedule_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Budget_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Calendar_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CalendarDate_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CalendarEventDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CalendarTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CareerPathwayDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CharterApprovalAgencyTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CharterStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CitizenshipStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ClassPeriod_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ClassroomPositionDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Cohort_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CohortScopeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CohortTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CohortYearTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CommunityOrganization_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CommunityProvider_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CommunityProviderLicense_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CompetencyLevelDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CompetencyObjective_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ContactTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ContentClassDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ContinuationOfServicesReasonDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ContractedStaff_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CostRateDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CountryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Course_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseAttemptResultDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseDefinedByDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseGPAApplicabilityDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseIdentificationSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseLevelCharacteristicDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseOffering_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseRepeatCodeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CourseTranscript_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Credential_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CredentialFieldDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CredentialTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CreditTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CTEProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_CurriculumUsedDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DeliveryMethodDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Descriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DiagnosisDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DiplomaLevelDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DiplomaTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisabilityDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisabilityDesignationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisabilityDeterminationSourceTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisciplineAction_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisciplineActionLengthDifferenceReasonDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisciplineDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisciplineIncident_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_DisciplineIncidentParticipationCodeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationalEnvironmentDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationContent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganization_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationIdentificationSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationInterventionPrescriptionAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationNetwork_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationNetworkAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationOrganizationPeerAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationPlanDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EducationServiceCenter_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ElectronicMailTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EmploymentStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EntryGradeLevelReasonDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EntryTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_EventCircumstanceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ExitWithdrawTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_FeederSchoolAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GeneralStudentProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Grade_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradebookEntry_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradebookEntryTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradeLevelDescriptor_TR_DeleteTracking;
+GO
+
+-- in this case we want to validate the trigger still exists if the table has not been dropped.
+IF EXISTS (select 1 from sys.objects where type = 'TR' and name = 'edfi_GradePointAverageWeightSystemDescriptor_TR_DeleteTracking')
+DROP TRIGGER edfi.edfi_GradePointAverageWeightSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradeTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradingPeriod_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GradingPeriodDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GraduationPlan_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GraduationPlanTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_GunFreeSchoolsActReportingStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_HomelessPrimaryNighttimeResidenceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_HomelessProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_IdentificationDocumentUseDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_IncidentLocationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InstitutionTelephoneNumberTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InteractivityStyleDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InternetAccessDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Intervention_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InterventionClassDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InterventionEffectivenessRatingDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InterventionPrescription_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_InterventionStudy_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LanguageDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LanguageInstructionProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LanguageUseDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningObjective_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningStandard_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningStandardCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningStandardEquivalenceAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningStandardEquivalenceStrengthDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LearningStandardScopeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LevelOfEducationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LicenseStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LicenseTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LimitedEnglishProficiencyDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LocaleDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LocalEducationAgency_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_LocalEducationAgencyCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Location_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_MagnetSpecialProgramEmphasisSchoolDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_MediumOfInstructionDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_MethodCreditEarnedDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_MigrantEducationProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_MonitoredDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_NeglectedOrDelinquentProgramDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_NeglectedOrDelinquentProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_NetworkPurposeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ObjectiveAssessment_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_OldEthnicityDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_OpenStaffPosition_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_OperationalStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_OtherNameTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Parent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ParticipationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ParticipationStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Payroll_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PerformanceBaseConversionDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PerformanceLevelDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PersonalInformationVerificationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PlatformTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PopulationServedDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PostingResultDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PostSecondaryEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PostSecondaryEventCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PostSecondaryInstitution_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PostSecondaryInstitutionLevelDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProficiencyDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Program_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgramAssignmentDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgramCharacteristicDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgramSponsorDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgramTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgressDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProgressLevelDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProviderCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProviderProfitabilityDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ProviderStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_PublicationStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RaceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ReasonExitedDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ReasonNotTestedDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RecognitionTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RelationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RepeatIdentifierDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ReportCard_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ReporterDescriptionDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ResidencyStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ResponseIndicatorDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ResponsibilityDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RestraintEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RestraintEventReasonDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ResultDatatypeTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_RetestIndicatorDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_School_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SchoolCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SchoolChoiceImplementStatusDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SchoolFoodServiceProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SchoolTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Section_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SectionAttendanceTakenEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SectionCharacteristicDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SeparationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SeparationReasonDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_ServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Session_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SexDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SpecialEducationProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_SpecialEducationSettingDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Staff_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffAbsenceEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffClassificationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffCohortAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffDisciplineIncidentAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffEducationOrganizationAssignmentAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffEducationOrganizationContactAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffEducationOrganizationEmploymentAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffIdentificationSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffLeave_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffLeaveEventCategoryDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffSchoolAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StaffSectionAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StateAbbreviationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StateEducationAgency_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_Student_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentAcademicRecord_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentAssessment_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentCharacteristicDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentCohortAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentCompetencyObjective_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentCTEProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentDisciplineIncidentAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentEducationOrganizationAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentEducationOrganizationResponsibilityAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentGradebookEntry_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentHomelessProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentIdentificationSystemDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentInterventionAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentInterventionAttendanceEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentLanguageInstructionProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentLearningObjective_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentMigrantEducationProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentNeglectedOrDelinquentProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentParentAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentParticipationCodeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentProgramAttendanceEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSchoolAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSchoolAttendanceEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSchoolFoodServiceProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSectionAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSectionAttendanceEvent_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentSpecialEducationProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_StudentTitleIPartAProgramAssociation_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TeachingCredentialBasisDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TeachingCredentialDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TechnicalSkillsAssessmentDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TelephoneNumberTypeDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TermDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TitleIPartAParticipantDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TitleIPartAProgramServiceDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TitleIPartASchoolDesignationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_TribalAffiliationDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_VisaDescriptor_TR_DeleteTracking;
+GO
+
+DROP TRIGGER edfi.edfi_WeaponDescriptor_TR_DeleteTracking;
+GO
