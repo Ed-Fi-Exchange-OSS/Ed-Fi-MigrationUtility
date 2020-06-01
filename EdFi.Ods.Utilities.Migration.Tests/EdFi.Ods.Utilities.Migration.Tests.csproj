@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>EdFi.Ods.Utilities.Migration.Tests</AssemblyName>
     <RootNamespace>EdFi.Ods.Utilities.Migration.Tests</RootNamespace>
     <Configurations>Debug;Release</Configurations>
