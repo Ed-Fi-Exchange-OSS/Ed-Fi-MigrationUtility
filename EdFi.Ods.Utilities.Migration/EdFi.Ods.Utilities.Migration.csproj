@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>EdFi.Ods.Utilities.Migration</AssemblyName>
     <RootNamespace>EdFi.Ods.Utilities.Migration</RootNamespace>
     <Configurations>Debug;Release</Configurations>
@@ -29,9 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="Dapper" Version="2.0.30" />
-    <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.35" />
     <PackageReference Include="dbup-core" Version="4.3.1" />
     <PackageReference Include="dbup-sqlserver" Version="4.3.1" />
     <PackageReference Include="EdFi.Standard.Descriptors" Version="1.0.0-b10000" />
