@@ -16,8 +16,8 @@
     <Description>Database migration utility for the Ed-Fi ODS/API solution.</Description>
     <Copyright>Copyright © 2020 Ed-Fi Alliance, LLC and contributors</Copyright>
     <PackageId>EdFi.Ods.Utilities.Migration</PackageId>
-    <PackageProjectUrl>https://github.com/Ed-Fi-Alliance/Ed-Fi-MigrationUtility/tree/master</PackageProjectUrl>
-    <License>https://www.ed-fi.org/license</License>
+    <PackageProjectUrl>https://github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility/tree/master</PackageProjectUrl>
+	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <PackageType>DotnetTool</PackageType>
     <PackAsTool>true</PackAsTool>
@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+  </PropertyGroup>  
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
@@ -43,5 +43,6 @@
     <None Include="Scripts/**" CopyToOutputDirectory="Always" />
     <None Include="Sample Calendar Config/**" CopyToOutputDirectory="Always" />
     <None Update="log4net.config" CopyToOutputDirectory="Always" />
+	<None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
   </ItemGroup>
 </Project>
