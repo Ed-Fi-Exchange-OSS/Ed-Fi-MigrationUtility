@@ -9,7 +9,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Migration utility for the Ed-Fi ODS/API solution.</description>
     <releaseNotes></releaseNotes>
-
   </metadata>
   <files>
     <file src="Descriptors\**" target="Descriptors" /> 
