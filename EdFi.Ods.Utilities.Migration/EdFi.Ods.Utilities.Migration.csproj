@@ -17,7 +17,7 @@
     <Copyright>Copyright © 2020 Ed-Fi Alliance, LLC and contributors</Copyright>
     <PackageId>EdFi.Ods.Utilities.Migration</PackageId>
     <PackageProjectUrl>https://github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility/tree/master</PackageProjectUrl>
-	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+ 	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <PackageType>DotnetTool</PackageType>
     <PackAsTool>true</PackAsTool>
