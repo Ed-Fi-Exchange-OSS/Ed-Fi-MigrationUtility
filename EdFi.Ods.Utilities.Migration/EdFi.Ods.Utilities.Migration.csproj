@@ -43,6 +43,6 @@
     <None Include="Scripts/**" CopyToOutputDirectory="Always" />
     <None Include="Sample Calendar Config/**" CopyToOutputDirectory="Always" />
     <None Update="log4net.config" CopyToOutputDirectory="Always" />
-  	<None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+    <None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
   </ItemGroup>
 </Project>
