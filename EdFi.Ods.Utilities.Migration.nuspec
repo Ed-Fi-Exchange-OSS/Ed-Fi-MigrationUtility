@@ -11,8 +11,8 @@
     <releaseNotes></releaseNotes>
   </metadata>
   <files>
-    <file src="Descriptors\**" target="Descriptors" /> 
-    <file src="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$\net48\**\*.*" target="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$" /> 
+    <file src="Descriptors\**" target="Descriptors" />
+    <file src="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$\net48\**\*.*" target="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$" />
     <file src="Sample Calendar Config\*.*" target="Sample Calendar Config" />
     <file src="Scripts\**" target="Scripts" />
   </files>

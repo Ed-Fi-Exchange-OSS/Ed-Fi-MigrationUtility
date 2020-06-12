@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup> 
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
