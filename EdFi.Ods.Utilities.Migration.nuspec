@@ -5,7 +5,7 @@
     <version>$PackageVersion$</version>
     <authors>Ed-Fi Alliance</authors>
     <owners>Ed-Fi Alliance</owners>
-	  <projectUrl>https://github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility</projectUrl>
+	<projectUrl>https://github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Migration utility for the Ed-Fi ODS/API solution.</description>
     <releaseNotes></releaseNotes>
