@@ -48,6 +48,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
     {
         public ConfigurationAutoMapperProfile()
         {
+            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV311ToV32>();
             CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV311ToV34>();
             CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV33ToV34>();
             CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV311ToV33>();
