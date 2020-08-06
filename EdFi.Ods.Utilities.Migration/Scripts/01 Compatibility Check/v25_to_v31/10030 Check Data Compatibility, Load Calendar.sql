@@ -87,7 +87,7 @@ BEGIN
 		BULK INSERT [migration_tempdata].[CalendarConfig] FROM ''$CalendarConfigurationFilePath$'' WITH
 		(
 			FIELDTERMINATOR = '',''
-			,ROWTERMINATOR = ''\n''
+			,ROWTERMINATOR = ''0x0A''
 			,FIRSTROW = 2
 		)');
 	END
