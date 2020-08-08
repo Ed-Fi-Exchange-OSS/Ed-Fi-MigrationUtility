@@ -15,21 +15,11 @@ IF EXISTS
 	WHERE COALESCE(a.[Namespace], f.[Namespace]) IS NULL
 )
 BEGIN
-	DECLARE @ValidNamespaceInstructionsVersionSpecific nvarchar(max) =
-	CASE
-		WHEN '$RequestedFinalUpgradeVersion$' like '2%'
-			THEN 'Please insert a [Namespace] for each assessment in the format "[scheme]://[organization-name]/Assessment/Assessment.xml"'
-		WHEN '$RequestedFinalUpgradeVersion$' like '3%'
-			THEN 'Please insert a [Namespace] for each assessment in the format "uri://[organization-name]/Assessment"'
-		ELSE
-			'Please insert a valid [Namespace] for each assessment'
-	END
-
 	DECLARE @Newline CHAR(2) = CHAR(13) + CHAR(10)
 	DECLARE @ErrorMessage NVARCHAR(max) = N'Action Required - [edfi].[Assessment]: All assessments must have a [Namespace] set.'
 	+@Newline
 	+@Newline
-	+@ValidNamespaceInstructionsVersionSpecific
+	+'Please insert a [Namespace] for each assessment in the format "uri://[organization-name]/Assessment"'
 	+@Newline
 	+'This will become part of the new [edfi].[Assessment] primary key beginning in version 2.5.'
 	PRINT @ErrorMessage;

@@ -20,19 +20,6 @@ namespace EdFi.Ods.Utilities.Migration.Queries
             {
                 upgradeStatus.InProgress =
                     connection.Query("SELECT 1 FROM [sys].[schemas] WHERE [name] = 'migration_tempdata'").Any();
-
-                if (upgradeStatus.InProgress)
-                {
-                    var versionBeforeUpgrade =
-                        connection.Query<string>("SELECT [VersionBeforeUpgrade] FROM [migration_tempdata].[Version]")
-                            .Single();
-                    upgradeStatus.VersionBeforeUpgrade = EdFiOdsVersion.ParseString(versionBeforeUpgrade);
-
-                    var requestedFinalUpgradeVersion =
-                        connection.Query<string>("SELECT [RequestedFinalUpgradeVersion] FROM [migration_tempdata].[Version]")
-                            .Single();
-                    upgradeStatus.RequestedFinalUpgradeVersion = EdFiOdsVersion.ParseString(requestedFinalUpgradeVersion);
-                }
             }
 
             return upgradeStatus;
@@ -41,10 +28,6 @@ namespace EdFi.Ods.Utilities.Migration.Queries
 
     public class EdFiOdsUpgradeStatus
     {
-        public EdFiOdsVersion VersionBeforeUpgrade { get; set; }
-
-        public EdFiOdsVersion RequestedFinalUpgradeVersion { get; set; }
-
         public bool InProgress { get; set; }
     }
 }
