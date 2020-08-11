@@ -37,7 +37,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         protected abstract Dictionary<string, string> GetSqlSubstitutionVariables();
 
-        public void ValidateConfigurationState() 
+        public void ValidateConfigurationState()
         {
             if (!_configurationValidated)
             {
@@ -181,10 +181,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                 .WithTransactionPerScript()
                 .WithExecutionTimeout(TimeSpan.FromSeconds(Configuration.Timeout))
-                .WithVariable("VersionBeforeUpgrade",
-                    UpgradeVersionConfiguration.VersionBeforeUpgrade.ApiVersion.ToString())
-                .WithVariable("RequestedFinalUpgradeVersion",
-                    UpgradeVersionConfiguration.RequestedFinalUpgradeVersion.ApiVersion.ToString())
                 .WithVariables(GetSqlSubstitutionVariables())
                 .LogScriptOutput()
                 .LogTo(new DbUpLogger());

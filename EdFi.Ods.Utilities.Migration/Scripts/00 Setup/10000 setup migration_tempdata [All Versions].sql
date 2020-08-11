@@ -125,17 +125,6 @@ BEGIN
 END
 GO
 
-CREATE TABLE [migration_tempdata].[Version] 
-(
-	[VersionBeforeUpgrade] NVARCHAR(50) NOT NULL,
-	[RequestedFinalUpgradeVersion] NVARCHAR(50) NOT NULL
-)
-GO
-
-INSERT  [migration_tempdata].[Version] ([VersionBeforeUpgrade], [RequestedFinalUpgradeVersion])
-VALUES ('$VersionBeforeUpgrade$','$RequestedFinalUpgradeVersion$')
-GO
-
 --BEGIN: Validation related items
 
 CREATE TABLE [migration_tempdata].[ValidationResult]

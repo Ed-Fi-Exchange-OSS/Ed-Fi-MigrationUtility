@@ -41,21 +41,6 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
                                                                                  string optionalRequestedUpgradeVersionOverride = null)
         {
             var upgradeVersionConfiguration = new UpgradeVersionConfiguration();
-            var upgradeStatus = new GetStatusOfUpgradeInProgress().Execute(databaseConnectionString);
-
-            if (upgradeStatus.InProgress)
-            {
-                if (!string.IsNullOrEmpty(optionalRequestedUpgradeVersionOverride) &&
-                    !upgradeStatus.RequestedFinalUpgradeVersion.IsVersion(optionalRequestedUpgradeVersionOverride))
-                {
-                    throw new ArgumentException(
-                        $"Attempted to resume an upgrade to version {optionalRequestedUpgradeVersionOverride}, but an incomplete upgrade to ODS version {upgradeStatus.RequestedFinalUpgradeVersion} was previously initiated.  To upgrade to a different version, please restore the ODS to the initial state and start over.");
-                }
-
-                upgradeVersionConfiguration.VersionBeforeUpgrade = upgradeStatus.VersionBeforeUpgrade;
-                upgradeVersionConfiguration.RequestedFinalUpgradeVersion = upgradeStatus.RequestedFinalUpgradeVersion;
-                return upgradeVersionConfiguration;
-            }
 
             if (string.IsNullOrEmpty(optionalCurrentOdsVersionOverride))
             {

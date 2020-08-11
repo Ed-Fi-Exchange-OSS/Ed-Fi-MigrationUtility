@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 // Licensed to the Ed-Fi Alliance under one or more agreements.
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
@@ -43,16 +43,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             Setup(testCase.FromVersion, testCase.ToVersion);
 
             var upgradeStatus = upgradeStatusQuery.Execute(ConnectionString);
-            upgradeStatus.VersionBeforeUpgrade.ShouldBe(testCase.FromVersion);
-            upgradeStatus.RequestedFinalUpgradeVersion.ShouldBe(testCase.ToVersion);
             upgradeStatus.InProgress.ShouldBe(true);
 
             CleanUp();
 
             upgradeStatus = upgradeStatusQuery.Execute(ConnectionString);
             upgradeStatus.InProgress.ShouldBe(false);
-            upgradeStatus.VersionBeforeUpgrade.ShouldBe(null);
-            upgradeStatus.RequestedFinalUpgradeVersion.ShouldBe(null);
 
             TestDatabaseShouldNoLongerContainUpgradeArtifacts();
 
@@ -64,8 +60,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
                 .SqlDatabase(ConnectionString)
                 .WithScriptsFromFileSystem(Path.Combine(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath"), MigrationStep.Setup.FolderName), Encoding.UTF8)
                 .WithTransactionPerScript()
-                .WithVariable("VersionBeforeUpgrade", fromVersion.ApiVersion.ToString())
-                .WithVariable("RequestedFinalUpgradeVersion", toVersion.ApiVersion.ToString())
                 .LogScriptOutput()
                 .JournalTo(new NullJournal())
                 .LogTo(new DbUpLogger(_logger))
