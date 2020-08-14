@@ -5,12 +5,15 @@
 
 using System;
 using AutoMapper;
+using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
 {
     public interface IConfigurationAutoMapper
     {
-        MigrationConfigurationVersionSpecific MapToVersionConfiguration(MigrationConfigurationGlobal globalConfiguration, Type versionConfigurationType);
+        MigrationConfigurationVersionSpecific MapToVersionConfiguration(
+            MigrationConfigurationGlobal globalConfiguration, Type versionConfigurationType);
+
         MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
             where TConfiguration : MigrationConfigurationVersionSpecific;
     }
@@ -19,6 +22,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
     {
         public readonly IMapper ConfigurationMapper;
         public readonly MapperConfiguration MapperConfiguration;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ConfigurationAutoMapper));
 
         public ConfigurationAutoMapper()
         {
@@ -26,21 +30,71 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             ConfigurationMapper = MapperConfiguration.CreateMapper();
         }
 
-        public MigrationConfigurationVersionSpecific MapToVersionConfiguration(MigrationConfigurationGlobal globalConfiguration, Type versionConfigurationType)
+        public MigrationConfigurationVersionSpecific MapToVersionConfiguration(
+            MigrationConfigurationGlobal globalConfiguration, Type versionConfigurationType)
         {
-            return (MigrationConfigurationVersionSpecific)ConfigurationMapper.Map(globalConfiguration, typeof(MigrationConfigurationGlobal), versionConfigurationType);
+            MigrationConfigurationVersionSpecific migrationConfigurationVersionSpecific = null;
+            try
+            {
+                migrationConfigurationVersionSpecific =
+                    (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(globalConfiguration,
+                        typeof(MigrationConfigurationGlobal), versionConfigurationType);
+            }
+            catch (Exception ex)
+            {
+                var msg = "Application has occurred error in MigrationConfigurationVersionSpecific"
+                          + Environment.NewLine
+                          + $"Details: {ex.Message}";
+
+                _logger.Error(msg);
+            }
+
+            return migrationConfigurationVersionSpecific;
         }
 
-        public TConfiguration MapToVersionConfiguration<TConfiguration>(MigrationConfigurationGlobal globalConfiguration)
+        public TConfiguration MapToVersionConfiguration<TConfiguration>(
+            MigrationConfigurationGlobal globalConfiguration)
             where TConfiguration : MigrationConfigurationVersionSpecific
         {
-            return (TConfiguration) Mapper.Map(globalConfiguration, typeof(MigrationConfigurationGlobal), typeof(TConfiguration));
+            TConfiguration tConfiguration = null;
+            try
+            {
+                tConfiguration = (TConfiguration) Mapper.Map(globalConfiguration, typeof(MigrationConfigurationGlobal),
+                    typeof(TConfiguration));
+            }
+            catch (Exception ex)
+            {
+                var msg = "Application has occurred error in MapToVersionConfiguration"
+                          + Environment.NewLine
+                          + $"Details: {ex.Message}";
+
+                _logger.Error(msg);
+            }
+
+            return tConfiguration;
         }
 
-        public MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
+        public MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(
+            TConfiguration versionConfiguration)
             where TConfiguration : MigrationConfigurationVersionSpecific
         {
-            return (MigrationConfigurationGlobal)ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration), typeof(MigrationConfigurationGlobal));
+            MigrationConfigurationGlobal migrationConfigurationGlobal = null;
+            try
+            {
+                migrationConfigurationGlobal =
+                    (MigrationConfigurationGlobal) ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration),
+                        typeof(MigrationConfigurationGlobal));
+            }
+            catch (Exception ex)
+            {
+                var msg = "Application has occurred error in ConfigurationAutoMapper"
+                          + Environment.NewLine
+                          + $"Details: {ex.Message}";
+
+                _logger.Error(msg);
+            }
+
+            return migrationConfigurationGlobal;
         }
     }
 
@@ -60,9 +114,9 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore());
             CreateMap<MigrationConfigurationV24ToV311, MigrationConfigurationGlobal>()
-               .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
-               .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
-               .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore());
+                .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
+                .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
+                .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore());
             CreateMap<MigrationConfigurationV24ToV33, MigrationConfigurationGlobal>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
