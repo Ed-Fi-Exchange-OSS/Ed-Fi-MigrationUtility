@@ -12,8 +12,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
     {
         public OdsMigrationManagerV31ToV50(MigrationConfigurationV31ToV50 configuration, UpgradeVersionConfiguration upgradeVersion) : base(configuration, upgradeVersion)
         {
-            AddUpgradeStep(EdFiOdsVersion.V311, EdFiOdsVersion.V32);
-            AddUpgradeStep(EdFiOdsVersion.V32, EdFiOdsVersion.V33);
+            AddUpgradeStep(EdFiOdsVersion.V31, EdFiOdsVersion.V311);
+            AddUpgradeStep(EdFiOdsVersion.V311, EdFiOdsVersion.V33);
             AddUpgradeStep(EdFiOdsVersion.V33, EdFiOdsVersion.V34);
             AddUpgradeStep(EdFiOdsVersion.V34, EdFiOdsVersion.V50);
         }
