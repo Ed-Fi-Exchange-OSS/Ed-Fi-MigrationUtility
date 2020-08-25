@@ -45,6 +45,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions.Version
             _latestKnownStructureVersionLevel.Add(EdFiOdsVersion.V31, 1027);
             _latestKnownDataVersionLevel.Add(EdFiOdsVersion.V311, 1030);
             _latestKnownStructureVersionLevel.Add(EdFiOdsVersion.V311, 1029);
+            _latestKnownDataVersionLevel.Add(EdFiOdsVersion.V32, 0000);
+            _latestKnownStructureVersionLevel.Add(EdFiOdsVersion.V32, 0000);
         }
 
         [TestCaseSource(nameof(VersionLevelConfigurationsUnderTest))]
