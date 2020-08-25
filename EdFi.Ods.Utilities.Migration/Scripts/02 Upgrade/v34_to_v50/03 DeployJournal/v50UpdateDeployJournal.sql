@@ -31,12 +31,10 @@ VALUES
 ('EdFi.Ods.Standard.Artifacts.MsSql.Structure.Ods.1090-MissingSecurityViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Structure.Ods.1100-AddMoreContextToEducationIdentifiersView.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Structure.Ods.1100-CorrectCommunityOrganizationAuthViews.sql'),
-('EdFi.Ods.Standard.Artifacts.MsSql.Structure.Ods.1120-RemoveCompositesHierarchicalViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Data.Ods.0020-SchoolYears.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Data.Ods.1010-OperationalContexts.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Data.Ods.1020-Assign-Discriminator-Values.sql'),
 ('EdFi.Ods.Standard.Artifacts.MsSql.Data.Ods.1040-Set-Default-SchoolYear.sql')
-
 
 INSERT [dbo].[DeployJournal] ([ScriptName], [Applied])
 SELECT e.[ScriptName], GETDATE()
