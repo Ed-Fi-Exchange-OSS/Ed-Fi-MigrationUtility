@@ -13,5 +13,11 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         public override EdFiOdsVersion ToVersion => EdFiOdsVersion.V50;
 
         public override string MigrationScriptVersionSpecificDirectoryName => "v311_to_v50";
+
+        public string DescriptorNamespacePrefix { get; set; }
+        public string CalendarConfigFilePath { get; set; }
+        public string AzureStorageLocation { get; set; }
+        public string CredentialNamespacePrefix { get; set; }
+
     }
 }

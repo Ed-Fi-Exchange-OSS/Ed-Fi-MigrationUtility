@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
-using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models.v34;
+using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models.v50;
 using NUnit.Framework;
 using Shouldly;
 
