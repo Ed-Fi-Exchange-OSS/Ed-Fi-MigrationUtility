@@ -2,7 +2,7 @@
   "profiles": {
     "EdFi.Ods.Utilities.Migration": {
         "commandName": "Project",
-        "commandLineArgs": "--Database \"Data Source=localhost;Initial Catalog=EdFi.Samples.Ods.2.5.0;Integrated Security=True;\" --DescriptorNamespace \"uri://ed-fi.org\" --CredentialNamespace \"uri://ed-fi.org\" --FromVersion 2.5 --ToVersion 3.1"
+        "commandLineArgs": "--Database \"Data Source=localhost;Initial Catalog=EdFi.Ods.Minimal.Template.3.4.0;Integrated Security=True;\" --DescriptorNamespace \"uri://ed-fi.org\" --CredentialNamespace \"uri://ed-fi.org\" --FromVersion 3.4 --ToVersion 5.0"
     }
   }
 }
