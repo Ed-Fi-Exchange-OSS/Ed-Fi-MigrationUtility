@@ -18,6 +18,5 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         public string CalendarConfigFilePath { get; set; }
         public string AzureStorageLocation { get; set; }
         public string CredentialNamespacePrefix { get; set; }
-
     }
 }

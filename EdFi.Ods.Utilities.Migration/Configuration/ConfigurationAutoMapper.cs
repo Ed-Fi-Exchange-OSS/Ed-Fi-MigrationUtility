@@ -237,6 +237,5 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore());
         }
-
     }
 }
