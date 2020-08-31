@@ -65,7 +65,7 @@ INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Descript
 VALUES ('uri://ed-fi.org/SurveyCategoryDescriptor', 'Other', 'Other', 'Other');
 
 INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/SurveyCategoryDescriptor', 'Exit', 'Exit', 'Exit');
+VALUES ('uri://ed-fi.org/SurveyCategoryDescriptor', 'Exit', 'Exit', 'Exiting staff');
 
 INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
 VALUES ('uri://ed-fi.org/SurveyCategoryDescriptor', 'Parent', 'Parent', 'Parent');
