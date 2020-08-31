@@ -17,6 +17,7 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models;
+using EdFi.Ods.Utilities.Migration.Tests.Utilities;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -214,7 +215,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             CurrentSchemaVersion = FromVersion;
         }
 
-        // TODO: ODS-3930 - Update to use DbDeploy tool
         private void ExecuteOdsScripts(EdFiOdsVersion version)
         {
             if (IsPreDbDeploy(version))
@@ -223,32 +223,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 return;
             }
 
-            var versionLevel = new EdFiOdsVersionJournal(version);
+            var dbDeploy = new DatabaseDeploymentProvider();
 
-            var allJournalEntries = versionLevel.GetJournalEntriesWithoutFeatures();
-
-            var structureScriptPaths = allJournalEntries.Where(je => je.ScriptType == "Structure")
-                .Select(
-                    je => new KeyValuePair<string, string>(
-                        je.RelativeFilePath,
-                        new FileInfo(Path.Combine(versionLevel.BaseVersionScriptPath, je.RelativeFilePath)).DirectoryName)
-                )
-                .ToArray();
-
-            ExecuteOdsScriptsFromScriptPaths(structureScriptPaths.Select(x => x.Value).Distinct().ToArray());
-
-            LogScriptsDeployed(GetDeployedDatabaseScriptJournalEntries(structureScriptPaths, allJournalEntries));
-
-            var dataScriptPaths = allJournalEntries.Where(je => je.ScriptType == "Data")
-                .Select(
-                    je => new KeyValuePair<string, string>(
-                        je.RelativeFilePath,
-                        new FileInfo(Path.Combine(versionLevel.BaseVersionScriptPath, je.RelativeFilePath)).DirectoryName))
-                .ToArray();
-
-            ExecuteOdsScriptsFromScriptPaths(dataScriptPaths.Select(x => x.Value).Distinct().ToArray());
-
-            LogScriptsDeployed(GetDeployedDatabaseScriptJournalEntries(dataScriptPaths, allJournalEntries));
+            dbDeploy.Deploy(version.DisplayName, "Deploy", "SQLServer", "ODS", ConnectionString);
         }
 
         private void LogScriptsDeployed(IEnumerable<DatabaseScriptJournalEntry> deployedDatabaseScriptJournalEntries)
@@ -304,6 +281,10 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 return;
             }
 
+            var dbDeploy = new DatabaseDeploymentProvider();
+
+            dbDeploy.Deploy(version.DisplayName, "Deploy", "SQLServer", "ODS", ConnectionString);
+
             var versionLevel = new EdFiOdsVersionJournal(version);
 
             var allJournalEntries = versionLevel.GetJournalEntries();
@@ -320,7 +301,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 .Where(x => Directory.Exists(x.Value))
                 .ToArray();
 
-            ExecuteOdsScriptsFromScriptPaths(structureScriptPaths.Select(x=>x.Value).Distinct().ToArray());
+            ExecuteOdsScriptsFromScriptPaths(structureScriptPaths.Select(x => x.Value).Distinct().ToArray());
 
             LogScriptsDeployed(GetDeployedDatabaseScriptJournalEntries(structureScriptPaths, allJournalEntries));
 
@@ -336,7 +317,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 .Where(x => Directory.Exists(x.Value))
                 .Distinct().ToArray();
 
-            ExecuteOdsScriptsFromScriptPaths(dataScriptPaths.Select(x=> x.Value).Distinct().ToArray());
+            ExecuteOdsScriptsFromScriptPaths(dataScriptPaths.Select(x => x.Value).Distinct().ToArray());
             LogScriptsDeployed(GetDeployedDatabaseScriptJournalEntries(dataScriptPaths, allJournalEntries));
         }
 
