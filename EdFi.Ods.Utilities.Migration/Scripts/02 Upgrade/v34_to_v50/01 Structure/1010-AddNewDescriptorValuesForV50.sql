@@ -111,9 +111,8 @@ VALUES ('uri://ed-fi.org/SurveyCategoryDescriptor', 'Teacher', 'Teacher', 'Teach
 INSERT INTO edfi.SurveyCategoryDescriptor
 SELECT DescriptorId FROM edfi.Descriptor
 WHERE [Namespace] = 'uri://ed-fi.org/SurveyCategoryDescriptor';
-
 INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/SurveyLevelDescriptor', 'Adult Education', 'Adult Education', 'Adult Education');
+VALUES ('uri://ed-fi.org/SurveyLevelDescriptor', 'Early Education', 'Early Education', 'Early Education');
 
 INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
 VALUES ('uri://ed-fi.org/SurveyLevelDescriptor', 'Eighth grade', 'Eighth grade', 'Eighth grade');
