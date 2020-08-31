@@ -3,35 +3,6 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/IndicatorDescriptor', 'Retention Rate', 'Percent of staff retained', 'The percent of staff retained for the education organization');
-
-INSERT INTO edfi.IndicatorDescriptor
-SELECT DescriptorId FROM edfi.Descriptor
-WHERE [Namespace] = 'uri://ed-fi.org/IndicatorDescriptor';
-
-
-INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/IndicatorGroupDescriptor', 'Staff Indicator', 'Staff Indicator', 'Indicators related to organization staffing');
-
-INSERT INTO edfi.IndicatorDescriptor
-SELECT DescriptorId FROM edfi.Descriptor
-WHERE [Namespace] = 'uri://ed-fi.org/IndicatorGroupDescriptor';
-
-
-INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/IndicatorLevelDescriptor', 'Medium Retention', 'Medium Retention', 'Staff retention from previous school year is between 80-90 percent of staff retained');
-
-INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/IndicatorLevelDescriptor', 'High Retention', 'High Retention', 'Staff retention from previous school year is between 90-100 percent of staff retained');
-
-INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
-VALUES ('uri://ed-fi.org/IndicatorLevelDescriptor', 'Low Retention', 'Low Retention', 'Staff retention from previous school year is under 80 percent of staff retained');
-
-
-INSERT INTO edfi.IndicatorLevelDescriptor
-SELECT DescriptorId FROM edfi.Descriptor
-WHERE [Namespace] = 'uri://ed-fi.org/IndicatorLevelDescriptor';
 
 
 INSERT INTO edfi.Descriptor ([Namespace], CodeValue, ShortDescription, [Description])
