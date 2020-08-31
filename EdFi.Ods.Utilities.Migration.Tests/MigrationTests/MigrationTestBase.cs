@@ -281,10 +281,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 return;
             }
 
-            var dbDeploy = new DatabaseDeploymentProvider();
-
-            dbDeploy.Deploy(version.DisplayName, "Deploy", "SQLServer", "ODS", ConnectionString);
-
             var versionLevel = new EdFiOdsVersionJournal(version);
 
             var allJournalEntries = versionLevel.GetJournalEntries();
