@@ -4,7 +4,7 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 $ErrorActionPreference = "Stop"
-$repositoryNames = @('Ed-Fi-Ods', 'Ed-Fi-ODS-Implementation' )
+$repositoryNames = @('EdFi.Ods.Utilities.Migration')
 & "$PSScriptRoot\..\..\..\logistics\scripts\modules\load-path-resolver.ps1"  $repositoryNames 
 Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\tasks\TaskHelper.psm1')
 Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\packaging\packaging.psm1')
@@ -17,7 +17,7 @@ function New-EdFiStandardDescriptorsPackage {
         # NOTE: the target folder version is the api version the migration utility is migrating to NOT the data standard version
         [hashtable[]]
         $PackageFiles = @(
-            @{ src = (Get-RepositoryResolvedPath "../Ed-Fi-Standard/v3.1/Descriptors/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
+            @{ src = (Get-RepositoryResolvedPath "../../Ed-Fi-MigrationUtility/EdFi.Ods.Utilities.Migration/bin/Debug/netcoreapp3.1/Descriptors/3.1/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
         )
     )
 
