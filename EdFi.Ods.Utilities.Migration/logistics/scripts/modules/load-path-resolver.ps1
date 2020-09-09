@@ -9,7 +9,7 @@ param(
 
 #Resolve if overrides or defaults are required
 if ($null -eq $repositoryNames) {
-    $repositoryNames = @('Ed-Fi-ODS', (Get-Item "$PSScriptRoot\..\..\..").Name)
+    $repositoryNames = @('Ed-Fi-ODS', (Get-Item "$PSScriptRoot\..\..\..\..\..").Name)
 }
 if ([string]::IsNullOrWhiteSpace($env:PathResolverRepositoryOverride)) {
     Write-Host "Using repositories: $($repositoryNames -join ', ')"
