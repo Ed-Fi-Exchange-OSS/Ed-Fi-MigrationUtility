@@ -7,7 +7,6 @@ param(
     [string[]] $repositoryNames
 )
 
-Write-Host "semalai repositoryNames " $repositoryNames  -ForegroundColor Green 
 if ((Get-Module | Where-Object -Property Name -eq 'path-resolver')) { return }
 
 Import-Module -Force -Scope Global "$PSScriptRoot\path-resolver.psm1" -ArgumentList @(, $repositoryNames)
