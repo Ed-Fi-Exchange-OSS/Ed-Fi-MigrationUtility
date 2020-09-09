@@ -7,6 +7,18 @@ param(
     [string[]] $repositoryNames
 )
 
+#Resolve if overrides or defaults are required
+if ($null -eq $repositoryNames) {
+    $repositoryNames = @('Ed-Fi-ODS', (Get-Item "$PSScriptRoot\..\..\..").Name)
+}
+if ([string]::IsNullOrWhiteSpace($env:PathResolverRepositoryOverride)) {
+    Write-Host "Using repositories: $($repositoryNames -join ', ')"
+}
+else {
+    $repositoryNames = @($env:PathResolverRepositoryOverride.Split(';'))
+    Write-Host "Using repositories from environment variable: $($repositoryNames -join ', ')"
+}
+
 Write-Host "semalai repositoryNames " $repositoryNames  -ForegroundColor Green 
 if ((Get-Module | Where-Object -Property Name -eq 'path-resolver')) { return }
 
