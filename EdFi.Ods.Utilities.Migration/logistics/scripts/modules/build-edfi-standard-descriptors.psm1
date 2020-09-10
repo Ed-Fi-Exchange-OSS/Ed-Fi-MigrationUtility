@@ -7,7 +7,6 @@ $ErrorActionPreference = "Stop"
 $repositoryNames = @('EdFi.Ods.Utilities.Migration')
 & "$PSScriptRoot\..\..\..\logistics\scripts\modules\load-path-resolver.ps1"  $repositoryNames 
 Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\tasks\TaskHelper.psm1')
-Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\packaging\packaging.psm1')
 
 function New-EdFiStandardDescriptorsPackage {
     param(
