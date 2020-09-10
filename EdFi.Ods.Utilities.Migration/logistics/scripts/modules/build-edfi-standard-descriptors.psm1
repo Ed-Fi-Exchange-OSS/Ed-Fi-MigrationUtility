@@ -4,6 +4,8 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 $ErrorActionPreference = "Stop"
+$repositoryNames = @('EdFi.Ods.Utilities.Migration')
+& "$PSScriptRoot\..\..\..\logistics\scripts\modules\load-path-resolver.ps1"  $repositoryNames 
 Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\tasks\TaskHelper.psm1')
 Import-Module -Force -Scope Global (Get-RepositoryResolvedPath 'logistics\scripts\modules\packaging\packaging.psm1')
 
@@ -15,7 +17,7 @@ function New-EdFiStandardDescriptorsPackage {
         # NOTE: the target folder version is the api version the migration utility is migrating to NOT the data standard version
         [hashtable[]]
         $PackageFiles = @(
-            @{ src = (Get-RepositoryResolvedPath "../../Ed-Fi-Standard/v3.1/Descriptors/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
+            @{ nuspecsrc = (Get-RepositoryResolvedPath "../../Ed-Fi-MigrationUtility/EdFi.Ods.Utilities.Migration/EdFi.Standard.Descriptors/");src = (Get-RepositoryResolvedPath "../../Ed-Fi-Standard/v3.1/Descriptors/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
         )
     )
 
@@ -31,7 +33,7 @@ function New-EdFiStandardDescriptorsPackage {
         'Remove-TempDirectory'
         'New-TempDirectory'
         'Copy-PackageFiles'
-        'New-PackageNuspec'
+        'Copy-PackageNuspec'
     )
 
     $script:result = @()
@@ -72,73 +74,34 @@ function Copy-PackageFiles([hashtable] $config) {
     foreach ($file in $config.PackageFiles) {
         New-Item -Path $file.target -ItemType "Directory" -Force
         $items = Get-ChildItem $file.src -Recurse
-
+        $nuspecPath = Join-Path $config.OutputPath 'EdFi.Standard.Descriptors.nuspec'
         foreach ($item in $items) {
             Write-Host "copy $($item.Fullname)" -ForegroundColor DarkGray
 
-            $destination = Copy-Item -Path $item.Fullname -destination $file.target -Force -PassThru
+            $destination = Copy-Item -Path $item.Fullname -destination $nuspecPath -Force -PassThru
 
             Write-Host '  -> ' -NoNewLine -ForegroundColor DarkGray
             Write-Host $destination.FullName -ForegroundColor Green
         }
         Write-Host
         Write-Host "$($items.Length) items copied."
-        Write-Host
+        Write-Host         
     }
 }
+function Copy-PackageNuspec([hashtable] $config) {
+    foreach ($file in $config.PackageFiles) {          
+        $nuspecPath = Join-Path $config.OutputPath 'EdFi.Standard.Descriptors.nuspec'      
+        $items = Get-ChildItem $file.nuspecsrc -Recurse
+          foreach ($item in $items) {
+            Write-Host "copy $($item.Fullname)" -ForegroundColor DarkGray
 
-function New-PackageNuspec([hashtable] $config) {
-    $nuspecPath = Join-Path $config.OutputPath 'package.nuspec'
+            $destination = Copy-Item -Path $item.Fullname -destination $nuspecPath -Force -PassThru
 
-    $params = @{
-        nuspecPath = $nuspecPath
-        id = '$id$'
-        title = '$title$'
-        description = '$description$'
-        version = '$version$'
-        authors = '$authors$'
-        copyright = '$copyright$'
-        owners = '$owners$'
-        requireLicenseAcceptance = $false
-        forceOverwrite = $true
+            Write-Host '  -> ' -NoNewLine -ForegroundColor DarkGray
+            Write-Host $destination.FullName -ForegroundColor Green
+        }
     }
-    New-Nuspec @params
-
-    function Add-Files([string] $nuspecPath) {
-        [xml]$xml = Get-Content $nuspecPath
-
-        $file = $xml.CreateElement('file')
-
-        $file.SetAttribute('src', '**/*')
-        $file.SetAttribute('target', 'contentFiles/')
-
-        $filesElem = $xml.GetElementsByTagName('files')[0]
-        $filesElem.AppendChild($file)
-
-        $xml.Save($nuspecPath)
-    }
-
-    function Add-ContentFiles([string] $nuspecPath) {
-        [xml]$xml = Get-Content $nuspecPath
-
-        $files = $xml.CreateElement('files')
-
-        $files.SetAttribute('include', 'any/netcoreapp3.1/**/*')
-        $files.SetAttribute('buildAction', 'None')
-        $files.SetAttribute('copyToOutput', 'true')
-
-        $metadata = $xml.GetElementsByTagName('metadata')[0]
-        $contentFiles = $xml.CreateElement('contentFiles')
-        $metadata.AppendChild($contentFiles)
-        $contentFiles.AppendChild($files)
-
-        $xml.Save($nuspecPath)
-    }
-
-    Add-Files $nuspecPath
-    Add-ContentFiles $nuspecPath
-
-    Write-Host "Nuspec Created: " -NoNewline
+    Write-Host "Nuspec Copied: " -NoNewline
     Write-Host (Get-ChildItem $nuspecPath).FullName -ForegroundColor Green
     Write-Host
 }
