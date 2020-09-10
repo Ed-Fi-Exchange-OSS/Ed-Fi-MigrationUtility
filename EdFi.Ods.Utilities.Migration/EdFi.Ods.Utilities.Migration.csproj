@@ -46,6 +46,5 @@
     <None Update="log4net.config" CopyToOutputDirectory="Always" />
     <None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
     <None Include="Descriptors/**" CopyToOutputDirectory="Always" />
-    <None Include="logistics/**" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>
