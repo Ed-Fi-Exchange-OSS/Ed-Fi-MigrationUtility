@@ -60,4 +60,4 @@ function New-Nuspec {
     $xml.Save($nuspecPath)
 }
 
-Export-ModuleMember -Function *
+Export-ModuleMember -Function New-Nuspec
