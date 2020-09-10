@@ -72,12 +72,11 @@ function New-TempDirectory([hashtable] $config) {
 function Copy-PackageFiles([hashtable] $config) {
     foreach ($file in $config.PackageFiles) {
         New-Item -Path $file.target -ItemType "Directory" -Force
-        $items = Get-ChildItem $file.src -Recurse
-        $nuspecPath = Join-Path $config.OutputPath 'EdFi.Standard.Descriptors.nuspec'
+        $items = Get-ChildItem $file.src -Recurse       
         foreach ($item in $items) {
             Write-Host "copy $($item.Fullname)" -ForegroundColor DarkGray
 
-            $destination = Copy-Item -Path $item.Fullname -destination $nuspecPath -Force -PassThru
+            $destination = Copy-Item -Path $item.Fullname -destination $file.target -Force -PassThru
 
             Write-Host '  -> ' -NoNewLine -ForegroundColor DarkGray
             Write-Host $destination.FullName -ForegroundColor Green
