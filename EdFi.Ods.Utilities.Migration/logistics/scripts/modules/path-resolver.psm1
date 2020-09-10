@@ -129,24 +129,9 @@ function Get-RepositoryResolvedPath ([string]$pathSuffix) {
     throw ($errorMsg)
 }
 
-
-#Sets a global folders variable. Is the primary access mechanism for resolving paths. Utilizes a delegate.
-if (-not ($script:folders)) {
-    $script:folders = @{ }
-    #This is used in remote web deployments to find this path resolver and CANNOT be a delegate. 
-    $folders.scripts = [System.Func[Object, Object]] { return (Get-RepositoryResolvedPath "logistics\scripts\$($args[0])") }
-    $folders.base = [System.Func[Object, Object]] { return (Get-RepositoryResolvedPath "$($args[0])") }
-    $folders.tools = [System.Func[Object, Object]] { return (Get-RepositoryResolvedPath "tools\$($args[0])") }
-    $folders.modules = [System.Func[Object, Object]] { return (Get-RepositoryResolvedPath "logistics\scripts\modules\$($args[0])") }
-    $folders.activities = [System.Func[Object, Object]] { return (Get-RepositoryResolvedPath "logistics\scripts\activities\$($args[0])") }
-}
-
 $exportFunction = @(    
     'Get-RepositoryResolvedPath'
     'Get-RepositoryRoot'        
 )
-$exportVariable = @(
-    "folders"
-)
 
-Export-ModuleMember -Function $exportFunction -variable $exportVariable 
+Export-ModuleMember -Function $exportFunction 
