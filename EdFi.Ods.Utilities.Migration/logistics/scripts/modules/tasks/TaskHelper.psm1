@@ -88,23 +88,6 @@ function Write-HashtableInfo([hashtable] $hashtable) {
     ($hashtable).GetEnumerator() | Sort-Object -Property Name | Format-Table -HideTableHeaders -AutoSize -Wrap | Out-Host
 }
 
-function Write-InvocationInfo {
-    param(
-        [System.Object] $Invocation
-    )
-
-    # allows more list properties to be displayed (default = 4)
-    $global:FormatEnumerationLimit = 10
-
-    Write-Host $Invocation.MyCommand.Name
-    ($Invocation.BoundParameters).GetEnumerator() |
-        Sort-Object -Property Key |
-        Format-Table -HideTableHeaders -AutoSize -Wrap |
-        Out-Host
-}
-
-function Write-ErrorAndThenExit([string] $message) { Write-Error $message; exit -1 }
-
 function Write-Info([string] $message) { Write-Host $message -ForegroundColor Green }
 
 Export-ModuleMember -function * -Alias *
