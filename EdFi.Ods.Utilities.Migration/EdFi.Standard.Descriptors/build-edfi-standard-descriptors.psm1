@@ -4,7 +4,6 @@
 # See the LICENSE and NOTICES files in the project root for more information.
 
 $ErrorActionPreference = "Stop"
-Import-Module -Force -Scope Global (Resolve-Path "$PSScriptRoot/tasks/TaskHelper.psm1")
 
 function New-EdFiStandardDescriptorsPackage {
     param(
@@ -14,39 +13,22 @@ function New-EdFiStandardDescriptorsPackage {
         # NOTE: the target folder version is the api version the migration utility is migrating to NOT the data standard version
         [hashtable[]]
         $PackageFiles = @(
-            @{ nuspecsrc = (Resolve-Path "$PSScriptRoot/../../../EdFi.Standard.Descriptors/");src = (Resolve-Path "$PSScriptRoot/../../../../../Ed-Fi-Standard/v3.1/Descriptors/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
+            @{ nuspecsrc = (Resolve-Path "$PSScriptRoot/");src = (Resolve-Path "$PSScriptRoot/../../../Ed-Fi-Standard/v3.1/Descriptors/"); target = (Join-Path $OutputPath "any/netcoreapp3.1/Descriptors/3.1") }
         )
     )
 
     Write-Host "OutputPath $OutputPath"
-    $PackageFiles | % { Write-HashtableInfo $_ }
+    $PackageFiles |  % { Write-HashtableInfo $_ }
 
     $config = @{
         OutputPath = $OutputPath
         PackageFiles = $PackageFiles
     }
 
-    $script:tasks = @(
-        'Remove-TempDirectory'
-        'New-TempDirectory'
-        'Copy-PackageFiles'
-        'Copy-PackageNuspec'
-    )
-
-    $script:result = @()
-
-    $elapsed = Use-StopWatch {
-        foreach ($task in $tasks) {
-            $script:result += Invoke-Task -name $task -task { & $task $config }
-        }
-    }
-
-    Test-Error
-
-    $script:result += New-TaskResult -name '-' -duration '-'
-    $script:result += New-TaskResult -name $MyInvocation.MyCommand.Name -duration $elapsed.format
-
-    return $script:result | Format-Table
+    Remove-TempDirectory $config
+    New-TempDirectory $config
+    Copy-PackageFiles $config
+    Copy-PackageNuspec $config
 }
 
 function Remove-TempDirectory([hashtable] $config) {
@@ -100,6 +82,10 @@ function Copy-PackageNuspec([hashtable] $config) {
     Write-Host "Nuspec Copied: " -NoNewline
     Write-Host (Get-ChildItem $nuspecPath).FullName -ForegroundColor Green
     Write-Host
+}
+
+function Write-HashtableInfo([hashtable] $hashtable) {
+    ($hashtable).GetEnumerator() | Sort-Object -Property Name | Format-Table -HideTableHeaders -AutoSize -Wrap | Out-Host
 }
 
 Export-ModuleMember -Function New-EdFiStandardDescriptorsPackage
