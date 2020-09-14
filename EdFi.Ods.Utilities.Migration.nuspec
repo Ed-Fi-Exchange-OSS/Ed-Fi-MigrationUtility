@@ -15,7 +15,7 @@
     <file src="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$\net48\**\*.*" target="EdFi.Ods.Utilities.Migration.Console\bin\$BuildConfiguration$" />
     <file src="Sample Calendar Config\*.*" target="Sample Calendar Config" />
     <file src="Scripts\**" target="Scripts" />
-	<file src="LICENSE.txt" />
-	<file src="NOTICES.md" />
+    <file src="LICENSE.txt" />
+    <file src="NOTICES.md" />
   </files>
 </package>
