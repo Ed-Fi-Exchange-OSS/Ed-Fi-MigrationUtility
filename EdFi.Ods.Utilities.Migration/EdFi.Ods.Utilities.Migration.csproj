@@ -35,7 +35,7 @@
     <PackageReference Include="Dapper.Contrib" Version="2.0.35" />
     <PackageReference Include="dbup-core" Version="4.3.1" />
     <PackageReference Include="dbup-sqlserver" Version="4.3.1" />
-    <PackageReference Include="EdFi.Standard.Descriptors" Version="1.0.0-b10000" />
+    <PackageReference Include="EdFi.Suite3.Standard.Descriptors" Version="1.0.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
   <ItemGroup>
@@ -45,5 +45,6 @@
     <None Include="Sample Calendar Config/**" CopyToOutputDirectory="Always" />
     <None Update="log4net.config" CopyToOutputDirectory="Always" />
     <None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
+    <None Include="Descriptors/**" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>
