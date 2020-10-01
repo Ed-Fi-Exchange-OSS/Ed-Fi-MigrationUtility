@@ -7,11 +7,11 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
 {
-    public class MigrationConfigurationV311ToV33 : MigrationConfigurationVersionSpecific
+    public class MigrationConfigurationV32ToV33 : MigrationConfigurationVersionSpecific
     {
-        public override EdFiOdsVersion FromVersion => EdFiOdsVersion.V311;
+        public override EdFiOdsVersion FromVersion => EdFiOdsVersion.V32;
         public override EdFiOdsVersion ToVersion => EdFiOdsVersion.V33;
 
-        public override string MigrationScriptVersionSpecificDirectoryName => "v311_to_v33";
+        public override string MigrationScriptVersionSpecificDirectoryName => "v32_to_v33";
     }
 }

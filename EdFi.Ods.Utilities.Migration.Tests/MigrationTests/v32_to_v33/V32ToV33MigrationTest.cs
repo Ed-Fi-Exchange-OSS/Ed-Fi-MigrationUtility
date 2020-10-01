@@ -11,13 +11,13 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models.v33;
 
-namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
+namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v32_to_v33
 {
-    public abstract class V311ToV33MigrationTest : MigrationTestBase
+    public abstract class V32ToV33MigrationTest : MigrationTestBase
     {
-        protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V311;
+        protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V32;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V33;
-        protected override string TestDataDirectoryName => "v311_to_v33";
+        protected override string TestDataDirectoryName => "v32_to_v33";
 
         protected OdsUpgradeResult PerformTestMigration(string sourceDataScriptName = null, DynamicParameters scriptParameters = null, string calendarConfigurationFileName = null, string namespacePrefix = null)
         {
@@ -30,7 +30,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
                 UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
                     FromVersion.ToString(), ToVersion.ToString());
 
-            var config = new MigrationConfigurationV311ToV33
+            var config = new MigrationConfigurationV32ToV33
             {
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
@@ -39,7 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new OdsMigrationManagerV311ToV33(config, versionConfiguration);
+            var migrationManager = new OdsMigrationManagerV32ToV33(config, versionConfiguration);
             return RunMigration(migrationManager);
         }
 

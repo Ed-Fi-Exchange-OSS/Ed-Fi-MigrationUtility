@@ -7,9 +7,9 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using NUnit.Framework;
 
-namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33.AddressDependencyTests
+namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v32_to_v33.AddressDependencyTests
 {
-    public class AddressDependencyTests : V311ToV33MigrationTest
+    public class AddressDependencyTests : V32ToV33MigrationTest
     {
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.FullRestoreBeforeEveryTest;
 

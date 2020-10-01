@@ -8,9 +8,9 @@ using EdFi.Ods.Utilities.Migration.Configuration;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public class OdsMigrationManagerV311ToV33 : OdsVersionSpecificMigrationManager<MigrationConfigurationV311ToV33>
+    public class OdsMigrationManagerV32ToV33 : OdsVersionSpecificMigrationManager<MigrationConfigurationV32ToV33>
     {
-        public OdsMigrationManagerV311ToV33(MigrationConfigurationV311ToV33 configuration, UpgradeVersionConfiguration upgradeVersionConfiguration) : base(configuration, upgradeVersionConfiguration)
+        public OdsMigrationManagerV32ToV33(MigrationConfigurationV32ToV33 configuration, UpgradeVersionConfiguration upgradeVersionConfiguration) : base(configuration, upgradeVersionConfiguration)
         {
         }
 
