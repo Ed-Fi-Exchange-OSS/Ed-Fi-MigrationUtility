@@ -49,9 +49,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
                 CredentialNamespacePrefix = V2ToV3MigrationConstants.DefaultEdFiNamespacePrefix
             };
 
-            var migrationManager = new OdsMigrationManager(versionConfiguration, globalConfiguration).CreateInstance();
+            var migrationManagers = new OdsMigrationManager(versionConfiguration, globalConfiguration).CreateManagers();
 
-            return RunMigration(migrationManager);
+            return RunMigration(migrationManagers);
         }
 
         protected IEnumerable<T> GetV2SourceTableContents<T>()

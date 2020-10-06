@@ -19,10 +19,15 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         internal class OdsMigrationManagerResolverConfiguration
         {
-            public EdFiOdsVersion FromVersion;
-            public EdFiOdsVersion ToVersion;
+            public OdsMigrationVersionRange VersionRange;
             public Type MigrationManagerType;
             public Type ConfigurationType;
+        }
+
+        public class OdsMigrationVersionRange
+        {
+            public EdFiOdsVersion FromVersion;
+            public EdFiOdsVersion ToVersion;
         }
 
         private static readonly Lazy<OdsMigrationManagerResolver> _instance =
@@ -33,7 +38,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         private OdsMigrationManagerResolver()
         {
             RegisterMigrationManagers(typeof(OdsVersionSpecificMigrationManager<>));
-            RegisterMigrationManagers(typeof(OdsChainedUpgradeMigrationManager<>));
         }
 
         private void RegisterMigrationManagers(Type migrationManagerBaseType)
@@ -48,7 +52,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 .ToList();
 
             migrationManagers.ForEach(RegisterMigrationManagerResolver);
-            _allMigrationManagerResolverConfigurations.Sort((x, y) => x.FromVersion.CompareTo(y.FromVersion));
+            _allMigrationManagerResolverConfigurations.Sort((x, y) => x.VersionRange.FromVersion.CompareTo(y.VersionRange.FromVersion));
         }
 
         private void RegisterMigrationManagerResolver(Type migrationManager)
@@ -58,10 +62,13 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
             var resolverConfiguration = new OdsMigrationManagerResolverConfiguration
             {
-                FromVersion = configuration.FromVersion,
-                ToVersion = configuration.ToVersion,
+                VersionRange = new OdsMigrationVersionRange
+                {
+                    FromVersion = configuration.FromVersion,
+                    ToVersion = configuration.ToVersion,
+                },
                 MigrationManagerType = migrationManager,
-                ConfigurationType = configurationType
+                ConfigurationType = configurationType,
             };
 
             _allMigrationManagerResolverConfigurations.Add(resolverConfiguration);
@@ -79,35 +86,46 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private void Validate(OdsMigrationManagerResolverConfiguration configuration)
         {
-            if (configuration.FromVersion.ApiVersion >= configuration.ToVersion.ApiVersion)
+            if (configuration.VersionRange.FromVersion.ApiVersion >= configuration.VersionRange.ToVersion.ApiVersion)
             {
                 throw new InvalidOperationException(
-                    $"OdsMigrationManagerResolver configuration error:  Cannot upgrade API version {configuration.FromVersion.ApiVersion} to {configuration.ToVersion.ApiVersion}");
+                    $"OdsMigrationManagerResolver configuration error:  Cannot upgrade API version {configuration.VersionRange.FromVersion.ApiVersion} to {configuration.VersionRange.ToVersion.ApiVersion}");
             }
 
-            var registeredFromVersions = _allMigrationManagerResolverConfigurations.Count(x => x.FromVersion == configuration.FromVersion);
+            var registeredFromVersions =
+                _allMigrationManagerResolverConfigurations.Count(x => x.VersionRange.FromVersion == configuration.VersionRange.FromVersion);
 
             if (registeredFromVersions != 1)
             {
                 throw new InvalidOperationException(
-                    $"Found {registeredFromVersions} registered upgrade configurations from version {configuration.FromVersion}, but expected only 1");
+                    $"Found {registeredFromVersions} registered upgrade configurations from version {configuration.VersionRange.FromVersion}, but expected only 1");
             }
 
-            var registeredToVersions = _allMigrationManagerResolverConfigurations.Count(x => x.ToVersion == configuration.ToVersion);
+            var registeredToVersions = _allMigrationManagerResolverConfigurations.Count(x => x.VersionRange.ToVersion == configuration.VersionRange.ToVersion);
 
             if (registeredToVersions != 1)
             {
                 throw new InvalidOperationException(
-                    $"Found {registeredToVersions} registered upgrade configurations to version {configuration.ToVersion}, but expected only 1");
+                    $"Found {registeredToVersions} registered upgrade configurations to version {configuration.VersionRange.ToVersion}, but expected only 1");
             }
         }
 
-        public Type GetConfiguration(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+        public List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+        {
+            return _allMigrationManagerResolverConfigurations
+                .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)
+                .TakeWhile(x => x.VersionRange.ToVersion != toVersion)
+                .Union(_allMigrationManagerResolverConfigurations.Where(x => x.VersionRange.ToVersion == toVersion))
+                .Select(x => x.VersionRange)
+                .ToList();
+        }
+
+        public Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
         {
             return GetResolverConfiguration(fromVersion, toVersion)?.ConfigurationType;
         }
 
-        public Type GetMigrationManager(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+        public Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
         {
             return GetResolverConfiguration(fromVersion, toVersion)?.MigrationManagerType;
         }
@@ -115,21 +133,21 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         private OdsMigrationManagerResolverConfiguration GetResolverConfiguration(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
         {
             return _allMigrationManagerResolverConfigurations
-                .SingleOrDefault(x => x.FromVersion == fromVersion && x.ToVersion == toVersion);
+                .First(x => x.VersionRange.FromVersion == fromVersion);
         }
 
         public List<EdFiOdsVersion> GetAllUpgradableVersions()
         {
             return _allMigrationManagerResolverConfigurations
-                .Select(x => x.FromVersion)
+                .Select(x => x.VersionRange.FromVersion)
                 .ToList();
         }
 
         public List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion)
         {
             return _allMigrationManagerResolverConfigurations
-                .SkipWhile(x => x.FromVersion != fromVersion)
-                .Select(x => x.ToVersion)
+                .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)
+                .Select(x => x.VersionRange.ToVersion)
                 .ToList();
         }
 
@@ -142,14 +160,14 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         public EdFiOdsVersion GetLatestSupportedUpgradeVersion()
         {
             return _allMigrationManagerResolverConfigurations
-                .Select(x => x.ToVersion)
+                .Select(x => x.VersionRange.ToVersion)
                 .LastOrDefault();
         }
 
         public bool VersionCanBeUpgraded(EdFiOdsVersion version)
         {
             return _allMigrationManagerResolverConfigurations
-                .Select(x => x.FromVersion)
+                .Select(x => x.VersionRange.FromVersion)
                 .Contains(version);
         }
     }

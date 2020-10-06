@@ -272,11 +272,9 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private static void RaiseErrorIfConnectionStringIsInvalid(MigrationConfigurationVersionSpecific configuration)
         {
-            using (var connection = new SqlConnection(configuration.DatabaseConnectionString))
-            {
-                connection.Open();
-                connection.Close();
-            }
+            using var connection = new SqlConnection(configuration.DatabaseConnectionString);
+            connection.Open();
+            connection.Close();
         }
 
         private void RaiseErrorIfVersionConfigurationIsInvalid(MigrationConfigurationVersionSpecific configuration)
