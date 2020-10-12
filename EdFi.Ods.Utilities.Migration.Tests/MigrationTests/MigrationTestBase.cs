@@ -174,6 +174,21 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             return result;
         }
 
+        protected OdsUpgradeResult RunMigration(List<IOdsMigrationManager> managers)
+        {
+            var upgradeResult = new OdsUpgradeResult();
+            foreach (var manager in managers)
+            {
+                upgradeResult.AddUpgradeResult(RunMigration(manager));
+                if (!upgradeResult.Successful)
+                {
+                    break;
+                }
+            }
+
+            return upgradeResult;
+        }
+
         private void BuildSchemaMetadata(TestSchemaVersion testVersion)
         {
             ShowStatusMessage($"Building {testVersion} schema metadata");

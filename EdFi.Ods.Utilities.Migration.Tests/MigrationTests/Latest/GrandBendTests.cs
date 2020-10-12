@@ -120,7 +120,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
                 CredentialNamespacePrefix = "uri://ed-fi.org/"
             };
 
-            var migrationManager = new OdsMigrationManager(upgradeConfiguration, globalConfiguration).CreateInstance();
+            var migrationManager = new OdsMigrationManager(upgradeConfiguration, globalConfiguration).CreateManagers();
             UpgradeResult = RunMigration(migrationManager);
         }
 
