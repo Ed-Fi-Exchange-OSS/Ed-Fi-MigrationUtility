@@ -9,6 +9,7 @@ using System.Linq;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Helpers;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
@@ -44,7 +45,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
             if (string.IsNullOrEmpty(optionalCurrentOdsVersionOverride))
             {
-                var autoDetectedVersion = new GetCurrentOdsApiVersion().Execute(databaseConnectionString);
+                var autoDetectedVersion = new SqlServerCurrentOdsApiVersionProvider().Get(databaseConnectionString);
 
                 if (autoDetectedVersion == null)
                 {

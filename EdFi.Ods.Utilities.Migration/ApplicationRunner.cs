@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 using EdFi.Ods.Utilities.Migration.Validation;
 using log4net;
@@ -18,10 +19,12 @@ namespace EdFi.Ods.Utilities.Migration
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(ApplicationRunner));
         private readonly IOptionsValidator _optionsValidator;
+        private readonly ICurrentOdsApiVersionProvider _currentOdsApiVersionProvider;
 
-        public ApplicationRunner(IOptionsValidator optionsValidator)
+        public ApplicationRunner(IOptionsValidator optionsValidator, ICurrentOdsApiVersionProvider currentOdsApiVersionProvider)
         {
             _optionsValidator = optionsValidator;
+            _currentOdsApiVersionProvider = currentOdsApiVersionProvider;
         }
 
         public int Run(Options options)
@@ -32,7 +35,7 @@ namespace EdFi.Ods.Utilities.Migration
             }
 
             _logger.Info("Checking Version");
-            var currentOdsApiVersion = new GetCurrentOdsApiVersion().Execute(options.DatabaseConnectionString);
+            var currentOdsApiVersion = _currentOdsApiVersionProvider.Get(options.DatabaseConnectionString);
             _logger.Info($"Current version of the database {currentOdsApiVersion.CurrentVersion}");
 
             if (currentOdsApiVersion.CurrentVersion.ApiVersion.ToString() == options.RequestedFinalUpgradeVersion)

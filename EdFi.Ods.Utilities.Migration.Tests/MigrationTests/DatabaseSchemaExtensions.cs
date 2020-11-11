@@ -10,6 +10,7 @@ using DatabaseSchemaReader;
 using DatabaseSchemaReader.Compare;
 using DatabaseSchemaReader.DataSchema;
 using EdFi.Ods.Utilities.Migration.Enumerations;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 using NUnit.Framework;
 using Shouldly;
@@ -33,7 +34,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             if (compareResult.Any())
                 Assert.Fail(FormatForLogMessage(compareResult));
 
-            var detectedVersion = new GetCurrentOdsApiVersion().Execute(connectionString);
+            var detectedVersion = new SqlServerCurrentOdsApiVersionProvider().Get(connectionString);
             detectedVersion.CurrentVersion.ShouldBe(version);
 
             bool CompareResultIsUnexpected(CompareResult result)

@@ -12,6 +12,7 @@ using System.Reflection;
 using CommandLine;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 using EdFi.Ods.Utilities.Migration.Validation;
 using log4net;
@@ -42,7 +43,8 @@ namespace EdFi.Ods.Utilities.Migration
                     .WithParsed(options =>
                     {
                         var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
-                        var applicationRunner = new ApplicationRunner(optionsValidator);
+                        var currentOdsApiVersionProvider = new SqlServerCurrentOdsApiVersionProvider();
+                        var applicationRunner = new ApplicationRunner(optionsValidator, currentOdsApiVersionProvider);
                         exitCode = applicationRunner.Run(options);
                     })
                     .WithNotParsed(

@@ -10,13 +10,14 @@ using System.Linq;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Helpers;
+using EdFi.Ods.Utilities.Migration.Queries;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 
-namespace EdFi.Ods.Utilities.Migration.Queries
+namespace EdFi.Ods.Utilities.Migration.Providers
 {
-    public class GetCurrentOdsApiVersion
+    public class SqlServerCurrentOdsApiVersionProvider : ICurrentOdsApiVersionProvider
     {
-        public CurrentOdsApiVersion Execute(string databaseConnectionString)
+        public CurrentOdsApiVersion Get(string databaseConnectionString)
         {
             var result = new CurrentOdsApiVersion();
             /*
