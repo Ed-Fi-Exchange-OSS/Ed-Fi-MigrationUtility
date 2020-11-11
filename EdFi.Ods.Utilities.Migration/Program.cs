@@ -13,6 +13,7 @@ using CommandLine;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Queries;
+using EdFi.Ods.Utilities.Migration.Validation;
 using log4net;
 using log4net.Config;
 
@@ -35,14 +36,14 @@ namespace EdFi.Ods.Utilities.Migration
                     {
                         config.CaseInsensitiveEnumValues = true;
                         config.CaseSensitive = false;
-                    }).ParseArguments<MigrationConfigurationGlobal>(args);
+                    }).ParseArguments<Options>(args);
 
                 parserResult
                     .WithParsed(globalConfiguration => exitCode = Run(globalConfiguration))
                     .WithNotParsed(
                         errors =>
                         {
-                            logger.Error(MigrationConfigurationGlobal.BuildHelpText(parserResult, errors));
+                            logger.Error(Options.BuildHelpText(parserResult, errors));
                             exitCode = -1;
                         });
 
@@ -54,36 +55,38 @@ namespace EdFi.Ods.Utilities.Migration
                 Environment.Exit(-1);
             }
 
-            int Run(MigrationConfigurationGlobal globalConfiguration)
+            int Run(Options options)
             {
-                if (!globalConfiguration.IsValid())
+                var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
+
+                if (!optionsValidator.IsValid(options))
                 {
                     return -1;
                 }
 
                 logger.Info("Checking Version");
-                var currentOdsApiVersion = new GetCurrentOdsApiVersion().Execute(globalConfiguration.DatabaseConnectionString);
+                var currentOdsApiVersion = new GetCurrentOdsApiVersion().Execute(options.DatabaseConnectionString);
                 logger.Info($"Current version of the database {currentOdsApiVersion.CurrentVersion}");
 
-                if (currentOdsApiVersion.CurrentVersion.ApiVersion.ToString() == globalConfiguration.RequestedFinalUpgradeVersion)
+                if (currentOdsApiVersion.CurrentVersion.ApiVersion.ToString() == options.RequestedFinalUpgradeVersion)
                 {
-                    logger.Info($"ODS is already at version {globalConfiguration.RequestedFinalUpgradeVersion}");
+                    logger.Info($"ODS is already at version {options.RequestedFinalUpgradeVersion}");
                     Environment.Exit(0);
                 }
 
                 logger.Info("Building version configuration");
 
                 var upgradeVersionConfiguration = UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(
-                    globalConfiguration.DatabaseConnectionString,
-                    globalConfiguration.CurrentOdsVersionCommandLineOverride,
-                    globalConfiguration.RequestedFinalUpgradeVersion);
+                    options.DatabaseConnectionString,
+                    options.CurrentOdsVersionCommandLineOverride,
+                    options.RequestedFinalUpgradeVersion);
 
                 upgradeVersionConfiguration.ApplyFeatures(currentOdsApiVersion.ExistingFeatures.ToList());
 
-                var migrationManager = new OdsMigrationManager(upgradeVersionConfiguration, globalConfiguration);
+                var migrationManager = new OdsMigrationManager(upgradeVersionConfiguration, options);
 
                 OdsUpgradeResult result;
-                if (globalConfiguration.CompatibilityCheckOnly)
+                if (options.CompatibilityCheckOnly)
                 {
                     logger.Info(
                         $"Checking compatibility for upgrade to version {upgradeVersionConfiguration.RequestedFinalUpgradeVersion}");

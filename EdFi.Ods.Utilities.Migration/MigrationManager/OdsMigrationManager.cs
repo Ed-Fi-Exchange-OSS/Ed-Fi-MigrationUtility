@@ -13,7 +13,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
     public class OdsMigrationManager
     {
         public UpgradeVersionConfiguration GlobalUpgradeVersionConfiguration { get; }
-        public MigrationConfigurationGlobal Configuration { get; }
+        public Options Configuration { get; }
 
         private readonly IConfigurationAutoMapper _configurationAutoMapper;
 
@@ -23,7 +23,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         public OdsMigrationManager(
             UpgradeVersionConfiguration globalUpgradeVersionConfiguration,
-            MigrationConfigurationGlobal configuration)
+            Options configuration)
             : this(
                 globalUpgradeVersionConfiguration,
                 configuration,
@@ -33,7 +33,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         public OdsMigrationManager(
             UpgradeVersionConfiguration globalUpgradeVersionConfiguration,
-            MigrationConfigurationGlobal configuration,
+            Options configuration,
             IConfigurationAutoMapper configurationAutoMapper)
         {
             GlobalUpgradeVersionConfiguration = globalUpgradeVersionConfiguration;

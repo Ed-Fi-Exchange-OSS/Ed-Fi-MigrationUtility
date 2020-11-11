@@ -33,7 +33,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
                 UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
                     FromVersion.ToString(), ToVersion.ToString());
 
-            var globalConfiguration = new MigrationConfigurationGlobal
+            var globalConfiguration = new Options
             {
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =

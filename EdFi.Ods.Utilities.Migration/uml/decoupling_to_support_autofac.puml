@@ -41,7 +41,7 @@ interface IApplicationRunner {
     +int Run(Options options)
 }
 
-interface IConfigurationValidator {
+interface IOptionsValidator {
     +bool IsValid(Options options)
 }
 
@@ -53,8 +53,16 @@ class SqlServerCurrentOdsApiVersion implements ICurrentOdsApiVersionProvider {
     +CurrentOdsApiVersion Get(string databaseConnectionString)
 }
 
-class ConfigurationValidator implements IConfigurationValidator {
+class OptionsValidator implements IOptionsValidator {
     +bool IsValid(Options options)
+}
+
+interface IConnectionStringValidator {
+    +bool IsValidConnectionString(string connectionString);
+}
+
+class SqlServerConnectionStringValidator implements IConnectionStringValidator {
+    +bool IsValidConnectionString(string connectionString);
 }
 
 class SqlServerMigrationConfigurationProvider implements IMigrationConfigurationProvider {
@@ -104,7 +112,7 @@ class OdsMigrationManagerResolver implements IOdsMigrationManagerResolver{
 }
 
 note as N1
-This resolver uses reflection to generate the right migration manager. At
+This factory uses reflection to locate the right migration manager's type. At
 this point of time we will not be changing this behavior, but this will allow
 for future modifications. Note: The instance field inside of the class will be
 removed, and this class should be registered as a singleton.
@@ -113,11 +121,13 @@ end note
 OdsMigrationManagerResolver . N1
 
 ApplicationRunner *-- IMigrationConfigurationProvider
-ApplicationRunner *-- IConfigurationValidator
+ApplicationRunner *-- IOptionsValidator
 ApplicationRunner *-- IOdsMigrationManagerProvider
 ApplicationRunner *-- ICurrentOdsApiVersionProvider
 
 OdsMigrationManagerProvider *-- IScriptsFactory
 
 SqlServerMigrationConfigurationProvider *-- IOdsMigrationManagerResolver
+
+OptionsValidator *-- IConnectionStringValidator
 @enduml

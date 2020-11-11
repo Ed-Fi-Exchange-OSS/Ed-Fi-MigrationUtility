@@ -103,7 +103,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
             upgradeConfiguration.VersionBeforeUpgrade.ShouldBe(FromVersion);
             upgradeConfiguration.RequestedFinalUpgradeVersion.ShouldBe(ToVersion);
 
-            var globalConfiguration = new MigrationConfigurationGlobal
+            var globalConfiguration = new Options
             {
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =
