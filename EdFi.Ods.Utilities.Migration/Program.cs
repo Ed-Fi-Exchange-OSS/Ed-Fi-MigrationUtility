@@ -39,7 +39,12 @@ namespace EdFi.Ods.Utilities.Migration
                     }).ParseArguments<Options>(args);
 
                 parserResult
-                    .WithParsed(globalConfiguration => exitCode = Run(globalConfiguration))
+                    .WithParsed(options =>
+                    {
+                        var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
+                        var applicationRunner = new ApplicationRunner(optionsValidator);
+                        exitCode = applicationRunner.Run(options);
+                    })
                     .WithNotParsed(
                         errors =>
                         {
@@ -55,58 +60,8 @@ namespace EdFi.Ods.Utilities.Migration
                 Environment.Exit(-1);
             }
 
-            int Run(Options options)
-            {
-                var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
 
-                if (!optionsValidator.IsValid(options))
-                {
-                    return -1;
-                }
 
-                logger.Info("Checking Version");
-                var currentOdsApiVersion = new GetCurrentOdsApiVersion().Execute(options.DatabaseConnectionString);
-                logger.Info($"Current version of the database {currentOdsApiVersion.CurrentVersion}");
-
-                if (currentOdsApiVersion.CurrentVersion.ApiVersion.ToString() == options.RequestedFinalUpgradeVersion)
-                {
-                    logger.Info($"ODS is already at version {options.RequestedFinalUpgradeVersion}");
-                    Environment.Exit(0);
-                }
-
-                logger.Info("Building version configuration");
-
-                var upgradeVersionConfiguration = UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(
-                    options.DatabaseConnectionString,
-                    options.CurrentOdsVersionCommandLineOverride,
-                    options.RequestedFinalUpgradeVersion);
-
-                upgradeVersionConfiguration.ApplyFeatures(currentOdsApiVersion.ExistingFeatures.ToList());
-
-                var migrationManager = new OdsMigrationManager(upgradeVersionConfiguration, options);
-
-                OdsUpgradeResult result;
-                if (options.CompatibilityCheckOnly)
-                {
-                    logger.Info(
-                        $"Checking compatibility for upgrade to version {upgradeVersionConfiguration.RequestedFinalUpgradeVersion}");
-                    result = migrationManager.RunCompatibilityCheck();
-                }
-                else
-                {
-                    logger.Info(
-                        $"Initializing upgrade to version {upgradeVersionConfiguration.RequestedFinalUpgradeVersion}");
-                    result = migrationManager.PerformUpgrade();
-                }
-
-                if (result.Error is SqlException sqlException)
-                {
-                    logger.Error(sqlException);
-                    return sqlException.Number == 0 ? -1 : sqlException.Number;
-                }
-
-                return result.Successful ? 0 : 1;
-            }
 
             void ConfigureLogging()
             {
