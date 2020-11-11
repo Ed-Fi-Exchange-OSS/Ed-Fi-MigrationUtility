@@ -1,0 +1,123 @@
+@startuml
+
+title Decoupling to support Autofac
+
+class Options {
+    +string BaseMigrationScriptFolderPath
+    +string BaseDescriptorXmlDirectoryPath
+    +string DatabaseConnectionString
+    +bool BypassExtensionValidationCheck
+    +string RequestedFinalUpgradeVersion
+    +string CurrentOdsVersionCommandLineOverride
+    +string DescriptorNamespacePrefix
+    +string CalendarConfigFilePath
+    +string AzureStorageLocation
+    +string CredentialNamespacePrefix
+    +bool CompatibilityCheckOnly
+    +int Timeout
+    +HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors)
+}
+
+note as N0
+This is a rename of the MigrationConfigurationGlobal class.
+Also the validation will be removed into a separate class.
+The intent of this class is to be the command line arguments.
+end note
+
+Options . N0
+
+class CurrentOdsApiVersion {
+    +EdFiOdsVersion CurrentVersion
+    +HashSet<EdFiOdsFeature> ExistingFeatures
+}
+
+
+
+interface IMigrationConfigurationProvider {
+    +UpgradeVersionConfiguration Get(Options options,CurrentOdsApiVersion currentOdsApiVersion)
+}
+
+interface IApplicationRunner {
+    +int Run(Options options)
+}
+
+interface IConfigurationValidator {
+    +bool IsValid(Options options)
+}
+
+interface ICurrentOdsApiVersionProvider {
+    +CurrentOdsApiVersion Get(string databaseConnectionString)
+}
+
+class SqlServerCurrentOdsApiVersion implements ICurrentOdsApiVersionProvider {
+    +CurrentOdsApiVersion Get(string databaseConnectionString)
+}
+
+class ConfigurationValidator implements IConfigurationValidator {
+    +bool IsValid(Options options)
+}
+
+class SqlServerMigrationConfigurationProvider implements IMigrationConfigurationProvider {
+    +UpgradeVersionConfiguration Get(Options options, CurrentOdsApiVersion currentOdsApiVersion)
+}
+
+interface IOdsMigrationManagerProvider {
+    +OdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
+}
+
+class OdsMigrationManagerProvider implements IOdsMigrationManagerProvider {
+    +OdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
+}
+
+class ApplicationRunner implements IApplicationRunner {
+    +int Run(Options options)
+}
+
+interface IScriptsFactory {
+    +string[] Get(Options options)
+}
+
+class SqlSeverScriptsFactory implements IScriptsFactory {
+    +string[] Get(Options options)
+}
+
+interface IOdsMigrationManagerResolver {
+    +List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +List<EdFiOdsVersion> GetAllUpgradableVersions()
+    +List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion)
+    +EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion)
+    +EdFiOdsVersion GetLatestSupportedUpgradeVersion()
+    +bool VersionCanBeUpgraded(EdFiOdsVersion version)
+}
+
+class OdsMigrationManagerResolver implements IOdsMigrationManagerResolver{
+    +List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+    +List<EdFiOdsVersion> GetAllUpgradableVersions()
+    +List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion)
+    +EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion)
+    +EdFiOdsVersion GetLatestSupportedUpgradeVersion()
+    +bool VersionCanBeUpgraded(EdFiOdsVersion version)
+}
+
+note as N1
+This resolver uses reflection to generate the right migration manager. At
+this point of time we will not be changing this behavior, but this will allow
+for future modifications. Note: The instance field inside of the class will be
+removed, and this class should be registered as a singleton.
+end note
+
+OdsMigrationManagerResolver . N1
+
+ApplicationRunner *-- IMigrationConfigurationProvider
+ApplicationRunner *-- IConfigurationValidator
+ApplicationRunner *-- IOdsMigrationManagerProvider
+ApplicationRunner *-- ICurrentOdsApiVersionProvider
+
+OdsMigrationManagerProvider *-- IScriptsFactory
+
+SqlServerMigrationConfigurationProvider *-- IOdsMigrationManagerResolver
+@enduml
