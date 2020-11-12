@@ -4,13 +4,9 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using CommandLine;
-using CommandLine.Text;
-using EdFi.Ods.Utilities.Migration.MigrationManager;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
@@ -102,31 +98,5 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         [Option('t', "Timeout", Default = 0, HelpText = "SQL command execution timeout in seconds (optional)")]
         public int Timeout { get; set; }
-
-        private static IEnumerable<string> GetVersionText()
-        {
-            var versionHelpText = new List<string>
-            {
-                "Supports an in-place ODS upgrade for the following upgrade paths:",
-            };
-
-            versionHelpText.AddRange(OdsMigrationManagerResolver.Instance.GetAllUpgradableVersions().SelectMany(
-                fromVersion =>
-                    OdsMigrationManagerResolver.Instance.GetSupportedUpgradeVersions(fromVersion)
-                        .Select(toVersion =>
-                            $"    {fromVersion.ApiVersion.ToString().PadRight(5)} -> {toVersion.ApiVersion.ToString().PadRight(5)}")
-            ));
-
-            return versionHelpText;
-        }
-
-        public static HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors) =>
-            errors.IsVersion()
-                ? HelpText.AutoBuild(parserResult)
-                : HelpText.AutoBuild(parserResult, h =>
-                {
-                    h.AddPreOptionsLines(GetVersionText());
-                    return HelpText.DefaultParsingErrorsHandler(parserResult, h);
-                }, e => e);
     }
 }
