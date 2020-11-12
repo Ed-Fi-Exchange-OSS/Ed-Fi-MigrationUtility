@@ -7,6 +7,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Factories;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
@@ -20,11 +21,21 @@ namespace EdFi.Ods.Utilities.Migration
         private readonly ILog _logger = LogManager.GetLogger(typeof(ApplicationRunner));
         private readonly IOptionsValidator _optionsValidator;
         private readonly ICurrentOdsApiVersionProvider _currentOdsApiVersionProvider;
+        private readonly IMigrationConfigurationProvider _migrationConfigurationProvider;
+        private readonly IConfigurationAutoMapper _configurationAutoMapper;
+        private readonly IOdsMigrationManagerFactory _odsMigrationManagerFactory;
 
-        public ApplicationRunner(IOptionsValidator optionsValidator, ICurrentOdsApiVersionProvider currentOdsApiVersionProvider)
+        public ApplicationRunner(IOptionsValidator optionsValidator,
+            ICurrentOdsApiVersionProvider currentOdsApiVersionProvider,
+            IMigrationConfigurationProvider migrationConfigurationProvider,
+            IConfigurationAutoMapper configurationAutoMapper,
+            IOdsMigrationManagerFactory odsMigrationManagerFactory)
         {
             _optionsValidator = optionsValidator;
             _currentOdsApiVersionProvider = currentOdsApiVersionProvider;
+            _migrationConfigurationProvider = migrationConfigurationProvider;
+            _configurationAutoMapper = configurationAutoMapper;
+            _odsMigrationManagerFactory = odsMigrationManagerFactory;
         }
 
         public int Run(Options options)
@@ -46,14 +57,13 @@ namespace EdFi.Ods.Utilities.Migration
 
             _logger.Info("Building version configuration");
 
-            var upgradeVersionConfiguration = UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(
-                options.DatabaseConnectionString,
+            var upgradeVersionConfiguration = _migrationConfigurationProvider.Get(options,
                 options.CurrentOdsVersionCommandLineOverride,
                 options.RequestedFinalUpgradeVersion);
 
-            upgradeVersionConfiguration.ApplyFeatures(currentOdsApiVersion.ExistingFeatures.ToList());
+            upgradeVersionConfiguration.FeaturesBeforeUpgrade = currentOdsApiVersion.ExistingFeatures.ToList();
 
-            var migrationManager = new OdsMigrationManager(upgradeVersionConfiguration, options);
+            var migrationManager = _odsMigrationManagerFactory.Create(options, upgradeVersionConfiguration);
 
             OdsUpgradeResult result;
             if (options.CompatibilityCheckOnly)

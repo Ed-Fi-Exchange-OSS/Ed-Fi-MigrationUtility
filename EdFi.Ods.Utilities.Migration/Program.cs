@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using CommandLine;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Factories;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
@@ -39,18 +40,31 @@ namespace EdFi.Ods.Utilities.Migration
                         config.CaseSensitive = false;
                     }).ParseArguments<Options>(args);
 
+                var odsMigrationResolver = new OdsMigrationManagerResolver();
+
                 parserResult
                     .WithParsed(options =>
                     {
                         var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
                         var currentOdsApiVersionProvider = new SqlServerCurrentOdsApiVersionProvider();
-                        var applicationRunner = new ApplicationRunner(optionsValidator, currentOdsApiVersionProvider);
+                        var migrationConfigurationProvider = new MigrationConfigurationProvider(odsMigrationResolver, currentOdsApiVersionProvider);
+                        var configurationAutoMapper = new ConfigurationAutoMapper();
+                        var odsMigrationManagerProvider = new OdsMigrationManagerFactory(configurationAutoMapper, odsMigrationResolver);
+                        var applicationRunner =
+                            new ApplicationRunner(optionsValidator,
+                                currentOdsApiVersionProvider,
+                                migrationConfigurationProvider,
+                                configurationAutoMapper,
+                                odsMigrationManagerProvider);
+
                         exitCode = applicationRunner.Run(options);
                     })
                     .WithNotParsed(
                         errors =>
                         {
-                            logger.Error(Options.BuildHelpText(parserResult, errors));
+                            var helpTextProvider = new HelpTextProvider(odsMigrationResolver);
+
+                            logger.Error(helpTextProvider.BuildHelpText(parserResult, errors));
                             exitCode = -1;
                         });
 
@@ -61,8 +75,6 @@ namespace EdFi.Ods.Utilities.Migration
                 logger.Error(e.Message);
                 Environment.Exit(-1);
             }
-
-
 
 
             void ConfigureLogging()
