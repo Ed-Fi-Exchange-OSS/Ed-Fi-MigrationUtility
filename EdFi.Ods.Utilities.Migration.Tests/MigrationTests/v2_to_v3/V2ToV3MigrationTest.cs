@@ -29,11 +29,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
                 ? ""
                 : Path.Combine(GetTestDataDirectory(), calendarConfigurationFileName);
 
-            var versionConfiguration =
-                UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
-                    FromVersion.ToString(), ToVersion.ToString());
-
-            var globalConfiguration = new Options
+            var options = new Options
             {
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =
@@ -49,7 +45,11 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
                 CredentialNamespacePrefix = V2ToV3MigrationConstants.DefaultEdFiNamespacePrefix
             };
 
-            var migrationManagers = new OdsMigrationManager(versionConfiguration, globalConfiguration).CreateManagers();
+            var versionConfiguration =
+                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
+
+            var migrationManagers = OdsMigrationManagerFactory.Create(options, versionConfiguration)
+                .CreateManagers();
 
             return RunMigration(migrationManagers);
         }

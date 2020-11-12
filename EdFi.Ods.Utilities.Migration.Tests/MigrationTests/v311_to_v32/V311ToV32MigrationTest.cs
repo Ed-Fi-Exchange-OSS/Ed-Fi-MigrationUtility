@@ -26,9 +26,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v32
                 InsertTestRecords(sourceDataScriptName, scriptParameters);
             }
 
+            var options = new Options {DatabaseConnectionString = ConnectionString};
             var versionConfiguration =
-                UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
-                    FromVersion.ToString(), ToVersion.ToString());
+                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var config = new MigrationConfigurationV311ToV32
             {

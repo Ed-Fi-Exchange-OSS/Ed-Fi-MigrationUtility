@@ -26,9 +26,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v24_to_v25
                 InsertTestRecords(sourceDataScriptName, scriptParameters);
             }
 
+            var options = new Options {DatabaseConnectionString = ConnectionString};
             var versionConfiguration =
-                UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
-                    FromVersion.ToString(), ToVersion.ToString());
+                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var config = new MigrationConfigurationV24ToV25
             {

@@ -20,11 +20,13 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
         private static readonly List<EdFiOdsVersion> VersionLevelConfigurationsUnderTest = GetVersionLevelConfigurationsUnderTest();
 
         [Test]
-        public void MigrationUtilityScriptsShouldBeUpToDateWithCurrentEdfiOdsBuild()
+        public void MigrationUtilityScriptsShouldBeUpToDateWithCurrentEdFiOdsBuild()
         {
+            var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
+
             var latestVersionOverride = MigrationTestSettingsProvider.GetConfigVariable("LatestEdFiOdsUpgradeVersion");
             var latestVersion = string.IsNullOrEmpty(latestVersionOverride)
-                ? OdsMigrationManagerResolver.Instance.GetLatestSupportedUpgradeVersion()
+                ? odsMigrationManagerResolver.GetLatestSupportedUpgradeVersion()
                 : EdFiOdsVersion.ParseString(
                     MigrationTestSettingsProvider.GetConfigVariable("LatestEdFiOdsUpgradeVersion"));
 
@@ -60,11 +62,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
 
         private static List<EdFiOdsVersion> GetVersionLevelConfigurationsUnderTest()
         {
+            var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
             return EdFiOdsVersion.GetAll()
                 .Where(fromVersion =>
-                    OdsMigrationManagerResolver.Instance.VersionCanBeUpgraded(fromVersion)
+                    odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion)
                     && FromVersionIsUnderTest(fromVersion))
-                .SelectMany(fromVersion => OdsMigrationManagerResolver.Instance.GetSupportedUpgradeVersions(fromVersion)
+                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion)
                     .Where(ToVersionIsUnderTest))
                 .Distinct()
                 .ToList();

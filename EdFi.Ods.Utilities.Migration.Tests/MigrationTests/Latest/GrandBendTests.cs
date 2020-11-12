@@ -21,7 +21,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
     {
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.RestoreDuringFixtureSetupOnly;
         protected override string TestDataDirectoryName => "Latest";
-        
+
         protected OdsUpgradeResult UpgradeResult { get; private set; }
 
         protected override string TestDisabledReason
@@ -99,11 +99,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
         {
             UpdateBackupData();
 
-            var upgradeConfiguration = UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString, null, ToVersion.ToString());
-            upgradeConfiguration.VersionBeforeUpgrade.ShouldBe(FromVersion);
-            upgradeConfiguration.RequestedFinalUpgradeVersion.ShouldBe(ToVersion);
-
-            var globalConfiguration = new Options
+            var options = new Options
             {
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =
@@ -120,7 +116,16 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
                 CredentialNamespacePrefix = "uri://ed-fi.org/"
             };
 
-            var migrationManager = new OdsMigrationManager(upgradeConfiguration, globalConfiguration).CreateManagers();
+            var upgradeConfiguration =
+                MigrationConfigurationProvider.Get(options, null,
+                    ToVersion.ToString());
+
+            upgradeConfiguration.VersionBeforeUpgrade.ShouldBe(FromVersion);
+            upgradeConfiguration.RequestedFinalUpgradeVersion.ShouldBe(ToVersion);
+
+            var migrationManager = OdsMigrationManagerFactory.Create(options, upgradeConfiguration)
+                .CreateManagers();
+
             UpgradeResult = RunMigration(migrationManager);
         }
 

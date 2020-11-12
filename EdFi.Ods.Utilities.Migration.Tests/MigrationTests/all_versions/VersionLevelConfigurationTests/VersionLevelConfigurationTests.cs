@@ -29,13 +29,13 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions.Version
         private static readonly List<EdFiOdsVersion> VersionLevelConfigurationsUnderTest =
             GetVersionLevelConfigurationsUnderTest();
 
-        [OneTimeSetUp]
+       [OneTimeSetUp]
         public void TestFixtureSetup()
         {
             /*
              * Under current conventions, version levels are generated based on the file names of scripts from the core Ed-Fi-ODS build
              * These values are used to populate the values of the [dbo].[VersionLevel] table
-             * 
+             *
              * [dbo].[VersionLevel] DATA:  Contains the latest data script number that the migration utility has been brought up to date with
              * [dbo].[VersionLevel] STRUCTURE: Contains the latest structure script number that the migration utility has been brought up to date with
              */
@@ -78,11 +78,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions.Version
 
         private static List<EdFiOdsVersion> GetVersionLevelConfigurationsUnderTest()
         {
+            var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
+
             return EdFiOdsVersion.GetAll()
-                .Where(fromVersion =>
-                    OdsMigrationManagerResolver.Instance.VersionCanBeUpgraded(fromVersion)
+                .Where(fromVersion => odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion)
                     && FromVersionIsUnderTest(fromVersion))
-                .SelectMany(fromVersion => OdsMigrationManagerResolver.Instance.GetSupportedUpgradeVersions(fromVersion)
+                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion)
                     .Where(ToVersionIsUnderTest))
                 .Distinct()
                 // VersionLevel tests only apply to versions before v33

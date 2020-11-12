@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
@@ -25,9 +26,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
                 InsertTestRecords(sourceDataScriptName, scriptParameters);
             }
 
+            var options = new Options {DatabaseConnectionString = ConnectionString};
             var versionConfiguration =
-                UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
-                    FromVersion.ToString(), ToVersion.ToString());
+                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var v311ToV32Config = new MigrationConfigurationV311ToV32
             {
@@ -47,7 +48,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new List<IOdsMigrationManager>
+            var migrationManager = new List<IOdsVersionSpecificMigrationManager>
             {
                 new OdsMigrationManagerV311ToV32(v311ToV32Config, versionConfiguration),
                 new OdsMigrationManagerV32ToV33(v32ToV33Config, versionConfiguration)
