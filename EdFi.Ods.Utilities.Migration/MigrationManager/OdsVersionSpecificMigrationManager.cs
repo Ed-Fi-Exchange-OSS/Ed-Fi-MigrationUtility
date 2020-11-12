@@ -19,15 +19,16 @@ using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public abstract class OdsVersionSpecificMigrationManager<TConfiguration> : IOdsMigrationManager
+    public abstract class OdsVersionSpecificMigrationManager<TConfiguration> : IOdsVersionSpecificMigrationManager
         where TConfiguration : MigrationConfigurationVersionSpecific
     {
-        private ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
+        private readonly ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
 
-        public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
         protected readonly TConfiguration Configuration;
         private bool _configurationValidated;
+        public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
         public string UpgradeJournalTableName => Configuration.ToVersion.UpgradeJournalTableName;
+
 
         protected OdsVersionSpecificMigrationManager(TConfiguration configuration, UpgradeVersionConfiguration upgradeVersionConfiguration)
         {
@@ -44,7 +45,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 var commonConfiguration = (MigrationConfigurationVersionSpecific) Configuration;
 
                 RaiseErrorIfConnectionStringIsInvalid(commonConfiguration);
-                RaiseErrorIfVersionConfigurationIsInvalid(commonConfiguration);
                 RaiseErrorIfMissingOrInvalidScriptLocation(commonConfiguration);
                 RaiseErrorIfLoggingRequirementsNotMet(commonConfiguration);
                 ValidateVersionSpecificConfigurationState(Configuration);
@@ -275,11 +275,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             using var connection = new SqlConnection(configuration.DatabaseConnectionString);
             connection.Open();
             connection.Close();
-        }
-
-        private void RaiseErrorIfVersionConfigurationIsInvalid(MigrationConfigurationVersionSpecific configuration)
-        {
-            UpgradeVersionConfiguration.RaiseErrorIfUpgradePathNotSupported();
         }
 
         private enum UpgradeOption
