@@ -39,7 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v33_to_v34
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new OdsMigrationManagerV33ToV34(config, versionConfiguration);
+            var migrationManager = new OdsMigrationManagerV33ToV34(config, versionConfiguration, UpgradeEngineBuilderProvider);
             return RunMigration(migrationManager);
         }
 

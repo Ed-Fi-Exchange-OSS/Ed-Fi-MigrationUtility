@@ -9,13 +9,17 @@ using System.IO;
 using System.Text.RegularExpressions;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
     public class OdsMigrationManagerV25ToV31 : OdsVersionSpecificMigrationManager<MigrationConfigurationV25ToV31>
     {
-        public OdsMigrationManagerV25ToV31(MigrationConfigurationV25ToV31 configuration, UpgradeVersionConfiguration upgradeVersionConfiguration) : base(configuration, upgradeVersionConfiguration)
+        public OdsMigrationManagerV25ToV31(MigrationConfigurationV25ToV31 configuration,
+            UpgradeVersionConfiguration upgradeVersionConfiguration,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
+            : base(configuration, upgradeVersionConfiguration, upgradeEngineBuilderProvider)
         {
             Configuration.DescriptorNamespacePrefix = RemoveTrailingSlash(Configuration.DescriptorNamespacePrefix);
 
@@ -113,8 +117,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         /*
          * DbUp handles variable substitution with a simple string replacement.
          * This validation restriction is in place for parameters that appear in dynamic sql in
-         * order to prevent unintentional parsing problems that could occur when scripts are 
-         * modified or added in the future.  Should it become required to remove this restriction, 
+         * order to prevent unintentional parsing problems that could occur when scripts are
+         * modified or added in the future.  Should it become required to remove this restriction,
          * evaluate and test all dynamic sql usages, and ensure the proper escaping
          * is in place for the applicable upgrade scripts.
          * See usages of the DescriptorNamespace parameter, which supports the ' character,

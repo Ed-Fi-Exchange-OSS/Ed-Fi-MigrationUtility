@@ -1,5 +1,4 @@
 @startuml
-
 title Decoupling to support Autofac
 
 class Options {
@@ -15,7 +14,6 @@ class Options {
     +string CredentialNamespacePrefix
     +bool CompatibilityCheckOnly
     +int Timeout
-    +HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors)
 }
 
 note as N0
@@ -25,13 +23,6 @@ The intent of this class is to be the command line arguments.
 end note
 
 Options . N0
-
-class CurrentOdsApiVersion {
-    +EdFiOdsVersion CurrentVersion
-    +HashSet<EdFiOdsFeature> ExistingFeatures
-}
-
-
 
 interface IMigrationConfigurationProvider {
     +UpgradeVersionConfiguration Get(Options options,CurrentOdsApiVersion currentOdsApiVersion)
@@ -65,28 +56,20 @@ class SqlServerConnectionStringValidator implements IConnectionStringValidator {
     +bool IsValidConnectionString(string connectionString);
 }
 
-class SqlServerMigrationConfigurationProvider implements IMigrationConfigurationProvider {
+class MigrationConfigurationProvider implements IMigrationConfigurationProvider {
     +UpgradeVersionConfiguration Get(Options options, CurrentOdsApiVersion currentOdsApiVersion)
 }
 
-interface IOdsMigrationManagerProvider {
-    +OdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
+interface IOdsMigrationManagerFactory {
+    +IOdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
 }
 
-class OdsMigrationManagerProvider implements IOdsMigrationManagerProvider {
+class OdsMigrationManagerFactory implements IOdsMigrationManagerFactory {
     +OdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
 }
 
 class ApplicationRunner implements IApplicationRunner {
     +int Run(Options options)
-}
-
-interface IScriptsFactory {
-    +string[] Get(Options options)
-}
-
-class SqlSeverScriptsFactory implements IScriptsFactory {
-    +string[] Get(Options options)
 }
 
 interface IOdsMigrationManagerResolver {
@@ -112,22 +95,69 @@ class OdsMigrationManagerResolver implements IOdsMigrationManagerResolver{
 }
 
 note as N1
-This factory uses reflection to locate the right migration manager's type. At
+This class uses reflection to locate the right migration manager's type. At
 this point of time we will not be changing this behavior, but this will allow
 for future modifications. Note: The instance field inside of the class will be
 removed, and this class should be registered as a singleton.
 end note
 
-OdsMigrationManagerResolver . N1
+interface IHelpTextProvider {
+    +HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors)
+}
 
-ApplicationRunner *-- IMigrationConfigurationProvider
+class HelpTextProvider implements IHelpTextProvider{
+    +HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors)
+}
+
+OdsMigrationManagerResolver .. N1
+
+interface IConfigurationAutoMapper
+{
+    MigrationConfigurationVersionSpecific MapToVersionConfiguration(
+        Options globalConfiguration, Type versionConfigurationType);
+
+    Options MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
+        where TConfiguration : MigrationConfigurationVersionSpecific;
+}
+
+class ConfigurationAutoMapper implements IConfigurationAutoMapper
+{
+    MigrationConfigurationVersionSpecific MapToVersionConfiguration(
+        Options globalConfiguration, Type versionConfigurationType);
+
+    Options MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
+        where TConfiguration : MigrationConfigurationVersionSpecific;
+}
+
+note as N2
+ConfigurationAutoMapper is not changing but will be registered as a singleton
+into the container.
+end note
+
+ConfigurationAutoMapper .. N2
+
+interface IUpgradeEngineBuilderProvider {
+    +UpgradeEngineBuilder Get(string connectionString)
+}
+
+class SqlServerUpgradeEngineBuilderProvider implements IUpgradeEngineBuilderProvider {
+    +UpgradeEngineBuilder Get(string connectionString)
+}
+
+OdsMigrationManagerFactory *-- IConfigurationAutoMapper
+OdsMigrationManagerFactory *-- IOdsMigrationManagerResolver
+OdsMigrationManagerFactory *-- IUpgradeEngineBuilderProvider
+
 ApplicationRunner *-- IOptionsValidator
-ApplicationRunner *-- IOdsMigrationManagerProvider
 ApplicationRunner *-- ICurrentOdsApiVersionProvider
+ApplicationRunner *-- IMigrationConfigurationProvider
+ApplicationRunner *-- IConfigurationAutoMapper
+ApplicationRunner *-- IOdsMigrationManagerFactory
 
-OdsMigrationManagerProvider *-- IScriptsFactory
-
-SqlServerMigrationConfigurationProvider *-- IOdsMigrationManagerResolver
+MigrationConfigurationProvider *-- IOdsMigrationManagerResolver
+MigrationConfigurationProvider *-- ICurrentOdsApiVersionProvider
 
 OptionsValidator *-- IConnectionStringValidator
+
+HelpTextProvider *-- IOdsMigrationManagerResolver
 @enduml

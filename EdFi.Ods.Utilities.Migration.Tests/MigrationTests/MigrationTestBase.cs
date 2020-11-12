@@ -35,6 +35,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
         private SqlServerCurrentOdsApiVersionProvider _currentOdsApiVersionProvider;
 
         protected IOdsMigrationManagerResolver OdsMigrationManagerResolver = new OdsMigrationManagerResolver();
+        protected IUpgradeEngineBuilderProvider UpgradeEngineBuilderProvider = new SqlServerUpgradeEngineBuilderProvider();
         protected IConfigurationAutoMapper ConfigurationAutoMapper;
         protected MigrationConfigurationProvider MigrationConfigurationProvider;
         protected OdsMigrationManagerFactory OdsMigrationManagerFactory;
@@ -88,7 +89,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             MigrationConfigurationProvider =
                 new MigrationConfigurationProvider(OdsMigrationManagerResolver, _currentOdsApiVersionProvider);
 
-            OdsMigrationManagerFactory = new OdsMigrationManagerFactory(ConfigurationAutoMapper, OdsMigrationManagerResolver);
+            OdsMigrationManagerFactory = new OdsMigrationManagerFactory(ConfigurationAutoMapper, OdsMigrationManagerResolver, UpgradeEngineBuilderProvider);
         }
 
         [SetUp]

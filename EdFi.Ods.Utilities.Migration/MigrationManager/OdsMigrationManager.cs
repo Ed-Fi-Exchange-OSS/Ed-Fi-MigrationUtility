@@ -14,6 +14,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
     public class OdsMigrationManager
     {
         private readonly IOdsMigrationManagerResolver _odsMigrationManagerResolver;
+        private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
         private readonly UpgradeVersionConfiguration _upgradeVersionConfiguration;
         private readonly Options _options;
         private readonly IConfigurationAutoMapper _configurationAutoMapper;
@@ -21,6 +22,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         public OdsMigrationManager(IConfigurationAutoMapper configurationAutoMapper,
             IOdsMigrationManagerResolver odsMigrationManagerResolver,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider,
             Options options,
             UpgradeVersionConfiguration upgradeVersionConfiguration)
         {
@@ -28,6 +30,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             _options = options;
             _configurationAutoMapper = configurationAutoMapper;
             _odsMigrationManagerResolver = odsMigrationManagerResolver;
+            _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
             _migrationManagers = CreateManagers();
         }
 
@@ -48,7 +51,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     Activator.CreateInstance(
                         migrationManagerType,
                         versionSpecificConfiguration,
-                        _upgradeVersionConfiguration
+                        _upgradeVersionConfiguration,
+                        _upgradeEngineBuilderProvider
                     ) as IOdsVersionSpecificMigrationManager);
             }
 

@@ -49,7 +49,8 @@ namespace EdFi.Ods.Utilities.Migration
                         var currentOdsApiVersionProvider = new SqlServerCurrentOdsApiVersionProvider();
                         var migrationConfigurationProvider = new MigrationConfigurationProvider(odsMigrationResolver, currentOdsApiVersionProvider);
                         var configurationAutoMapper = new ConfigurationAutoMapper();
-                        var odsMigrationManagerProvider = new OdsMigrationManagerFactory(configurationAutoMapper, odsMigrationResolver);
+                        var upgradeEngineBuilderProvider = new SqlServerUpgradeEngineBuilderProvider();
+                        var odsMigrationManagerProvider = new OdsMigrationManagerFactory(configurationAutoMapper, odsMigrationResolver, upgradeEngineBuilderProvider);
                         var applicationRunner =
                             new ApplicationRunner(optionsValidator,
                                 currentOdsApiVersionProvider,

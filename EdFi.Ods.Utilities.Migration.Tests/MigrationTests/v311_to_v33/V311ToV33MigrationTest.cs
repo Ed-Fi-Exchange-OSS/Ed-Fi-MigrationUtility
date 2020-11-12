@@ -50,8 +50,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
 
             var migrationManager = new List<IOdsVersionSpecificMigrationManager>
             {
-                new OdsMigrationManagerV311ToV32(v311ToV32Config, versionConfiguration),
-                new OdsMigrationManagerV32ToV33(v32ToV33Config, versionConfiguration)
+                new OdsMigrationManagerV311ToV32(v311ToV32Config, versionConfiguration, UpgradeEngineBuilderProvider),
+                new OdsMigrationManagerV32ToV33(v32ToV33Config, versionConfiguration, UpgradeEngineBuilderProvider)
             };
             return RunMigration(migrationManager);
         }

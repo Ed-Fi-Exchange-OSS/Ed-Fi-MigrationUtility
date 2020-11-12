@@ -13,18 +13,22 @@ namespace EdFi.Ods.Utilities.Migration.Factories
     {
         private readonly IConfigurationAutoMapper _configurationAutoMapper;
         private readonly IOdsMigrationManagerResolver _odsMigrationManagerResolver;
+        private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
 
         public OdsMigrationManagerFactory(IConfigurationAutoMapper configurationAutoMapper,
-            IOdsMigrationManagerResolver odsMigrationManagerResolver)
+            IOdsMigrationManagerResolver odsMigrationManagerResolver,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
         {
             _configurationAutoMapper = configurationAutoMapper;
             _odsMigrationManagerResolver = odsMigrationManagerResolver;
+            _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
         }
 
         public OdsMigrationManager Create(Options options, UpgradeVersionConfiguration upgradeVersionConfiguration)
         {
             return new OdsMigrationManager(_configurationAutoMapper,
                 _odsMigrationManagerResolver,
+                _upgradeEngineBuilderProvider,
                 options,
                 upgradeVersionConfiguration);
         }
