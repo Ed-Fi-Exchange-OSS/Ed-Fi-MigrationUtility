@@ -9,7 +9,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using EdFi.Ods.Utilities.Migration.Configuration;
-using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using NUnit.Framework;
 using Shouldly;

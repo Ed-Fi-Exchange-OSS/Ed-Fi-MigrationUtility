@@ -16,7 +16,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest.GrandBendFull
     public class GrandBendFullUpgradeTests : GrandBendTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V2UpTo24;
-        protected override EdFiOdsVersion ToVersion => OdsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(FromVersion);
+        protected override EdFiOdsVersion ToVersion => new OdsMigrationManagerResolver().GetLatestSupportedUpgradeVersion(FromVersion);
 
         protected override void UpdateBackupData()
         {

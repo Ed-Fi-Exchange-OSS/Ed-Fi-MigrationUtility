@@ -5,14 +5,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Dapper;
 using DatabaseSchemaReader;
-using DatabaseSchemaReader.DataSchema;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Factories;
@@ -21,10 +20,9 @@ using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
-using EdFi.Ods.Utilities.Migration.Validation;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Respawn;
 using Shouldly;
 
@@ -32,13 +30,13 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 {
     public abstract class MigrationTestBase : DatabaseIntegrationTestBase
     {
-        private SqlServerCurrentOdsApiVersionProvider _currentOdsApiVersionProvider;
+        private IContainer _container;
 
-        protected IOdsMigrationManagerResolver OdsMigrationManagerResolver = new OdsMigrationManagerResolver();
-        protected IUpgradeEngineBuilderProvider UpgradeEngineBuilderProvider = new SqlServerUpgradeEngineBuilderProvider();
-        protected IConfigurationAutoMapper ConfigurationAutoMapper;
-        protected MigrationConfigurationProvider MigrationConfigurationProvider;
-        protected OdsMigrationManagerFactory OdsMigrationManagerFactory;
+        protected IOdsMigrationManagerResolver OdsMigrationManagerResolver;
+        protected IUpgradeEngineBuilderProvider UpgradeEngineBuilderProvider;
+        protected IMigrationConfigurationProvider MigrationConfigurationProvider;
+        protected IOdsMigrationManagerFactory OdsMigrationManagerFactory;
+
         protected abstract DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; }
         protected abstract string TestDataDirectoryName { get; }
         protected virtual string OptionalTestSourceOdsBackupFullPath { get; } = null;
@@ -60,6 +58,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
         [OneTimeSetUp]
         public void BaseTestFixtureSetup()
         {
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule(new MigrationUtilityModule());
+            containerBuilder.Populate(new ServiceCollection());
+
+            _container = containerBuilder.Build();
+
             if (!string.IsNullOrEmpty(TestDisabledReason))
             {
                 Assert.Ignore(TestDisabledReason);
@@ -83,13 +87,10 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                 CreateDefaultOds(TestFromVersion, OptionalTestSourceOdsBackupFullPath);
             }
 
-            _currentOdsApiVersionProvider = new SqlServerCurrentOdsApiVersionProvider();
-            ConfigurationAutoMapper = new ConfigurationAutoMapper();
-
-            MigrationConfigurationProvider =
-                new MigrationConfigurationProvider(OdsMigrationManagerResolver, _currentOdsApiVersionProvider);
-
-            OdsMigrationManagerFactory = new OdsMigrationManagerFactory(ConfigurationAutoMapper, OdsMigrationManagerResolver, UpgradeEngineBuilderProvider);
+            OdsMigrationManagerResolver = _container.Resolve<IOdsMigrationManagerResolver>();
+            UpgradeEngineBuilderProvider = _container.Resolve<IUpgradeEngineBuilderProvider>();
+            MigrationConfigurationProvider = _container.Resolve<IMigrationConfigurationProvider>();
+            OdsMigrationManagerFactory = _container.Resolve<IOdsMigrationManagerFactory>();
         }
 
         [SetUp]

@@ -4,25 +4,23 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using CommandLine;
 using EdFi.Ods.Utilities.Migration.Configuration;
-using EdFi.Ods.Utilities.Migration.Factories;
-using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
-using EdFi.Ods.Utilities.Migration.Queries;
-using EdFi.Ods.Utilities.Migration.Validation;
 using log4net;
 using log4net.Config;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EdFi.Ods.Utilities.Migration
 {
     internal class Program
     {
+        private static IContainer _container;
+
         private static void Main(string[] args)
         {
             ConfigureLogging();
@@ -40,30 +38,18 @@ namespace EdFi.Ods.Utilities.Migration
                         config.CaseSensitive = false;
                     }).ParseArguments<Options>(args);
 
-                var odsMigrationResolver = new OdsMigrationManagerResolver();
+                CreateServiceProvider(new ServiceCollection());
 
                 parserResult
                     .WithParsed(options =>
                     {
-                        var optionsValidator = new OptionsValidator(new SqlServerConnectionStringValidator());
-                        var currentOdsApiVersionProvider = new SqlServerCurrentOdsApiVersionProvider();
-                        var migrationConfigurationProvider = new MigrationConfigurationProvider(odsMigrationResolver, currentOdsApiVersionProvider);
-                        var configurationAutoMapper = new ConfigurationAutoMapper();
-                        var upgradeEngineBuilderProvider = new SqlServerUpgradeEngineBuilderProvider();
-                        var odsMigrationManagerProvider = new OdsMigrationManagerFactory(configurationAutoMapper, odsMigrationResolver, upgradeEngineBuilderProvider);
-                        var applicationRunner =
-                            new ApplicationRunner(optionsValidator,
-                                currentOdsApiVersionProvider,
-                                migrationConfigurationProvider,
-                                configurationAutoMapper,
-                                odsMigrationManagerProvider);
-
+                        var applicationRunner = _container.Resolve<IApplicationRunner>();
                         exitCode = applicationRunner.Run(options);
                     })
                     .WithNotParsed(
                         errors =>
                         {
-                            var helpTextProvider = new HelpTextProvider(odsMigrationResolver);
+                            var helpTextProvider = _container.Resolve<IHelpTextProvider>();
 
                             logger.Error(helpTextProvider.BuildHelpText(parserResult, errors));
                             exitCode = -1;
@@ -77,14 +63,23 @@ namespace EdFi.Ods.Utilities.Migration
                 Environment.Exit(-1);
             }
 
-
-            void ConfigureLogging()
+            static void ConfigureLogging()
             {
                 var assembly = typeof(Program).GetTypeInfo().Assembly;
 
                 string configPath = Path.Combine(Path.GetDirectoryName(assembly.Location), "log4net.config");
 
                 XmlConfigurator.Configure(LogManager.GetRepository(assembly), new FileInfo(configPath));
+            }
+
+            static void CreateServiceProvider(IServiceCollection serviceCollection)
+            {
+                var containerBuilder = new ContainerBuilder();
+
+                containerBuilder.RegisterModule(new MigrationUtilityModule());
+                containerBuilder.Populate(serviceCollection);
+
+                _container = containerBuilder.Build();
             }
         }
     }
