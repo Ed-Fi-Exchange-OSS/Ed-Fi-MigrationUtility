@@ -11,15 +11,6 @@ using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
 {
-    public interface IConfigurationAutoMapper
-    {
-        MigrationConfigurationVersionSpecific MapToVersionConfiguration(
-            MigrationConfigurationGlobal globalConfiguration, Type versionConfigurationType);
-
-        MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
-            where TConfiguration : MigrationConfigurationVersionSpecific;
-    }
-
     public class ConfigurationAutoMapper : IConfigurationAutoMapper
     {
         public readonly IMapper ConfigurationMapper;
@@ -37,7 +28,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         }
 
         public MigrationConfigurationVersionSpecific MapToVersionConfiguration(
-            MigrationConfigurationGlobal globalConfiguration,
+            Options globalConfiguration,
             Type versionConfigurationType)
         {
             MigrationConfigurationVersionSpecific migrationConfigurationVersionSpecific = null;
@@ -46,7 +37,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             {
                 migrationConfigurationVersionSpecific =
                     (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(globalConfiguration,
-                        typeof(MigrationConfigurationGlobal), versionConfigurationType);
+                        typeof(Options), versionConfigurationType);
             }
             catch (Exception ex)
             {
@@ -60,15 +51,15 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             return migrationConfigurationVersionSpecific;
         }
 
-        public MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
+        public Options MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
             where TConfiguration : MigrationConfigurationVersionSpecific
         {
-            MigrationConfigurationGlobal migrationConfigurationGlobal = null;
+            Options migrationConfigurationGlobal = null;
             try
             {
                 migrationConfigurationGlobal =
-                    (MigrationConfigurationGlobal) ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration),
-                        typeof(MigrationConfigurationGlobal));
+                    (Options) ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration),
+                        typeof(Options));
             }
             catch (Exception ex)
             {
@@ -87,20 +78,20 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
     {
         public ConfigurationAutoMapperProfile()
         {
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV24ToV25>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV25ToV31>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV31ToV311>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV311ToV32>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV32ToV33>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV33ToV34>();
-            CreateMap<MigrationConfigurationGlobal, MigrationConfigurationV34ToV50>();
-            
-            CreateMap<MigrationConfigurationV25ToV31, MigrationConfigurationGlobal>()
+            CreateMap<Options, MigrationConfigurationV24ToV25>();
+            CreateMap<Options, MigrationConfigurationV25ToV31>();
+            CreateMap<Options, MigrationConfigurationV31ToV311>();
+            CreateMap<Options, MigrationConfigurationV311ToV32>();
+            CreateMap<Options, MigrationConfigurationV32ToV33>();
+            CreateMap<Options, MigrationConfigurationV33ToV34>();
+            CreateMap<Options, MigrationConfigurationV34ToV50>();
+
+            CreateMap<MigrationConfigurationV25ToV31, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore());
-           
-            CreateMap<MigrationConfigurationV311ToV32, MigrationConfigurationGlobal>()
+
+            CreateMap<MigrationConfigurationV311ToV32, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore())
@@ -109,7 +100,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
                 .ForMember(dst => dst.CalendarConfigFilePath, opt => opt.Ignore())
                 .ForMember(dst => dst.AzureStorageLocation, opt => opt.Ignore())
                 .ForMember(dst => dst.CredentialNamespacePrefix, opt => opt.Ignore());
-            CreateMap<MigrationConfigurationV34ToV50, MigrationConfigurationGlobal>()
+            CreateMap<MigrationConfigurationV34ToV50, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore())
