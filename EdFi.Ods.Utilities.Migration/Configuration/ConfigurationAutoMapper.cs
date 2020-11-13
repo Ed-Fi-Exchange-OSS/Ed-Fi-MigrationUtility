@@ -4,6 +4,8 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using AutoMapper;
 using log4net;
 
@@ -26,7 +28,11 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         public ConfigurationAutoMapper()
         {
-            MapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfiles(typeof(ConfigurationAutoMapper)));
+            MapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                var assembly = Assembly.GetAssembly(typeof(ConfigurationAutoMapper));
+                cfg.AddMaps(assembly);
+            });
             ConfigurationMapper = MapperConfiguration.CreateMapper();
         }
 
@@ -52,27 +58,6 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             }
 
             return migrationConfigurationVersionSpecific;
-        }
-
-        public TConfiguration MapToVersionConfiguration<TConfiguration>(MigrationConfigurationGlobal globalConfiguration)
-            where TConfiguration : MigrationConfigurationVersionSpecific
-        {
-            TConfiguration tConfiguration = null;
-            try
-            {
-                tConfiguration = (TConfiguration) Mapper.Map(globalConfiguration, typeof(MigrationConfigurationGlobal),
-                    typeof(TConfiguration));
-            }
-            catch (Exception ex)
-            {
-                var msg = "Application has occurred error in MapToVersionConfiguration"
-                          + Environment.NewLine
-                          + $"Details: {ex.Message}";
-
-                _logger.Error(msg);
-            }
-
-            return tConfiguration;
         }
 
         public MigrationConfigurationGlobal MapToGlobalConfiguration<TConfiguration>(TConfiguration versionConfiguration)
