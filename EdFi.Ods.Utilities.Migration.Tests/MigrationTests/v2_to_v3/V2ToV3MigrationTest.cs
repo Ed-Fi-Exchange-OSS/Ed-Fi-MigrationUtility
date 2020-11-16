@@ -46,9 +46,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
             };
 
             var versionConfiguration =
-                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
+                MigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
-            var migrationManagers = OdsMigrationManagerFactory.Create(options, versionConfiguration)
+            var migrationManagers = MigrationTestsGlobalSetup.OdsMigrationManagerFactory.Create(options, versionConfiguration)
                 .CreateManagers();
 
             return RunMigration(migrationManagers);

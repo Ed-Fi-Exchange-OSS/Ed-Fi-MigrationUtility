@@ -28,7 +28,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v31_to_v311
 
             var options = new Options {DatabaseConnectionString = ConnectionString};
             var versionConfiguration =
-                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
+                MigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var config = new MigrationConfigurationV31ToV311
             {
@@ -39,7 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v31_to_v311
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new OdsMigrationManagerV31ToV311(config, versionConfiguration, UpgradeEngineBuilderProvider);
+            var migrationManager = new OdsMigrationManagerV31ToV311(config, versionConfiguration, MigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
             return RunMigration(migrationManager);
         }
 

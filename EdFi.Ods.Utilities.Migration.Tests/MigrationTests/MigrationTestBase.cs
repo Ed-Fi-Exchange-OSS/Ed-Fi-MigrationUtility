@@ -30,12 +30,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 {
     public abstract class MigrationTestBase : DatabaseIntegrationTestBase
     {
-        private IContainer _container;
 
-        protected IOdsMigrationManagerResolver OdsMigrationManagerResolver;
-        protected IUpgradeEngineBuilderProvider UpgradeEngineBuilderProvider;
-        protected IMigrationConfigurationProvider MigrationConfigurationProvider;
-        protected IOdsMigrationManagerFactory OdsMigrationManagerFactory;
 
         protected abstract DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; }
         protected abstract string TestDataDirectoryName { get; }
@@ -58,12 +53,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
         [OneTimeSetUp]
         public void BaseTestFixtureSetup()
         {
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new MigrationUtilityModule());
-            containerBuilder.Populate(new ServiceCollection());
-
-            _container = containerBuilder.Build();
-
             if (!string.IsNullOrEmpty(TestDisabledReason))
             {
                 Assert.Ignore(TestDisabledReason);
@@ -86,11 +75,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             {
                 CreateDefaultOds(TestFromVersion, OptionalTestSourceOdsBackupFullPath);
             }
-
-            OdsMigrationManagerResolver = _container.Resolve<IOdsMigrationManagerResolver>();
-            UpgradeEngineBuilderProvider = _container.Resolve<IUpgradeEngineBuilderProvider>();
-            MigrationConfigurationProvider = _container.Resolve<IMigrationConfigurationProvider>();
-            OdsMigrationManagerFactory = _container.Resolve<IOdsMigrationManagerFactory>();
         }
 
         [SetUp]

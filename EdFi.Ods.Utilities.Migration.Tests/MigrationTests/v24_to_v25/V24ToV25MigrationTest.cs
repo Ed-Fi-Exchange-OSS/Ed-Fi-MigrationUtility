@@ -28,7 +28,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v24_to_v25
 
             var options = new Options {DatabaseConnectionString = ConnectionString};
             var versionConfiguration =
-                MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
+                MigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var config = new MigrationConfigurationV24ToV25
             {
@@ -39,7 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v24_to_v25
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new OdsMigrationManagerV24ToV25(config, versionConfiguration, UpgradeEngineBuilderProvider);
+            var migrationManager = new OdsMigrationManagerV24ToV25(config, versionConfiguration, MigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
             return RunMigration(migrationManager);
         }
 
