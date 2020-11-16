@@ -29,7 +29,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions.Version
         private static readonly List<EdFiOdsVersion> VersionLevelConfigurationsUnderTest =
             GetVersionLevelConfigurationsUnderTest();
 
-       [OneTimeSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetup()
         {
             /*
