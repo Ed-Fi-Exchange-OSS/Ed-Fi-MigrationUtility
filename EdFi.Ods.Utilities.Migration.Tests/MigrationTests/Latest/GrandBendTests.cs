@@ -122,7 +122,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
             upgradeConfiguration.VersionBeforeUpgrade.ShouldBe(FromVersion);
             upgradeConfiguration.RequestedFinalUpgradeVersion.ShouldBe(ToVersion);
 
-            var migrationManager = MigrationTestsGlobalSetup.OdsMigrationManagerFactory.Create(options, upgradeConfiguration)
+            var migrationManager = MigrationTestsGlobalSetup.OdsMigrationManagerFactory(options, upgradeConfiguration)
                 .CreateManagers();
 
             UpgradeResult = RunMigration(migrationManager);

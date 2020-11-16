@@ -11,7 +11,7 @@ using EdFi.Ods.Utilities.Migration.Queries;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public class OdsMigrationManager
+    public class OdsMigrationManager : IOdsMigrationManager
     {
         private readonly IOdsMigrationManagerResolver _odsMigrationManagerResolver;
         private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;

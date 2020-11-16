@@ -30,10 +30,10 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 {
             var upgradeVersionConfiguration = new UpgradeVersionConfiguration();
 
+            var autoDetectedVersion = _currentOdsApiVersionProvider.Get(options.DatabaseConnectionString);
+
             if (string.IsNullOrEmpty(optionalCurrentOdsVersionOverride))
             {
-                var autoDetectedVersion = _currentOdsApiVersionProvider.Get(options.DatabaseConnectionString);
-
                 if (autoDetectedVersion == null)
                 {
                     var msg =
@@ -51,8 +51,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
             }
             else
             {
-                upgradeVersionConfiguration.VersionBeforeUpgrade =
-                    GetCurrentOdsVersionOverrideFromUserProvidedString(optionalCurrentOdsVersionOverride);
+                    upgradeVersionConfiguration.VersionBeforeUpgrade =
+                        GetCurrentOdsVersionOverrideFromUserProvidedString(optionalCurrentOdsVersionOverride);
             }
 
             upgradeVersionConfiguration.RequestedFinalUpgradeVersion = string.IsNullOrEmpty(optionalRequestedUpgradeVersionOverride)
@@ -60,6 +60,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
                 : GetRequestedUpgradeVersionFromUserProvidedString(optionalRequestedUpgradeVersionOverride);
 
             RaiseErrorIfUpgradePathNotSupported(upgradeVersionConfiguration);
+
+            upgradeVersionConfiguration.FeaturesBeforeUpgrade = autoDetectedVersion?.ExistingFeatures?.ToList();
 
             return upgradeVersionConfiguration;
         }

@@ -3,11 +3,13 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System;
 using System.IO;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using EdFi.Ods.Utilities.Migration.Factories;
+using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using log4net;
 using log4net.Config;
@@ -22,7 +24,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests
         public static IOdsMigrationManagerResolver OdsMigrationManagerResolver { get; private set; }
         public static IUpgradeEngineBuilderProvider UpgradeEngineBuilderProvider { get; private set; }
         public static IMigrationConfigurationProvider MigrationConfigurationProvider { get; private set; }
-        public static IOdsMigrationManagerFactory OdsMigrationManagerFactory { get; private set; }
+        public static Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> OdsMigrationManagerFactory { get; private set; }
         public static IContainer Container { get; private set; }
 
         [OneTimeSetUp]
@@ -36,6 +38,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new MigrationUtilityModule());
+            containerBuilder.RegisterModule(new SqlServerSpecificModule());
             containerBuilder.Populate(new ServiceCollection());
 
             Container = containerBuilder.Build();
@@ -43,7 +46,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests
             OdsMigrationManagerResolver = Container.Resolve<IOdsMigrationManagerResolver>();
             UpgradeEngineBuilderProvider = Container.Resolve<IUpgradeEngineBuilderProvider>();
             MigrationConfigurationProvider = Container.Resolve<IMigrationConfigurationProvider>();
-            OdsMigrationManagerFactory = Container.Resolve<IOdsMigrationManagerFactory>();
+            OdsMigrationManagerFactory = Container.Resolve<Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager>>();
         }
 
         [OneTimeTearDown]

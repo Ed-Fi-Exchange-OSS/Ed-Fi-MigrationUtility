@@ -5,7 +5,6 @@
 
 using Autofac;
 using EdFi.Ods.Utilities.Migration.Configuration;
-using EdFi.Ods.Utilities.Migration.Factories;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Validation;
@@ -31,30 +30,32 @@ namespace EdFi.Ods.Utilities.Migration
                 .As<IConfigurationAutoMapper>()
                 .SingleInstance();
 
-            builder.RegisterType<OdsMigrationManagerFactory>()
-                .As<IOdsMigrationManagerFactory>();
-
             builder.RegisterType<ApplicationRunner>()
                 .As<IApplicationRunner>();
 
-            builder.RegisterType<HelpTextProvider>().As<IHelpTextProvider>()
+            builder.RegisterType<HelpTextProvider>()
+                .As<IHelpTextProvider>()
                 .SingleInstance();
 
-            RegisterSqlServerSpecific();
+            builder.RegisterType<OdsMigrationManager>()
+                .As<IOdsMigrationManager>();
+        }
+    }
 
-            void RegisterSqlServerSpecific()
-            {
-                builder.RegisterType<SqlServerConnectionStringValidator>()
-                    .As<IConnectionStringValidator>()
-                    .SingleInstance();
+    public class SqlServerSpecificModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<SqlServerConnectionStringValidator>()
+                .As<IConnectionStringValidator>()
+                .SingleInstance();
 
-                builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
-                    .As<ICurrentOdsApiVersionProvider>()
-                    .SingleInstance();
+            builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
+                .As<ICurrentOdsApiVersionProvider>()
+                .SingleInstance();
 
-                builder.RegisterType<SqlServerUpgradeEngineBuilderProvider>()
-                    .As<IUpgradeEngineBuilderProvider>();
-            }
+            builder.RegisterType<SqlServerUpgradeEngineBuilderProvider>()
+                .As<IUpgradeEngineBuilderProvider>();
         }
     }
 }

@@ -5,12 +5,9 @@
 
 using System;
 using System.Data.SqlClient;
-using System.Linq;
 using EdFi.Ods.Utilities.Migration.Configuration;
-using EdFi.Ods.Utilities.Migration.Factories;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
-using EdFi.Ods.Utilities.Migration.Queries;
 using EdFi.Ods.Utilities.Migration.Validation;
 using log4net;
 
@@ -20,21 +17,17 @@ namespace EdFi.Ods.Utilities.Migration
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(ApplicationRunner));
         private readonly IOptionsValidator _optionsValidator;
-        private readonly ICurrentOdsApiVersionProvider _currentOdsApiVersionProvider;
         private readonly IMigrationConfigurationProvider _migrationConfigurationProvider;
-        private readonly IConfigurationAutoMapper _configurationAutoMapper;
-        private readonly IOdsMigrationManagerFactory _odsMigrationManagerFactory;
+
+        // TODO: ODS-4502 PostgreSQL Support: We need to address this in the future, and eliminate this factory along with its dependencies.
+        private readonly Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> _odsMigrationManagerFactory;
 
         public ApplicationRunner(IOptionsValidator optionsValidator,
-            ICurrentOdsApiVersionProvider currentOdsApiVersionProvider,
             IMigrationConfigurationProvider migrationConfigurationProvider,
-            IConfigurationAutoMapper configurationAutoMapper,
-            IOdsMigrationManagerFactory odsMigrationManagerFactory)
+            Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> odsMigrationManagerFactory)
         {
             _optionsValidator = optionsValidator;
-            _currentOdsApiVersionProvider = currentOdsApiVersionProvider;
             _migrationConfigurationProvider = migrationConfigurationProvider;
-            _configurationAutoMapper = configurationAutoMapper;
             _odsMigrationManagerFactory = odsMigrationManagerFactory;
         }
 
@@ -45,25 +38,13 @@ namespace EdFi.Ods.Utilities.Migration
                 return -1;
             }
 
-            _logger.Info("Checking Version");
-            var currentOdsApiVersion = _currentOdsApiVersionProvider.Get(options.DatabaseConnectionString);
-            _logger.Info($"Current version of the database {currentOdsApiVersion.CurrentVersion}");
-
-            if (currentOdsApiVersion.CurrentVersion.ApiVersion.ToString() == options.RequestedFinalUpgradeVersion)
-            {
-                _logger.Info($"ODS is already at version {options.RequestedFinalUpgradeVersion}");
-                Environment.Exit(0);
-            }
-
             _logger.Info("Building version configuration");
 
             var upgradeVersionConfiguration = _migrationConfigurationProvider.Get(options,
                 options.CurrentOdsVersionCommandLineOverride,
                 options.RequestedFinalUpgradeVersion);
 
-            upgradeVersionConfiguration.FeaturesBeforeUpgrade = currentOdsApiVersion.ExistingFeatures.ToList();
-
-            var migrationManager = _odsMigrationManagerFactory.Create(options, upgradeVersionConfiguration);
+            var migrationManager = _odsMigrationManagerFactory(options, upgradeVersionConfiguration);
 
             OdsUpgradeResult result;
             if (options.CompatibilityCheckOnly)
@@ -79,6 +60,7 @@ namespace EdFi.Ods.Utilities.Migration
                 result = migrationManager.PerformUpgrade();
             }
 
+            // TODO: ODS-4502 PostgreSQL Support: This needs to be fixed and not SQL Server specific.
             if (result.Error is SqlException sqlException)
             {
                 _logger.Error(sqlException);

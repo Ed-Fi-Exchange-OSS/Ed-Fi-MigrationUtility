@@ -19,8 +19,6 @@ namespace EdFi.Ods.Utilities.Migration
 {
     internal class Program
     {
-        private static IContainer _container;
-
         private static void Main(string[] args)
         {
             ConfigureLogging();
@@ -38,18 +36,18 @@ namespace EdFi.Ods.Utilities.Migration
                         config.CaseSensitive = false;
                     }).ParseArguments<Options>(args);
 
-                CreateServiceProvider(new ServiceCollection());
+                var container = CreateServiceProvider(new ServiceCollection());
 
                 parserResult
                     .WithParsed(options =>
                     {
-                        var applicationRunner = _container.Resolve<IApplicationRunner>();
+                        var applicationRunner = container.Resolve<IApplicationRunner>();
                         exitCode = applicationRunner.Run(options);
                     })
                     .WithNotParsed(
                         errors =>
                         {
-                            var helpTextProvider = _container.Resolve<IHelpTextProvider>();
+                            var helpTextProvider = container.Resolve<IHelpTextProvider>();
 
                             logger.Error(helpTextProvider.BuildHelpText(parserResult, errors));
                             exitCode = -1;
@@ -72,14 +70,15 @@ namespace EdFi.Ods.Utilities.Migration
                 XmlConfigurator.Configure(LogManager.GetRepository(assembly), new FileInfo(configPath));
             }
 
-            static void CreateServiceProvider(IServiceCollection serviceCollection)
+            static IContainer CreateServiceProvider(IServiceCollection serviceCollection)
             {
                 var containerBuilder = new ContainerBuilder();
 
                 containerBuilder.RegisterModule(new MigrationUtilityModule());
+                containerBuilder.RegisterModule(new SqlServerSpecificModule());
                 containerBuilder.Populate(serviceCollection);
 
-                _container = containerBuilder.Build();
+                return containerBuilder.Build();
             }
         }
     }
