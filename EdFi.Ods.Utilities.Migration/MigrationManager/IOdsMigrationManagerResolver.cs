@@ -11,12 +11,6 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 {
     public interface IOdsMigrationManagerResolver
     {
-        class OdsMigrationVersionRange
-        {
-            public EdFiOdsVersion FromVersion;
-            public EdFiOdsVersion ToVersion;
-        }
-
         List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);
         Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);
         Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);

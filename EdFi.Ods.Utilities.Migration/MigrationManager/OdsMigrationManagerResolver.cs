@@ -20,7 +20,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private class OdsMigrationManagerResolverConfiguration
         {
-            public IOdsMigrationManagerResolver.OdsMigrationVersionRange VersionRange;
+            public OdsMigrationVersionRange VersionRange;
             public Type MigrationManagerType;
             public Type ConfigurationType;
         }
@@ -52,7 +52,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
             var resolverConfiguration = new OdsMigrationManagerResolverConfiguration
             {
-                VersionRange = new IOdsMigrationManagerResolver.OdsMigrationVersionRange
+                VersionRange = new OdsMigrationVersionRange
                 {
                     FromVersion = configuration.FromVersion,
                     ToVersion = configuration.ToVersion,
@@ -100,7 +100,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             }
         }
 
-        public List<IOdsMigrationManagerResolver.OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
+        public List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
         {
             return _allMigrationManagerResolverConfigurations
                 .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)

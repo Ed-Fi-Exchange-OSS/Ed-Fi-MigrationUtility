@@ -4,6 +4,7 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
@@ -61,7 +62,9 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 
             RaiseErrorIfUpgradePathNotSupported(upgradeVersionConfiguration);
 
-            upgradeVersionConfiguration.FeaturesBeforeUpgrade = autoDetectedVersion?.ExistingFeatures?.ToList();
+            upgradeVersionConfiguration.FeaturesBeforeUpgrade = autoDetectedVersion?.ExistingFeatures == null
+                ? new List<EdFiOdsFeature>()
+                : autoDetectedVersion.ExistingFeatures.ToList();
 
             return upgradeVersionConfiguration;
         }
