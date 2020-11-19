@@ -63,9 +63,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 
             RaiseErrorIfUpgradePathNotSupported(upgradeVersionConfiguration);
 
-            upgradeVersionConfiguration.FeaturesBeforeUpgrade = autoDetectedVersion?.ExistingFeatures == null
-                ? new List<EdFiOdsFeature>()
-                : autoDetectedVersion.ExistingFeatures.ToList();
+            upgradeVersionConfiguration.FeaturesBeforeUpgrade =
+                autoDetectedVersion?.ExistingFeatures?.ToList() ?? new List<EdFiOdsFeature>();
 
             return upgradeVersionConfiguration;
         }
