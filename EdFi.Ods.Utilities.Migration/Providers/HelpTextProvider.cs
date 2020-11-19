@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
+using EdFi.Ods.Utilities.Migration.MigrationManager;
 
 namespace EdFi.Ods.Utilities.Migration.Providers
 {

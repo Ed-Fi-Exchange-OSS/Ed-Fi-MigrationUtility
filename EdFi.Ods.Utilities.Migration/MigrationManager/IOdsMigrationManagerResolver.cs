@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 
-namespace EdFi.Ods.Utilities.Migration.Providers
+namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
     public interface IOdsMigrationManagerResolver
     {

@@ -5,9 +5,9 @@
 
 using EdFi.Ods.Utilities.Migration.Enumerations;
 
-namespace EdFi.Ods.Utilities.Migration.Providers
+namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    class OdsMigrationVersionRange
+    public class OdsMigrationVersionRange
     {
         public EdFiOdsVersion FromVersion;
         public EdFiOdsVersion ToVersion;
