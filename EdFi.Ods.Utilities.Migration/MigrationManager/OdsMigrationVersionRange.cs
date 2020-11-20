@@ -3,15 +3,13 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using System.Collections.Generic;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public interface IOdsMigrationManager
+    public class OdsMigrationVersionRange
     {
-        List<IOdsVersionSpecificMigrationManager> CreateManagers();
-        void ValidateConfigurationState();
-        OdsUpgradeResult RunCompatibilityCheck();
-        OdsUpgradeResult PerformUpgrade();
+        public EdFiOdsVersion FromVersion;
+        public EdFiOdsVersion ToVersion;
     }
 }

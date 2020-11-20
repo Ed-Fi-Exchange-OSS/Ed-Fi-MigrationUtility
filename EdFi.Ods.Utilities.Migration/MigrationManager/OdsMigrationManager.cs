@@ -6,62 +6,54 @@
 using System;
 using System.Collections.Generic;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public class OdsMigrationManager
+    public class OdsMigrationManager : IOdsMigrationManager
     {
-        public UpgradeVersionConfiguration GlobalUpgradeVersionConfiguration { get; }
-        public MigrationConfigurationGlobal Configuration { get; }
-
+        private readonly IOdsMigrationManagerResolver _odsMigrationManagerResolver;
+        private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
+        private readonly UpgradeVersionConfiguration _upgradeVersionConfiguration;
+        private readonly Options _options;
         private readonly IConfigurationAutoMapper _configurationAutoMapper;
+        private readonly List<IOdsVersionSpecificMigrationManager> _migrationManagers;
 
-        private readonly List<IOdsMigrationManager> _migrationManagers;
-
-        private readonly OdsMigrationManagerResolver _odsMigrationManagerResolver = OdsMigrationManagerResolver.Instance;
-
-        public OdsMigrationManager(
-            UpgradeVersionConfiguration globalUpgradeVersionConfiguration,
-            MigrationConfigurationGlobal configuration)
-            : this(
-                globalUpgradeVersionConfiguration,
-                configuration,
-                new ConfigurationAutoMapper())
+        public OdsMigrationManager(IConfigurationAutoMapper configurationAutoMapper,
+            IOdsMigrationManagerResolver odsMigrationManagerResolver,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider,
+            Options options,
+            UpgradeVersionConfiguration upgradeVersionConfiguration)
         {
-        }
-
-        public OdsMigrationManager(
-            UpgradeVersionConfiguration globalUpgradeVersionConfiguration,
-            MigrationConfigurationGlobal configuration,
-            IConfigurationAutoMapper configurationAutoMapper)
-        {
-            GlobalUpgradeVersionConfiguration = globalUpgradeVersionConfiguration;
-            Configuration = configuration;
+            _upgradeVersionConfiguration = upgradeVersionConfiguration;
+            _options = options;
             _configurationAutoMapper = configurationAutoMapper;
-
+            _odsMigrationManagerResolver = odsMigrationManagerResolver;
+            _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
             _migrationManagers = CreateManagers();
         }
 
-        public List<IOdsMigrationManager> CreateManagers()
+        public List<IOdsVersionSpecificMigrationManager> CreateManagers()
         {
-            var managers = new List<IOdsMigrationManager>();
+            var managers = new List<IOdsVersionSpecificMigrationManager>();
 
             foreach (var versionRange in _odsMigrationManagerResolver.GetVersionRanges(
-                GlobalUpgradeVersionConfiguration.VersionBeforeUpgrade,
-                GlobalUpgradeVersionConfiguration.RequestedFinalUpgradeVersion))
+                _upgradeVersionConfiguration.VersionBeforeUpgrade,
+                _upgradeVersionConfiguration.RequestedFinalUpgradeVersion))
             {
                 var migrationManagerType = _odsMigrationManagerResolver.GetMigrationManagerType(versionRange.FromVersion, versionRange.ToVersion);
 
                 var configurationType = _odsMigrationManagerResolver.GetConfigurationType(versionRange.FromVersion, versionRange.ToVersion);
-                var versionSpecificConfiguration = _configurationAutoMapper.MapToVersionConfiguration(Configuration, configurationType);
+                var versionSpecificConfiguration = _configurationAutoMapper.MapToVersionConfiguration(_options, configurationType);
 
                 managers.Add(
                     Activator.CreateInstance(
                         migrationManagerType,
                         versionSpecificConfiguration,
-                        GlobalUpgradeVersionConfiguration
-                    ) as IOdsMigrationManager);
+                        _upgradeVersionConfiguration,
+                        _upgradeEngineBuilderProvider
+                    ) as IOdsVersionSpecificMigrationManager);
             }
 
             return managers;
@@ -108,7 +100,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
              */
 
             ValidateConfigurationState();
-            var upgradeInProgress = new GetStatusOfUpgradeInProgress().Execute(Configuration.DatabaseConnectionString).InProgress;
+            var upgradeInProgress = new GetStatusOfUpgradeInProgress().Execute(_options.DatabaseConnectionString).InProgress;
 
             var compatibilityCheckResult = new OdsUpgradeResult();
 

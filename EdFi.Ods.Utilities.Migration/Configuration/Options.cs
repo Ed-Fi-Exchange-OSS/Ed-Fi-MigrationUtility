@@ -4,33 +4,26 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using CommandLine;
-using CommandLine.Text;
-using EdFi.Ods.Utilities.Migration.MigrationManager;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
 {
-    public class MigrationConfigurationGlobal
+    public class Options
     {
         private const string Scripts = "Scripts";
         private const string Descriptors = "Descriptors";
         private const string SampleCalendarConfig = "Sample Calendar Config";
 
         private static readonly string BasePath =
-            Path.GetFullPath(
-                Path.GetDirectoryName(typeof(MigrationConfigurationGlobal).GetTypeInfo().Assembly.Location));
+            Path.GetFullPath(Path.GetDirectoryName(typeof(Options).GetTypeInfo().Assembly.Location));
 
         private static string _scriptsFolder;
         private static string _descriptorsFolder;
         private static string _calendarFolder;
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(MigrationConfigurationGlobal));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(Options));
 
         [Option("ScriptPath",
             HelpText = "Full file system path to the folder containing all migration scripts",
@@ -105,101 +98,5 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         [Option('t', "Timeout", Default = 0, HelpText = "SQL command execution timeout in seconds (optional)")]
         public int Timeout { get; set; }
-
-        private static IEnumerable<string> GetVersionText()
-        {
-            var versionHelpText = new List<string>
-            {
-                "Supports an in-place ODS upgrade for the following upgrade paths:",
-            };
-
-            versionHelpText.AddRange(OdsMigrationManagerResolver.Instance.GetAllUpgradableVersions().SelectMany(
-                fromVersion =>
-                    OdsMigrationManagerResolver.Instance.GetSupportedUpgradeVersions(fromVersion)
-                        .Select(toVersion =>
-                            $"    {fromVersion.ApiVersion.ToString().PadRight(5)} -> {toVersion.ApiVersion.ToString().PadRight(5)}")
-            ));
-
-            return versionHelpText;
-        }
-
-        public static HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors) =>
-            errors.IsVersion()
-                ? HelpText.AutoBuild(parserResult)
-                : HelpText.AutoBuild(parserResult, h =>
-                {
-                    h.AddPreOptionsLines(GetVersionText());
-                    return HelpText.DefaultParsingErrorsHandler(parserResult, h);
-                }, e => e);
-
-        public bool IsValid()
-        {
-            return IsValidConnectionString()
-                   && IsValidScriptPath()
-                   && IsValidDescriptorPath()
-                   && IsValidCalendarConfigFilePath();
-
-            bool IsValidScriptPath() => IsValidPath(BaseMigrationScriptFolderPath, "Script");
-
-            bool IsValidDescriptorPath() => IsValidPath(BaseDescriptorXmlDirectoryPath, "Descriptor");
-
-            bool IsValidCalendarConfigFilePath() => IsValidFilePath(CalendarConfigFilePath, "Calendar Config");
-
-            bool IsValidConnectionString()
-            {
-                _logger.Info("Testing connection string");
-
-                try
-                {
-                    using (var connection = new SqlConnection(DatabaseConnectionString))
-                    {
-                        connection.Open();
-                        connection.Close();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var msg = "Please check that the provided database connection string is valid"
-                              + Environment.NewLine
-                              + Environment.NewLine
-                              + $"Details:  The following exception was returned when attempting to connect to the database with the connection string provided:  {ex.GetType()}: {ex.Message}";
-
-                    _logger.Error(msg);
-                    return false;
-                }
-
-                _logger.Info("Connection string test successful");
-                return true;
-            }
-
-            bool IsValidFilePath(string path, string context)
-            {
-                if (string.IsNullOrEmpty(path))
-                {
-                    return true;
-                }
-
-                if (File.Exists(path))
-                {
-                    _logger.Info($"{context} path exists ({path})");
-                    return true;
-                }
-
-                _logger.Error($"{context} path does not exist ({path})");
-                return false;
-            }
-
-            bool IsValidPath(string path, string context)
-            {
-                if (Directory.Exists(path))
-                {
-                    _logger.Info($"{context} path exists ({path})");
-                    return true;
-                }
-
-                _logger.Error($"{context} path does not exist ({path})");
-                return false;
-            }
-        }
     }
 }

@@ -26,9 +26,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v33_to_v34
                 InsertTestRecords(sourceDataScriptName, scriptParameters);
             }
 
-            var versionConfiguration =
-                UpgradeVersionConfiguration.BuildValidUpgradeConfiguration(ConnectionString,
-                    FromVersion.ToString(), ToVersion.ToString());
+            var options = new Options {DatabaseConnectionString = ConnectionString};
+
+            var versionConfiguration = MigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
             var config = new MigrationConfigurationV33ToV34
             {
@@ -39,7 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v33_to_v34
                 Timeout = SqlCommandTimeout
             };
 
-            var migrationManager = new OdsMigrationManagerV33ToV34(config, versionConfiguration);
+            var migrationManager = new OdsMigrationManagerV33ToV34(config, versionConfiguration, MigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
             return RunMigration(migrationManager);
         }
 

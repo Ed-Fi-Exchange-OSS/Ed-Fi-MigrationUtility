@@ -5,12 +5,16 @@
 
 using System.Collections.Generic;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Providers;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
     public class OdsMigrationManagerV311ToV32 : OdsVersionSpecificMigrationManager<MigrationConfigurationV311ToV32>
     {
-        public OdsMigrationManagerV311ToV32(MigrationConfigurationV311ToV32 configuration, UpgradeVersionConfiguration upgradeVersionConfiguration) : base(configuration, upgradeVersionConfiguration)
+        public OdsMigrationManagerV311ToV32(MigrationConfigurationV311ToV32 configuration,
+            UpgradeVersionConfiguration upgradeVersionConfiguration,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
+            : base(configuration, upgradeVersionConfiguration, upgradeEngineBuilderProvider)
         {
         }
 

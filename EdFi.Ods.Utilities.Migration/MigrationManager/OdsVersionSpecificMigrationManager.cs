@@ -10,28 +10,33 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DbUp;
+using DbUp.Builder;
 using DbUp.Engine;
 using DbUp.Helpers;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Logging;
+using EdFi.Ods.Utilities.Migration.Providers;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
-    public abstract class OdsVersionSpecificMigrationManager<TConfiguration> : IOdsMigrationManager
+    public abstract class OdsVersionSpecificMigrationManager<TConfiguration> : IOdsVersionSpecificMigrationManager
         where TConfiguration : MigrationConfigurationVersionSpecific
     {
-        private ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
+        private readonly ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
 
-        public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
         protected readonly TConfiguration Configuration;
+        private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
         private bool _configurationValidated;
+        public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
         public string UpgradeJournalTableName => Configuration.ToVersion.UpgradeJournalTableName;
 
-        protected OdsVersionSpecificMigrationManager(TConfiguration configuration, UpgradeVersionConfiguration upgradeVersionConfiguration)
+
+        protected OdsVersionSpecificMigrationManager(TConfiguration configuration, UpgradeVersionConfiguration upgradeVersionConfiguration, IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
         {
             Configuration = configuration;
+            _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
             UpgradeVersionConfiguration = upgradeVersionConfiguration;
         }
 
@@ -44,7 +49,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 var commonConfiguration = (MigrationConfigurationVersionSpecific) Configuration;
 
                 RaiseErrorIfConnectionStringIsInvalid(commonConfiguration);
-                RaiseErrorIfVersionConfigurationIsInvalid(commonConfiguration);
                 RaiseErrorIfMissingOrInvalidScriptLocation(commonConfiguration);
                 RaiseErrorIfLoggingRequirementsNotMet(commonConfiguration);
                 ValidateVersionSpecificConfigurationState(Configuration);
@@ -176,8 +180,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         {
             _logger.Info($"Executing scripts in directory {fullPath}");
 
-            var upgradeEngine = DeployChanges.To
-                .SqlDatabase(Configuration.DatabaseConnectionString)
+            var upgradeEngine = _upgradeEngineBuilderProvider.Get(Configuration.DatabaseConnectionString)
                 .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                 .WithTransactionPerScript()
                 .WithExecutionTimeout(TimeSpan.FromSeconds(Configuration.Timeout))
@@ -275,11 +278,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             using var connection = new SqlConnection(configuration.DatabaseConnectionString);
             connection.Open();
             connection.Close();
-        }
-
-        private void RaiseErrorIfVersionConfigurationIsInvalid(MigrationConfigurationVersionSpecific configuration)
-        {
-            UpgradeVersionConfiguration.RaiseErrorIfUpgradePathNotSupported();
         }
 
         private enum UpgradeOption

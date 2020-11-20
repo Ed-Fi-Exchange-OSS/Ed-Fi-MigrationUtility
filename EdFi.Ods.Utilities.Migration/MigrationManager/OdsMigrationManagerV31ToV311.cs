@@ -6,13 +6,17 @@
 using System.Collections.Generic;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
     public class OdsMigrationManagerV31ToV311 : OdsVersionSpecificMigrationManager<MigrationConfigurationV31ToV311>
     {
-        public OdsMigrationManagerV31ToV311(MigrationConfigurationV31ToV311 configuration, UpgradeVersionConfiguration upgradeVersionConfiguration) : base(configuration, upgradeVersionConfiguration)
+        public OdsMigrationManagerV31ToV311(MigrationConfigurationV31ToV311 configuration,
+            UpgradeVersionConfiguration upgradeVersionConfiguration,
+            IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
+            : base(configuration, upgradeVersionConfiguration, upgradeEngineBuilderProvider)
         {
         }
 

@@ -4,14 +4,14 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Collections.Generic;
+using CommandLine;
+using CommandLine.Text;
+using EdFi.Ods.Utilities.Migration.MigrationManager;
 
-namespace EdFi.Ods.Utilities.Migration.MigrationManager
+namespace EdFi.Ods.Utilities.Migration.Providers
 {
-    public interface IOdsMigrationManager
+    public interface IHelpTextProvider
     {
-        List<IOdsVersionSpecificMigrationManager> CreateManagers();
-        void ValidateConfigurationState();
-        OdsUpgradeResult RunCompatibilityCheck();
-        OdsUpgradeResult PerformUpgrade();
+        HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors);
     }
 }

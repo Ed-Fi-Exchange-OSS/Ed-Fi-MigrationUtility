@@ -27,7 +27,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
         private readonly ILog _logger = LogManager.GetLogger(typeof(GlobalSetupTests));
 
         private static readonly List<GlobalVersionUpgradeTestCase> AllVersionUpgradesUnderTest =
-            OdsMigrationManagerResolver.Instance
+            new OdsMigrationManagerResolver()
                 .GetAllUpgradableVersions()
                 .Where(FromVersionIsUnderTest)
                 .SelectMany(GetAllUpgradesUnderTest)
@@ -84,7 +84,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
 
         public static List<GlobalVersionUpgradeTestCase> GetAllUpgradesUnderTest(EdFiOdsVersion fromVersion)
         {
-            return OdsMigrationManagerResolver.Instance
+            return new OdsMigrationManagerResolver()
                 .GetSupportedUpgradeVersions(fromVersion)
                 .Select(toVersion => new GlobalVersionUpgradeTestCase
                 {

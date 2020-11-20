@@ -5,14 +5,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Dapper;
 using DatabaseSchemaReader;
-using DatabaseSchemaReader.DataSchema;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
@@ -20,7 +17,6 @@ using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Respawn;
 using Shouldly;
 
@@ -28,6 +24,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 {
     public abstract class MigrationTestBase : DatabaseIntegrationTestBase
     {
+
+
         protected abstract DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; }
         protected abstract string TestDataDirectoryName { get; }
         protected virtual string OptionalTestSourceOdsBackupFullPath { get; } = null;
@@ -115,7 +113,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
         protected string GetTestDataDirectory()
         {
             var testFixtureName = GetType().Name;
-            return Path.Combine(Directory.GetCurrentDirectory(), "MigrationTests", TestDataDirectoryName, testFixtureName);
+            return Path.Combine(Directory.GetCurrentDirectory(), "MigrationTests", TestDataDirectoryName,
+                testFixtureName);
         }
 
         protected IEnumerable<T> GetTableContents<T>(EdFiOdsVersion targetSchema) where T : DbModelBase
@@ -129,12 +128,14 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 
             if (baseModel.Version != targetSchema)
             {
-                throw new InvalidOperationException($"Attempted to query schema version {targetSchema} with a model that targets version {baseModel.Version}");
+                throw new InvalidOperationException(
+                    $"Attempted to query schema version {targetSchema} with a model that targets version {baseModel.Version}");
             }
 
             if (baseModel.Version != CurrentSchemaVersion)
             {
-                throw new InvalidOperationException($"Attempted to query schema version {targetSchema} but database status is currently version {CurrentSchemaVersion}");
+                throw new InvalidOperationException(
+                    $"Attempted to query schema version {targetSchema} but database status is currently version {CurrentSchemaVersion}");
             }
 
             var fullTableName = baseModel.FullTableName;
@@ -161,9 +162,10 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             (result.Error as SqlException)?.Number.ShouldBe((int) expectedErrorCode, result.Error.Message);
         }
 
-        protected OdsUpgradeResult RunMigration(IOdsMigrationManager manager)
+        protected OdsUpgradeResult RunMigration(IOdsVersionSpecificMigrationManager manager)
         {
-            ShowStatusMessage($"Starting migration: {manager.UpgradeVersionConfiguration.VersionBeforeUpgrade} => {manager.UpgradeVersionConfiguration.RequestedFinalUpgradeVersion}");
+            ShowStatusMessage(
+                $"Starting migration: {manager.UpgradeVersionConfiguration.VersionBeforeUpgrade} => {manager.UpgradeVersionConfiguration.RequestedFinalUpgradeVersion}");
             var result = manager.PerformUpgrade();
 
             ShowStatusMessage(result.Error != null
@@ -174,7 +176,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             return result;
         }
 
-        protected OdsUpgradeResult RunMigration(List<IOdsMigrationManager> managers)
+        protected OdsUpgradeResult RunMigration(List<IOdsVersionSpecificMigrationManager> managers)
         {
             var upgradeResult = new OdsUpgradeResult();
             foreach (var manager in managers)
@@ -263,7 +265,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 
                 var existingDeployedScripts = conn.Query<string>("select ScriptName from dbo.DeployJournal").ToArray();
 
-                foreach (DatabaseScriptJournalEntry deployedDatabaseScriptJournalEntry in deployedDatabaseScriptJournalEntries)
+                foreach (DatabaseScriptJournalEntry deployedDatabaseScriptJournalEntry in
+                    deployedDatabaseScriptJournalEntries)
                 {
                     if (!existingDeployedScripts.Contains(deployedDatabaseScriptJournalEntry.JournalScriptEntry))
                     {
@@ -347,7 +350,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
                     "Unable to support features other than change queries for pre db deploy testing.");
             }
 
-            var paths = new []
+            var paths = new[]
                 {
                     EdFiOdsVersionLevel.GetDefaultStructureFeatureScriptPath(version, feature),
                     EdFiOdsVersionLevel.GetDefaultDataFeatureScriptPath(version, feature)
