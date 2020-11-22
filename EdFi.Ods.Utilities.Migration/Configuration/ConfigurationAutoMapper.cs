@@ -85,6 +85,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             CreateMap<Options, MigrationConfigurationV32ToV33>();
             CreateMap<Options, MigrationConfigurationV33ToV34>();
             CreateMap<Options, MigrationConfigurationV34ToV50>();
+            CreateMap<Options, MigrationConfigurationV50ToV51>();
 
             CreateMap<MigrationConfigurationV25ToV31, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
@@ -101,6 +102,15 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
                 .ForMember(dst => dst.AzureStorageLocation, opt => opt.Ignore())
                 .ForMember(dst => dst.CredentialNamespacePrefix, opt => opt.Ignore());
             CreateMap<MigrationConfigurationV34ToV50, Options>()
+                .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
+                .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
+                .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore())
+                // v2 global properties are not needed for a fully v3 upgrade path
+                .ForMember(dst => dst.DescriptorNamespacePrefix, opt => opt.Ignore())
+                .ForMember(dst => dst.CalendarConfigFilePath, opt => opt.Ignore())
+                .ForMember(dst => dst.AzureStorageLocation, opt => opt.Ignore())
+                .ForMember(dst => dst.CredentialNamespacePrefix, opt => opt.Ignore());
+            CreateMap<MigrationConfigurationV50ToV51, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
                 .ForMember(dst => dst.CurrentOdsVersionCommandLineOverride, opt => opt.Ignore())
                 .ForMember(dst => dst.CompatibilityCheckOnly, opt => opt.Ignore())
