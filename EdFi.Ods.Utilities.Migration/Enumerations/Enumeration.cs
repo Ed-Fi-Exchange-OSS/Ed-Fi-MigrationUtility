@@ -109,7 +109,7 @@ namespace EdFi.Ods.Utilities.Migration.Enumerations
             return Parse(displayName, "display name", item => item.DisplayName == displayName);
         }
 
-        private static bool TryParse(Func<TEnumeration, bool> predicate, out TEnumeration result)
+        public static bool TryParse(Func<TEnumeration, bool> predicate, out TEnumeration result)
         {
             result = GetAll().FirstOrDefault(predicate);
             return result != null;

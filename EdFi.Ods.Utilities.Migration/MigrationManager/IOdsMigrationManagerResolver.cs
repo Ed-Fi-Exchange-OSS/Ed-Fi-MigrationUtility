@@ -14,10 +14,10 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);
         Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);
         Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion);
-        List<EdFiOdsVersion> GetAllUpgradableVersions();
-        List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion);
-        EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion);
-        EdFiOdsVersion GetLatestSupportedUpgradeVersion();
-        bool VersionCanBeUpgraded(EdFiOdsVersion version);
+        List<EdFiOdsVersion> GetAllUpgradableVersions(string engine = DatabaseEngine.SQLServer);
+        List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer);
+        EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer);
+        EdFiOdsVersion GetLatestSupportedUpgradeVersion(string engine = DatabaseEngine.SQLServer);
+        bool VersionCanBeUpgraded(EdFiOdsVersion version, string engine = DatabaseEngine.SQLServer);
     }
 }

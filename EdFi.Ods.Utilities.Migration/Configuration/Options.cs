@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using CommandLine;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Configuration
@@ -24,6 +25,11 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         private static string _descriptorsFolder;
         private static string _calendarFolder;
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Options));
+
+        [Option("Engine",
+            HelpText = "",
+            Default = DatabaseEngine.SQLServer)]
+        public string Engine { get; set; }
 
         [Option("ScriptPath",
             HelpText = "Full file system path to the folder containing all migration scripts",

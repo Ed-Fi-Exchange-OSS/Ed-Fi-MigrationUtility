@@ -27,6 +27,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         private readonly ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
 
         protected readonly TConfiguration Configuration;
+        private readonly DatabaseEngine _engine;
         private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
         private bool _configurationValidated;
         public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
@@ -36,6 +37,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         protected OdsVersionSpecificMigrationManager(TConfiguration configuration, UpgradeVersionConfiguration upgradeVersionConfiguration, IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
         {
             Configuration = configuration;
+            _engine = DatabaseEngine.TryParseEngine(Configuration.Engine);
             _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
             UpgradeVersionConfiguration = upgradeVersionConfiguration;
         }
@@ -131,7 +133,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             var upgradeStepDirectories = new List<string>();
 
             var baseDirectory =
-                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, step.FolderName));
+                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, _engine.ScriptsFolderName, step.FolderName));
 
             if (Directory.GetFiles(baseDirectory, "*.sql").Length > 0)
             {
