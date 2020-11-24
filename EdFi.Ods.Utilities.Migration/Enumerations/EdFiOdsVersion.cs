@@ -11,6 +11,7 @@ namespace EdFi.Ods.Utilities.Migration.Enumerations
 {
     public sealed class EdFiOdsVersion : Enumeration<EdFiOdsVersion>
     {
+        public static EdFiOdsVersion V51 = new EdFiOdsVersion(510, "5.1", "EdFiOdsMigrationScriptLogV510", new Version(5, 1));
         public static EdFiOdsVersion V50 = new EdFiOdsVersion(500, "5.0", "EdFiOdsMigrationScriptLogV500", new Version(5, 0));
         public static EdFiOdsVersion V34 = new EdFiOdsVersion(340, "3.4", "EdFiOdsMigrationScriptLogV340", new Version(3, 4));
         public static EdFiOdsVersion V33 = new EdFiOdsVersion(330, "3.3", "EdFiOdsMigrationScriptLogV330", new Version(3, 3));
