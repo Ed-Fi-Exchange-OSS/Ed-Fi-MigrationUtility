@@ -26,7 +26,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DatabaseIntegrationTestBase));
 
-        protected string DatabaseName = "Edfi_Ods_Migration_Test";
+        protected string DatabaseName = "EdFi_Ods_Migration_Test";
 
         protected string ConnectionString => MigrationTestSettingsProvider.GetConnectionString(DatabaseName);
 
