@@ -4,6 +4,7 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Autofac;
@@ -27,31 +28,19 @@ namespace EdFi.Ods.Utilities.Migration
 
             try
             {
-                int exitCode = 0;
+                var parserResult = new Parser(ParserSettings).ParseArguments<Options>(args);
 
-                var parserResult = new Parser(
-                    config =>
+                var exitCode = parserResult.MapResult(
+                    options =>
                     {
-                        config.CaseInsensitiveEnumValues = true;
-                        config.CaseSensitive = false;
-                    }).ParseArguments<Options>(args);
-
-                var container = CreateServiceProvider(new ServiceCollection());
-
-                parserResult
-                    .WithParsed(options =>
+                        var container = CreateServiceProvider(new ServiceCollection(), options);
+                        return RunMigrationUtility(container);
+                    },
+                    errors =>
                     {
-                        var applicationRunner = container.Resolve<IApplicationRunner>();
-                        exitCode = applicationRunner.Run(options);
-                    })
-                    .WithNotParsed(
-                        errors =>
-                        {
-                            var helpTextProvider = container.Resolve<IHelpTextProvider>();
-
-                            logger.Error(helpTextProvider.BuildHelpText(parserResult, errors));
-                            exitCode = -1;
-                        });
+                        var container = CreateServiceProvider(new ServiceCollection(), new Options());
+                        return OptionsNotParsed(container, parserResult, errors);
+                    });
 
                 Environment.Exit(exitCode);
             }
@@ -64,21 +53,42 @@ namespace EdFi.Ods.Utilities.Migration
             static void ConfigureLogging()
             {
                 var assembly = typeof(Program).GetTypeInfo().Assembly;
-
-                string configPath = Path.Combine(Path.GetDirectoryName(assembly.Location), "log4net.config");
-
+                string configPath = Path.Combine(Path.GetDirectoryName(assembly.Location)!, "log4net.config");
                 XmlConfigurator.Configure(LogManager.GetRepository(assembly), new FileInfo(configPath));
             }
 
-            static IContainer CreateServiceProvider(IServiceCollection serviceCollection)
+            static void ParserSettings(ParserSettings settings)
+            {
+                settings.CaseInsensitiveEnumValues = true;
+                settings.CaseSensitive = false;
+            }
+
+            static int RunMigrationUtility(IContainer container)
+            {
+                var applicationRunner = container.Resolve<IApplicationRunner>();
+                return applicationRunner.Run();
+            }
+
+            static IContainer CreateServiceProvider(IServiceCollection serviceCollection, Options options)
             {
                 var containerBuilder = new ContainerBuilder();
 
+                containerBuilder.RegisterInstance(options);
+
                 containerBuilder.RegisterModule(new MigrationUtilityModule());
                 containerBuilder.RegisterModule(new SqlServerSpecificModule());
+
                 containerBuilder.Populate(serviceCollection);
 
                 return containerBuilder.Build();
+            }
+
+            int OptionsNotParsed(IContainer container, ParserResult<Options> parserResult, IEnumerable<Error> errors)
+            {
+                var helpTextProvider = container.Resolve<IHelpTextProvider>();
+                logger.Error(helpTextProvider.BuildHelpText(parserResult, errors));
+
+                return -1;
             }
         }
     }

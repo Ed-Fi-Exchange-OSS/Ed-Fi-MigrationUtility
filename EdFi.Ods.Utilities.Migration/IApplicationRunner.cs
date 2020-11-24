@@ -3,12 +3,10 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using EdFi.Ods.Utilities.Migration.Configuration;
-
 namespace EdFi.Ods.Utilities.Migration
 {
     public interface IApplicationRunner
     {
-        int Run(Options options);
+        int Run();
     }
 }

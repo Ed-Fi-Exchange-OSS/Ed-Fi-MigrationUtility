@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 
 namespace EdFi.Ods.Utilities.Migration.Providers
@@ -23,25 +24,32 @@ namespace EdFi.Ods.Utilities.Migration.Providers
         public HelpText BuildHelpText<T>(ParserResult<T> parserResult, IEnumerable<Error> errors) =>
             errors.IsVersion()
                 ? HelpText.AutoBuild(parserResult)
-                : HelpText.AutoBuild(parserResult, h =>
-                {
-                    h.AddPreOptionsLines(GetVersionText());
-                    return HelpText.DefaultParsingErrorsHandler(parserResult, h);
-                }, e => e);
+                : HelpText.AutoBuild(parserResult,
+                    h =>
+                    {
+                        h.AddPreOptionsLines(GetVersionText());
+                        return HelpText.DefaultParsingErrorsHandler(parserResult, h);
+                    }, e => e);
 
         private IEnumerable<string> GetVersionText()
         {
-            var versionHelpText = new List<string>
-            {
-                "Supports an in-place ODS upgrade for the following upgrade paths:",
-            };
+            var versionHelpText = new List<string> {"Supports an in-place ODS upgrade for the following upgrade paths:"};
 
-            versionHelpText.AddRange(_odsMigrationManagerResolver.GetAllUpgradableVersions()
-                .SelectMany(fromVersion => _odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion)
-                    .Select(toVersion =>
-                        $"    {fromVersion.ApiVersion.ToString().PadRight(5)} -> {toVersion.ApiVersion.ToString().PadRight(5)}")));
+            versionHelpText.Add("    SQLServer:");
+            GetVersionTextForEngine(versionHelpText, _odsMigrationManagerResolver, DatabaseEngine.SQLServer);
+
+            versionHelpText.Add("    PostgreSQL:");
+            GetVersionTextForEngine(versionHelpText, _odsMigrationManagerResolver, DatabaseEngine.PostgreSQL);
 
             return versionHelpText;
+
+            void GetVersionTextForEngine(List<string> helpText, IOdsMigrationManagerResolver resolver, string engine)
+            {
+                helpText
+                    .AddRange(resolver.GetAllUpgradableVersions(engine)
+                        .SelectMany(fromVersion => resolver.GetSupportedUpgradeVersions(fromVersion, engine).Select(toVersion =>
+                            $"        {fromVersion.ApiVersion,-5} =>   {toVersion.ApiVersion,-5}")));
+            }
         }
     }
 }

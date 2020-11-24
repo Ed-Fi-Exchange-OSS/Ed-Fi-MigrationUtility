@@ -4,7 +4,6 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using AutoMapper;
 using log4net;
@@ -35,17 +34,15 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
             try
             {
-                migrationConfigurationVersionSpecific =
-                    (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(globalConfiguration,
-                        typeof(Options), versionConfigurationType);
+                migrationConfigurationVersionSpecific = (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(
+                    globalConfiguration,
+                    typeof(Options),
+                    versionConfigurationType
+                );
             }
             catch (Exception ex)
             {
-                var msg = "Application has occurred error in MigrationConfigurationVersionSpecific"
-                          + Environment.NewLine
-                          + $"Details: {ex.Message}";
-
-                _logger.Error(msg);
+                _logger.Error($"Application error has occurred in {nameof(MigrationConfigurationVersionSpecific)}{Environment.NewLine}{ex.Message}");
             }
 
             return migrationConfigurationVersionSpecific;
@@ -55,19 +52,18 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             where TConfiguration : MigrationConfigurationVersionSpecific
         {
             Options migrationConfigurationGlobal = null;
+
             try
             {
-                migrationConfigurationGlobal =
-                    (Options) ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration),
-                        typeof(Options));
+                migrationConfigurationGlobal = (Options) ConfigurationMapper.Map(
+                    versionConfiguration,
+                    typeof(TConfiguration),
+                    typeof(Options)
+                );
             }
             catch (Exception ex)
             {
-                var msg = "Application has occurred error in ConfigurationAutoMapper"
-                          + Environment.NewLine
-                          + $"Details: {ex.Message}";
-
-                _logger.Error(msg);
+                _logger.Error($"Application error has occurred in {nameof(ConfigurationAutoMapper)}{Environment.NewLine}{ex.Message}");
             }
 
             return migrationConfigurationGlobal;
