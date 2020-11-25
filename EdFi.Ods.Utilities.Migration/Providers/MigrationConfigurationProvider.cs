@@ -26,7 +26,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
             _currentOdsApiVersionProvider = currentOdsApiVersionProvider;
         }
 
-        public UpgradeVersionConfiguration Get(Options options,
+        public UpgradeVersionConfiguration Get(
+            Options options,
             string optionalCurrentOdsVersionOverride = null,
             string optionalRequestedUpgradeVersionOverride = null)
 {

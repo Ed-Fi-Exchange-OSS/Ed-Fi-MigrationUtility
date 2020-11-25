@@ -76,7 +76,8 @@ namespace EdFi.Ods.Utilities.Migration
                 containerBuilder.RegisterInstance(options);
 
                 containerBuilder.RegisterModule(new MigrationUtilityModule());
-                containerBuilder.RegisterModule(new SqlServerSpecificModule());
+                containerBuilder.RegisterModule(new SqlServerSpecificModule {Options = options});
+                containerBuilder.RegisterModule(new PostgreSqlSpecificModule {Options = options});
 
                 containerBuilder.Populate(serviceCollection);
 

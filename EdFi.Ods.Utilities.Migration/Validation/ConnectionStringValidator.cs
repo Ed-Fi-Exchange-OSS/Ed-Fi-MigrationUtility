@@ -4,14 +4,20 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Data.SqlClient;
+using EdFi.Ods.Utilities.Migration.Providers;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Validation
 {
-    public class SqlServerConnectionStringValidator : IConnectionStringValidator
+    public class ConnectionStringValidator : IConnectionStringValidator
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(SqlServerConnectionStringValidator));
+        private readonly IDatabaseConnectionProvider _databaseConnectionProvider;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ConnectionStringValidator));
+
+        public ConnectionStringValidator(IDatabaseConnectionProvider databaseConnectionProvider)
+        {
+            _databaseConnectionProvider = databaseConnectionProvider;
+        }
 
         public bool IsValidConnectionString(string connectionString)
         {
@@ -19,11 +25,9 @@ namespace EdFi.Ods.Utilities.Migration.Validation
 
             try
             {
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-                    connection.Close();
-                }
+                using var connection = _databaseConnectionProvider.CreateConnection(connectionString);
+                connection.Open();
+                connection.Close();
             }
             catch (Exception ex)
             {

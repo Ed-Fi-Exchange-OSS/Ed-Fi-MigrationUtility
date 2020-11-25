@@ -1,8 +1,12 @@
 {
   "profiles": {
     "EdFi.Ods.Utilities.Migration": {
-        "commandName": "Project",
-        "commandLineArgs": "--Database \"Data Source=localhost;Initial Catalog=EdFi.Suite3.Ods.Minimal.Template.5.0.0;Integrated Security=True;\" --DescriptorNamespace \"uri://ed-fi.org\" --CredentialNamespace \"uri://ed-fi.org\" --FromVersion 5.0 --ToVersion 5.1"
+      "commandName": "Project",
+      "commandLineArgs": "--Database \"Data Source=localhost;Initial Catalog=EdFi.Suite3.Ods.Minimal.Template.5.0.0;Integrated Security=True;\" --DescriptorNamespace \"uri://ed-fi.org\" --CredentialNamespace \"uri://ed-fi.org\" --FromVersion 5.0 --ToVersion 5.1"
+    },
+    "EdFi.Ods.Utilities.Migration (PostgreSQL)": {
+      "commandName": "Project",
+      "commandLineArgs": "--Database \"Host=localhost; Port=5432; Username=postgres; Database=EdFi_Ods_Minimal_Template\" --DescriptorNamespace \"uri://ed-fi.org\" --CredentialNamespace \"uri://ed-fi.org\" --FromVersion 5.0 --ToVersion 5.1 --Engine postgresql"
     }
   }
 }
