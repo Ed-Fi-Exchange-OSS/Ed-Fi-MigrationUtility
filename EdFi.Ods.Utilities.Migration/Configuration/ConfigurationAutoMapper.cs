@@ -74,14 +74,14 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
     {
         public ConfigurationAutoMapperProfile()
         {
-            CreateMap<Options, MigrationConfigurationV24ToV25>();
-            CreateMap<Options, MigrationConfigurationV25ToV31>();
-            CreateMap<Options, MigrationConfigurationV31ToV311>();
-            CreateMap<Options, MigrationConfigurationV311ToV32>();
-            CreateMap<Options, MigrationConfigurationV32ToV33>();
-            CreateMap<Options, MigrationConfigurationV33ToV34>();
-            CreateMap<Options, MigrationConfigurationV34ToV50>();
-            CreateMap<Options, MigrationConfigurationV50ToV51>();
+            CreateMap<Options, MigrationConfigurationV24ToV25>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV25ToV31>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV31ToV311>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV311ToV32>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV32ToV33>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV33ToV34>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV34ToV50>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV50ToV51>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
 
             CreateMap<MigrationConfigurationV25ToV31, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())
