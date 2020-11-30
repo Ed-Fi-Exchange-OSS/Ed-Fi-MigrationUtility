@@ -30,7 +30,7 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 
             using var connection = DatabaseConnectionProvider.CreateConnection(connectionString);
 
-            var version = new CurrentOdsApiVersion { CurrentVersion = new VersionCheckBasedOnVersionFunction(connection).Result() };
+            var version = new CurrentOdsApiVersion {CurrentVersion = new VersionCheckBasedOnVersionFunction(connection).Result()};
 
             if (!GetTableEntries(connection).Any(t => t.TableSchema == "public" && t.TableName == "DeployJournal")) return version;
 
