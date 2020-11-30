@@ -15,11 +15,6 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         public override string MigrationScriptVersionSpecificDirectoryName => "v50_to_v51";
 
-        public override List<string> SupportedEngines => new List<string> { DatabaseEngine.SQLServer, DatabaseEngine.PostgreSQL };
-
-        public string DescriptorNamespacePrefix { get; set; }
-        public string CalendarConfigFilePath { get; set; }
-        public string AzureStorageLocation { get; set; }
-        public string CredentialNamespacePrefix { get; set; }
+        public override List<string> SupportedEngines => new List<string> {DatabaseEngine.SQLServer, DatabaseEngine.PostgreSQL};
     }
 }

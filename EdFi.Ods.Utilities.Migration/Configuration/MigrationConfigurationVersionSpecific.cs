@@ -15,7 +15,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         public abstract EdFiOdsVersion ToVersion { get; }
 
         public string Engine { get; set; }
-        public virtual List<string> SupportedEngines { get; set; } = new List<string> { DatabaseEngine.SQLServer };
+        public virtual List<string> SupportedEngines { get; set; }
 
         public string DatabaseConnectionString { get; set; }
         public int Timeout { get; set; }
@@ -23,6 +23,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         public string BaseMigrationScriptFolderPath { get; set; }
         public virtual string MigrationScriptVersionSpecificDirectoryName { get; }
+
         public virtual string MigrationScriptFeatureVersionSpecificDirectoryName(EdFiOdsFeature feature) =>
             $"{MigrationScriptVersionSpecificDirectoryName}_{feature.SubTypeFolderName}";
 
