@@ -9,6 +9,6 @@ namespace EdFi.Ods.Utilities.Migration.Providers
 {
     public interface ICurrentOdsApiVersionProvider
     {
-        CurrentOdsApiVersion Get(string databaseConnectionString);
+        CurrentOdsApiVersion Get(string connectionString);
     }
 }

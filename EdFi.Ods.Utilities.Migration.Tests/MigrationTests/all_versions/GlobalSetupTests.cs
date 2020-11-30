@@ -14,6 +14,7 @@ using DbUp.Helpers;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Logging;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 using log4net;
 using NUnit.Framework;
@@ -39,7 +40,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             DropTestDatabase();
             CreateEmptyTestDatabase();
 
-            var upgradeStatusQuery = new GetStatusOfUpgradeInProgress();
+            var upgradeStatusQuery = new GetStatusOfUpgradeInProgress(new SqlServerDatabaseConnectionProvider());
             Setup(testCase.FromVersion, testCase.ToVersion);
 
             var upgradeStatus = upgradeStatusQuery.Execute(ConnectionString);

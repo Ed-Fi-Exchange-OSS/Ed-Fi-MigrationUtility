@@ -5,12 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DbUp;
-using DbUp.Builder;
 using DbUp.Engine;
 using DbUp.Helpers;
 using EdFi.Ods.Utilities.Migration.Configuration;
@@ -50,7 +47,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             {
                 var commonConfiguration = (MigrationConfigurationVersionSpecific) Configuration;
 
-                RaiseErrorIfConnectionStringIsInvalid(commonConfiguration);
                 RaiseErrorIfMissingOrInvalidScriptLocation(commonConfiguration);
                 RaiseErrorIfLoggingRequirementsNotMet(commonConfiguration);
                 ValidateVersionSpecificConfigurationState(Configuration);
@@ -102,6 +98,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     return stepUpgradeResult;
                 }
             }
+
             return stepUpgradeResult;
         }
 
@@ -133,7 +130,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             var upgradeStepDirectories = new List<string>();
 
             var baseDirectory =
-                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, _engine.ScriptsFolderName, step.FolderName));
+                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, _engine.ScriptsFolderName,
+                    step.FolderName));
 
             if (Directory.GetFiles(baseDirectory, "*.sql").Length > 0)
             {
@@ -182,7 +180,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         {
             _logger.Info($"Executing scripts in directory {fullPath}");
 
-            var upgradeEngine = _upgradeEngineBuilderProvider.Get(Configuration.DatabaseConnectionString)
+            var upgradeEngine = _upgradeEngineBuilderProvider
+                .Get(Configuration.DatabaseConnectionString)
                 .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                 .WithTransactionPerScript()
                 .WithExecutionTimeout(TimeSpan.FromSeconds(Configuration.Timeout))
@@ -206,7 +205,9 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             return result;
         }
 
-        protected virtual void ValidateVersionSpecificConfigurationState(TConfiguration configuration) { }
+        protected virtual void ValidateVersionSpecificConfigurationState(TConfiguration configuration)
+        {
+        }
 
         private void RaiseErrorIfMissingOrInvalidScriptLocation(MigrationConfigurationVersionSpecific configuration)
         {
@@ -216,13 +217,15 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     $"Migration configuration error:  Base script directory not found: {configuration.BaseMigrationScriptFolderPath}");
             }
 
-            var requiredGlobalScriptDirectories = MigrationStep.GetAll().Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.AllVersions)
+            var requiredGlobalScriptDirectories = MigrationStep.GetAll()
+                .Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.AllVersions)
                 .Select(s => Path.Combine(configuration.BaseMigrationScriptFolderPath, s.FolderName)).ToList();
 
             var requiredVersionSpecificScriptDirectories =
                 MigrationStep.GetAll()
                     .Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.VersionSpecific)
-                    .Select(s => Path.Combine(configuration.BaseMigrationScriptFolderPath, s.FolderName, Configuration.MigrationScriptVersionSpecificDirectoryName))
+                    .Select(s => Path.Combine(configuration.BaseMigrationScriptFolderPath, s.FolderName,
+                        Configuration.MigrationScriptVersionSpecificDirectoryName))
                     .ToList();
 
             var allRequiredDirectories =
@@ -252,10 +255,10 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         {
             var duplicateScriptExceptions =
                 GetScriptList(configuration)
-                   .GroupBy(scriptName => scriptName)
-                   .Where(g => g.Count() > 1)
-                   .Select(g => new Exception($"Found {g.Count()} scripts with the name {g.Key} "))
-                   .ToList();
+                    .GroupBy(scriptName => scriptName)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => new Exception($"Found {g.Count()} scripts with the name {g.Key} "))
+                    .ToList();
 
             foreach (var exception in duplicateScriptExceptions.OrderBy(x => x.Message))
             {
@@ -272,14 +275,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private static IEnumerable<string> GetScriptList(MigrationConfigurationVersionSpecific configuration)
         {
-            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories).Select(Path.GetFileName);
-        }
-
-        private static void RaiseErrorIfConnectionStringIsInvalid(MigrationConfigurationVersionSpecific configuration)
-        {
-            using var connection = new SqlConnection(configuration.DatabaseConnectionString);
-            connection.Open();
-            connection.Close();
+            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories)
+                .Select(Path.GetFileName);
         }
 
         private enum UpgradeOption

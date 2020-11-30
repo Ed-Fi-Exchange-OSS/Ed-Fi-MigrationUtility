@@ -42,10 +42,6 @@ namespace EdFi.Ods.Utilities.Migration
             builder.RegisterType<OdsMigrationManager>()
                 .As<IOdsMigrationManager>();
 
-            builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
-                .As<ICurrentOdsApiVersionProvider>()
-                .SingleInstance();
-
             builder.RegisterType<ConnectionStringValidator>()
                 .As<IConnectionStringValidator>()
                 .SingleInstance();
@@ -70,6 +66,10 @@ namespace EdFi.Ods.Utilities.Migration
 
             builder.RegisterType<SqlServerUpgradeEngineBuilderProvider>()
                 .As<IUpgradeEngineBuilderProvider>();
+
+            builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
+                .As<ICurrentOdsApiVersionProvider>()
+                .SingleInstance();
         }
     }
 
@@ -91,6 +91,10 @@ namespace EdFi.Ods.Utilities.Migration
 
             builder.RegisterType<PostgreSqlUpgradeEngineBuilderProvider>()
                 .As<IUpgradeEngineBuilderProvider>();
+
+            builder.RegisterType<PostgreSqlCurrentOdsApiVersionProvider>()
+                .As<ICurrentOdsApiVersionProvider>()
+                .SingleInstance();
         }
     }
 }

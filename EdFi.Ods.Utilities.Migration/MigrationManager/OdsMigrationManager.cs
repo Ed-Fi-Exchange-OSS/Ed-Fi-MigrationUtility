@@ -15,22 +15,27 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
     {
         private readonly IOdsMigrationManagerResolver _odsMigrationManagerResolver;
         private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
+        private readonly IDatabaseConnectionProvider _databaseConnectionProvider;
         private readonly UpgradeVersionConfiguration _upgradeVersionConfiguration;
-        private readonly Options _options;
         private readonly IConfigurationAutoMapper _configurationAutoMapper;
+        private readonly Options _options;
         private readonly List<IOdsVersionSpecificMigrationManager> _migrationManagers;
 
-        public OdsMigrationManager(IConfigurationAutoMapper configurationAutoMapper,
+        public OdsMigrationManager(
             IOdsMigrationManagerResolver odsMigrationManagerResolver,
             IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider,
-            Options options,
-            UpgradeVersionConfiguration upgradeVersionConfiguration)
+            IDatabaseConnectionProvider databaseConnectionProvider,
+            UpgradeVersionConfiguration upgradeVersionConfiguration,
+            IConfigurationAutoMapper configurationAutoMapper,
+            Options options
+        )
         {
-            _upgradeVersionConfiguration = upgradeVersionConfiguration;
-            _options = options;
-            _configurationAutoMapper = configurationAutoMapper;
             _odsMigrationManagerResolver = odsMigrationManagerResolver;
             _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
+            _databaseConnectionProvider = databaseConnectionProvider;
+            _upgradeVersionConfiguration = upgradeVersionConfiguration;
+            _configurationAutoMapper = configurationAutoMapper;
+            _options = options;
             _migrationManagers = CreateManagers();
         }
 
@@ -42,9 +47,11 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 _upgradeVersionConfiguration.VersionBeforeUpgrade,
                 _upgradeVersionConfiguration.RequestedFinalUpgradeVersion))
             {
-                var migrationManagerType = _odsMigrationManagerResolver.GetMigrationManagerType(versionRange.FromVersion, versionRange.ToVersion);
+                var migrationManagerType =
+                    _odsMigrationManagerResolver.GetMigrationManagerType(versionRange.FromVersion, versionRange.ToVersion);
 
-                var configurationType = _odsMigrationManagerResolver.GetConfigurationType(versionRange.FromVersion, versionRange.ToVersion);
+                var configurationType =
+                    _odsMigrationManagerResolver.GetConfigurationType(versionRange.FromVersion, versionRange.ToVersion);
                 var versionSpecificConfiguration = _configurationAutoMapper.MapToVersionConfiguration(_options, configurationType);
 
                 managers.Add(
@@ -100,7 +107,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
              */
 
             ValidateConfigurationState();
-            var upgradeInProgress = new GetStatusOfUpgradeInProgress().Execute(_options.DatabaseConnectionString).InProgress;
+            var upgradeInProgress = new GetStatusOfUpgradeInProgress(_databaseConnectionProvider)
+                .Execute(_options.DatabaseConnectionString).InProgress;
 
             var compatibilityCheckResult = new OdsUpgradeResult();
 
