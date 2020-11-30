@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using NUnit.Framework;
 using Shouldly;
@@ -100,6 +101,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Latest
 
             var options = new Options
             {
+                Engine = DatabaseEngine.SQLServer,
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =
                     Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),

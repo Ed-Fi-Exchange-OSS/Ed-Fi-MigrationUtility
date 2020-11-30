@@ -37,6 +37,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
         [TestCaseSource(nameof(AllVersionUpgradesUnderTest))]
         public void ShouldSetupCorrectVersionAndCleanUp(GlobalVersionUpgradeTestCase testCase)
         {
+            AllVersionUpgradesUnderTest.ForEach(x => _logger.Debug(x));
             DropTestDatabase();
             CreateEmptyTestDatabase();
 

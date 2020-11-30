@@ -32,6 +32,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v24_to_v25
 
             var config = new MigrationConfigurationV24ToV25
             {
+                Engine = DatabaseEngine.SQLServer,
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),

@@ -27,7 +27,7 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Options));
 
         [Option("Engine",
-            HelpText = "",
+            HelpText = "The database engine type: SQLServer or PostgreSQL",
             Default = DatabaseEngine.SQLServer)]
         public string Engine { get; set; }
 

@@ -9,6 +9,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using log4net;
@@ -36,9 +37,13 @@ namespace EdFi.Ods.Utilities.Migration.Tests
 
             XmlConfigurator.Configure(LogManager.GetRepository(assembly), new FileInfo(configPath));
 
+            var options = new Options {Engine = DatabaseEngine.SQLServer};
+
             var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterInstance(options);
             containerBuilder.RegisterModule(new MigrationUtilityModule());
-            containerBuilder.RegisterModule(new SqlServerSpecificModule());
+            containerBuilder.RegisterModule(new SqlServerSpecificModule {Options = options});
+            containerBuilder.RegisterModule(new PostgreSqlSpecificModule {Options = options});
             containerBuilder.Populate(new ServiceCollection());
 
             Container = containerBuilder.Build();
