@@ -5,16 +5,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DbUp;
-using DbUp.Builder;
 using DbUp.Engine;
 using DbUp.Helpers;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
+using EdFi.Ods.Utilities.Migration.Helpers;
 using EdFi.Ods.Utilities.Migration.Logging;
 using EdFi.Ods.Utilities.Migration.Providers;
 using log4net;
@@ -27,15 +25,18 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         private readonly ILog _logger = LogManager.GetLogger(typeof(OdsVersionSpecificMigrationManager<TConfiguration>));
 
         protected readonly TConfiguration Configuration;
+        private readonly DatabaseEngine _engine;
         private readonly IUpgradeEngineBuilderProvider _upgradeEngineBuilderProvider;
         private bool _configurationValidated;
         public UpgradeVersionConfiguration UpgradeVersionConfiguration { get; }
         public string UpgradeJournalTableName => Configuration.ToVersion.UpgradeJournalTableName;
 
 
-        protected OdsVersionSpecificMigrationManager(TConfiguration configuration, UpgradeVersionConfiguration upgradeVersionConfiguration, IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
+        protected OdsVersionSpecificMigrationManager(TConfiguration configuration,
+            UpgradeVersionConfiguration upgradeVersionConfiguration, IUpgradeEngineBuilderProvider upgradeEngineBuilderProvider)
         {
             Configuration = configuration;
+            _engine = DatabaseEngine.TryParseEngine(Configuration.Engine);
             _upgradeEngineBuilderProvider = upgradeEngineBuilderProvider;
             UpgradeVersionConfiguration = upgradeVersionConfiguration;
         }
@@ -48,7 +49,6 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             {
                 var commonConfiguration = (MigrationConfigurationVersionSpecific) Configuration;
 
-                RaiseErrorIfConnectionStringIsInvalid(commonConfiguration);
                 RaiseErrorIfMissingOrInvalidScriptLocation(commonConfiguration);
                 RaiseErrorIfLoggingRequirementsNotMet(commonConfiguration);
                 ValidateVersionSpecificConfigurationState(Configuration);
@@ -100,6 +100,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     return stepUpgradeResult;
                 }
             }
+
             return stepUpgradeResult;
         }
 
@@ -131,7 +132,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             var upgradeStepDirectories = new List<string>();
 
             var baseDirectory =
-                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, step.FolderName));
+                Path.GetFullPath(Path.Combine(Configuration.BaseMigrationScriptFolderPath, _engine.ScriptsFolderName,
+                    step.FolderName));
 
             if (Directory.GetFiles(baseDirectory, "*.sql").Length > 0)
             {
@@ -180,7 +182,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         {
             _logger.Info($"Executing scripts in directory {fullPath}");
 
-            var upgradeEngine = _upgradeEngineBuilderProvider.Get(Configuration.DatabaseConnectionString)
+            var upgradeEngine = _upgradeEngineBuilderProvider
+                .Get(Configuration.DatabaseConnectionString)
                 .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                 .WithTransactionPerScript()
                 .WithExecutionTimeout(TimeSpan.FromSeconds(Configuration.Timeout))
@@ -204,45 +207,68 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             return result;
         }
 
-        protected virtual void ValidateVersionSpecificConfigurationState(TConfiguration configuration) { }
+        protected virtual void ValidateVersionSpecificConfigurationState(TConfiguration configuration)
+        {
+        }
 
         private void RaiseErrorIfMissingOrInvalidScriptLocation(MigrationConfigurationVersionSpecific configuration)
         {
-            if (!Directory.Exists(configuration.BaseMigrationScriptFolderPath))
+            var baseScriptDirectory = configuration.BaseMigrationScriptFolderPath;
+            if (!Directory.Exists(baseScriptDirectory))
             {
-                throw new DirectoryNotFoundException(
-                    $"Migration configuration error:  Base script directory not found: {configuration.BaseMigrationScriptFolderPath}");
+                throw new DirectoryNotFoundException($"Base script directory not found: {baseScriptDirectory}.");
             }
 
-            var requiredGlobalScriptDirectories = MigrationStep.GetAll().Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.AllVersions)
-                .Select(s => Path.Combine(configuration.BaseMigrationScriptFolderPath, s.FolderName)).ToList();
+            var engineSpecificDirectory = Path.Combine(baseScriptDirectory, _engine.ScriptsFolderName);
+            if (!Directory.Exists(engineSpecificDirectory))
+            {
+                throw new DirectoryNotFoundException($"Engine specific script directory not found: {engineSpecificDirectory}");
+            }
 
-            var requiredVersionSpecificScriptDirectories =
-                MigrationStep.GetAll()
-                    .Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.VersionSpecific)
-                    .Select(s => Path.Combine(configuration.BaseMigrationScriptFolderPath, s.FolderName, Configuration.MigrationScriptVersionSpecificDirectoryName))
-                    .ToList();
-
-            var allRequiredDirectories =
-                requiredGlobalScriptDirectories.Concat(requiredVersionSpecificScriptDirectories);
+            var requiredMigrationStepDirectories = MigrationStep.GetAll()
+                .Select(s => Path.Combine(engineSpecificDirectory, s.FolderName))
+                .ToList();
 
             var missingDirectoryExceptions =
-                allRequiredDirectories
+                requiredMigrationStepDirectories
                     .Where(d => !Directory.Exists(d))
-                    .Select(d =>
-                        new DirectoryNotFoundException(
-                            $"Missing required directory for migration: {d}"))
+                    .Select(d => new DirectoryNotFoundException($"{nameof(MigrationStep)} Directory Not Found: {d}"))
+                    .OrderBy(x => x.Message)
                     .ToList();
 
-            foreach (var exception in missingDirectoryExceptions.OrderBy(x => x.Message))
-            {
-                _logger.Error(exception.Message);
-            }
+            missingDirectoryExceptions.ForEach(x => _logger.Error(x.Message));
 
             if (missingDirectoryExceptions.Any())
             {
                 throw new AggregateException(
-                    "Missing required directory for migration step. See inner exception for details", missingDirectoryExceptions);
+                    $"Missing required directory for {nameof(MigrationStep)}. See inner exception for details:{Environment.NewLine}",
+                    missingDirectoryExceptions);
+            }
+
+            var optionalVersionSpecificDirectories =
+                MigrationStep.GetAll()
+                    .Where(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.VersionSpecific)
+                    .Select(s => Path.Combine(
+                        engineSpecificDirectory,
+                        s.FolderName,
+                        Configuration.MigrationScriptVersionSpecificDirectoryName))
+                    .ToList();
+
+            var missingVersionSpecificDirectories =
+                optionalVersionSpecificDirectories
+                    .Where(d => !Directory.Exists(d))
+                    .Select(d => $"{nameof(MigrationStep)} Directory Not Found: {d}.  Skipping Directory.")
+                    .OrderBy(x => x)
+                    .ToList();
+
+            missingVersionSpecificDirectories.ForEach(x => _logger.Info(x));
+
+            // Must have at least one version specific directory
+            if (missingVersionSpecificDirectories.Count == MigrationStep.GetAll()
+                .Count(s => s.ScriptVersionTarget == MigrationStep.VersionTarget.VersionSpecific))
+            {
+                throw new AggregateException(
+                    $"Version Specific Directories Not Found. At least one '{Configuration.MigrationScriptVersionSpecificDirectoryName}' directory must exist.");
             }
         }
 
@@ -250,10 +276,10 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
         {
             var duplicateScriptExceptions =
                 GetScriptList(configuration)
-                   .GroupBy(scriptName => scriptName)
-                   .Where(g => g.Count() > 1)
-                   .Select(g => new Exception($"Found {g.Count()} scripts with the name {g.Key} "))
-                   .ToList();
+                    .GroupBy(scriptName => scriptName)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => new Exception($"Found {g.Count()} scripts with the name {g.Key} "))
+                    .ToList();
 
             foreach (var exception in duplicateScriptExceptions.OrderBy(x => x.Message))
             {
@@ -270,14 +296,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private static IEnumerable<string> GetScriptList(MigrationConfigurationVersionSpecific configuration)
         {
-            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories).Select(Path.GetFileName);
-        }
-
-        private static void RaiseErrorIfConnectionStringIsInvalid(MigrationConfigurationVersionSpecific configuration)
-        {
-            using var connection = new SqlConnection(configuration.DatabaseConnectionString);
-            connection.Open();
-            connection.Close();
+            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories)
+                .Select(Path.GetFileName);
         }
 
         private enum UpgradeOption

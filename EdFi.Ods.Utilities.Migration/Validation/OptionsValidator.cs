@@ -3,8 +3,10 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System;
 using System.IO;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Validation
@@ -24,7 +26,8 @@ namespace EdFi.Ods.Utilities.Migration.Validation
             return IsValidConnectionString()
                    && IsValidScriptPath()
                    && IsValidDescriptorPath()
-                   && IsValidCalendarConfigFilePath();
+                   && IsValidCalendarConfigFilePath()
+                   && IsValidEngine();
 
             bool IsValidScriptPath() => IsValidPath(options.BaseMigrationScriptFolderPath, "Script");
 
@@ -33,6 +36,8 @@ namespace EdFi.Ods.Utilities.Migration.Validation
             bool IsValidCalendarConfigFilePath() => IsValidFilePath(options.CalendarConfigFilePath, "Calendar Config");
 
             bool IsValidConnectionString() => _connectionStringValidator.IsValidConnectionString(options.DatabaseConnectionString);
+
+            bool IsValidEngine() => DatabaseEngine.TryParse(x => x.Value.Equals(options.Engine, StringComparison.InvariantCultureIgnoreCase), out _);
 
             bool IsValidFilePath(string path, string context)
             {

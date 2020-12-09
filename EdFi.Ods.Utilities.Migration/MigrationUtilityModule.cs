@@ -3,8 +3,10 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System;
 using Autofac;
 using EdFi.Ods.Utilities.Migration.Configuration;
+using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Validation;
@@ -39,23 +41,60 @@ namespace EdFi.Ods.Utilities.Migration
 
             builder.RegisterType<OdsMigrationManager>()
                 .As<IOdsMigrationManager>();
+
+            builder.RegisterType<ConnectionStringValidator>()
+                .As<IConnectionStringValidator>()
+                .SingleInstance();
         }
     }
 
     public class SqlServerSpecificModule : Module
     {
+        public Options Options { get; set; }
+
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<SqlServerConnectionStringValidator>()
-                .As<IConnectionStringValidator>()
-                .SingleInstance();
+            if (Options.Engine == null
+                || !Options.Engine.Equals(DatabaseEngine.SQLServer, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
 
-            builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
-                .As<ICurrentOdsApiVersionProvider>()
+            builder.RegisterType<SqlServerDatabaseConnectionProvider>()
+                .As<IDatabaseConnectionProvider>()
                 .SingleInstance();
 
             builder.RegisterType<SqlServerUpgradeEngineBuilderProvider>()
                 .As<IUpgradeEngineBuilderProvider>();
+
+            builder.RegisterType<SqlServerCurrentOdsApiVersionProvider>()
+                .As<ICurrentOdsApiVersionProvider>()
+                .SingleInstance();
+        }
+    }
+
+    public class PostgreSqlSpecificModule : Module
+    {
+        public Options Options { get; set; }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            if (Options.Engine == null
+                || !Options.Engine.Equals(DatabaseEngine.PostgreSQL, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
+
+            builder.RegisterType<PostgreSqlDatabaseConnectionProvider>()
+                .As<IDatabaseConnectionProvider>()
+                .SingleInstance();
+
+            builder.RegisterType<PostgreSqlUpgradeEngineBuilderProvider>()
+                .As<IUpgradeEngineBuilderProvider>();
+
+            builder.RegisterType<PostgreSqlCurrentOdsApiVersionProvider>()
+                .As<ICurrentOdsApiVersionProvider>()
+                .SingleInstance();
         }
     }
 }

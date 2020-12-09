@@ -16,38 +16,45 @@ namespace EdFi.Ods.Utilities.Migration
     public class ApplicationRunner : IApplicationRunner
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(ApplicationRunner));
+
+        private readonly Options _options;
         private readonly IOptionsValidator _optionsValidator;
         private readonly IMigrationConfigurationProvider _migrationConfigurationProvider;
 
         // TODO: ODS-4502 PostgreSQL Support: We need to address this in the future, and eliminate this factory along with its dependencies.
         private readonly Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> _odsMigrationManagerFactory;
-
-        public ApplicationRunner(IOptionsValidator optionsValidator,
+        
+        public ApplicationRunner(
+            Options options,
+            IOptionsValidator optionsValidator,
             IMigrationConfigurationProvider migrationConfigurationProvider,
-            Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> odsMigrationManagerFactory)
+            Func<Options, UpgradeVersionConfiguration, IOdsMigrationManager> odsMigrationManagerFactory 
+        )
         {
+            _options = options;
             _optionsValidator = optionsValidator;
             _migrationConfigurationProvider = migrationConfigurationProvider;
             _odsMigrationManagerFactory = odsMigrationManagerFactory;
         }
 
-        public int Run(Options options)
+        public int Run()
         {
-            if (!_optionsValidator.IsValid(options))
+            if (!_optionsValidator.IsValid(_options))
             {
                 return -1;
             }
 
             _logger.Info("Building version configuration");
 
-            var upgradeVersionConfiguration = _migrationConfigurationProvider.Get(options,
-                options.CurrentOdsVersionCommandLineOverride,
-                options.RequestedFinalUpgradeVersion);
+            var upgradeVersionConfiguration = _migrationConfigurationProvider.Get(
+                _options,
+                _options.CurrentOdsVersionCommandLineOverride,
+                _options.RequestedFinalUpgradeVersion);
 
-            var migrationManager = _odsMigrationManagerFactory(options, upgradeVersionConfiguration);
+            var migrationManager = _odsMigrationManagerFactory(_options, upgradeVersionConfiguration);
 
             OdsUpgradeResult result;
-            if (options.CompatibilityCheckOnly)
+            if (_options.CompatibilityCheckOnly)
             {
                 _logger.Info(
                     $"Checking compatibility for upgrade to version {upgradeVersionConfiguration.RequestedFinalUpgradeVersion}");

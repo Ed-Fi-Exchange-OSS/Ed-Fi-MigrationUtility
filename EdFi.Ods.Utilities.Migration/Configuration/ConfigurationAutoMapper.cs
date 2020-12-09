@@ -4,7 +4,6 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using AutoMapper;
 using log4net;
@@ -35,17 +34,15 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
             try
             {
-                migrationConfigurationVersionSpecific =
-                    (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(globalConfiguration,
-                        typeof(Options), versionConfigurationType);
+                migrationConfigurationVersionSpecific = (MigrationConfigurationVersionSpecific) ConfigurationMapper.Map(
+                    globalConfiguration,
+                    typeof(Options),
+                    versionConfigurationType
+                );
             }
             catch (Exception ex)
             {
-                var msg = "Application has occurred error in MigrationConfigurationVersionSpecific"
-                          + Environment.NewLine
-                          + $"Details: {ex.Message}";
-
-                _logger.Error(msg);
+                _logger.Error($"Application error has occurred in {nameof(MigrationConfigurationVersionSpecific)}{Environment.NewLine}{ex.Message}");
             }
 
             return migrationConfigurationVersionSpecific;
@@ -55,19 +52,18 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
             where TConfiguration : MigrationConfigurationVersionSpecific
         {
             Options migrationConfigurationGlobal = null;
+
             try
             {
-                migrationConfigurationGlobal =
-                    (Options) ConfigurationMapper.Map(versionConfiguration, typeof(TConfiguration),
-                        typeof(Options));
+                migrationConfigurationGlobal = (Options) ConfigurationMapper.Map(
+                    versionConfiguration,
+                    typeof(TConfiguration),
+                    typeof(Options)
+                );
             }
             catch (Exception ex)
             {
-                var msg = "Application has occurred error in ConfigurationAutoMapper"
-                          + Environment.NewLine
-                          + $"Details: {ex.Message}";
-
-                _logger.Error(msg);
+                _logger.Error($"Application error has occurred in {nameof(ConfigurationAutoMapper)}{Environment.NewLine}{ex.Message}");
             }
 
             return migrationConfigurationGlobal;
@@ -78,14 +74,14 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
     {
         public ConfigurationAutoMapperProfile()
         {
-            CreateMap<Options, MigrationConfigurationV24ToV25>();
-            CreateMap<Options, MigrationConfigurationV25ToV31>();
-            CreateMap<Options, MigrationConfigurationV31ToV311>();
-            CreateMap<Options, MigrationConfigurationV311ToV32>();
-            CreateMap<Options, MigrationConfigurationV32ToV33>();
-            CreateMap<Options, MigrationConfigurationV33ToV34>();
-            CreateMap<Options, MigrationConfigurationV34ToV50>();
-            CreateMap<Options, MigrationConfigurationV50ToV51>();
+            CreateMap<Options, MigrationConfigurationV24ToV25>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV25ToV31>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV31ToV311>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV311ToV32>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV32ToV33>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV33ToV34>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV34ToV50>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
+            CreateMap<Options, MigrationConfigurationV50ToV51>().ForMember(dst => dst.SupportedEngines, opt => opt.Ignore());
 
             CreateMap<MigrationConfigurationV25ToV31, Options>()
                 .ForMember(dst => dst.RequestedFinalUpgradeVersion, opt => opt.Ignore())

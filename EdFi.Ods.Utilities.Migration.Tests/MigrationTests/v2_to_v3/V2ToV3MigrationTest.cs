@@ -31,6 +31,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v2_to_v3
 
             var options = new Options
             {
+                Engine = DatabaseEngine.SQLServer,
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath =
                     Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),

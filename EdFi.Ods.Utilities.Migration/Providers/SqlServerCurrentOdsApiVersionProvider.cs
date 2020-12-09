@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Enumerations;
@@ -15,9 +14,14 @@ using EdFi.Ods.Utilities.Migration.VersionLevel;
 
 namespace EdFi.Ods.Utilities.Migration.Providers
 {
-    public class SqlServerCurrentOdsApiVersionProvider : ICurrentOdsApiVersionProvider
+    public class SqlServerCurrentOdsApiVersionProvider : CurrentOdsApiVersionProviderBase
     {
-        public CurrentOdsApiVersion Get(string databaseConnectionString)
+        public SqlServerCurrentOdsApiVersionProvider(IDatabaseConnectionProvider databaseConnectionProvider)
+            : base(databaseConnectionProvider)
+        {
+        }
+
+        public override CurrentOdsApiVersion Get(string connectionString)
         {
             var result = new CurrentOdsApiVersion();
             /*
@@ -33,89 +37,74 @@ namespace EdFi.Ods.Utilities.Migration.Providers
              * specifying the current API version at upgrade time.
              */
 
-            using (var connection = new SqlConnection(databaseConnectionString))
+            using var connection = DatabaseConnectionProvider.CreateConnection(connectionString);
+
+
+            var tables = GetTableEntries(connection);
+
+            var edfiTableEntries = tables.Where(t => t.TableSchema == "edfi")
+                .Select(t => t.TableName)
+                .ToList();
+
+            // Older check based on existence of tables, used pre v311
+            var versionLevelCheckResult = new SchemaCheckResultForOlderVersionsOnly(edfiTableEntries).Result();
+
+            // Only use newer version checks if the older version check found v31.
+            if (versionLevelCheckResult == null || versionLevelCheckResult == EdFiOdsVersion.V31)
             {
-                var tableList =
-                    connection.Query<TableEntry>(
-                            @"
-                        SELECT TABLE_SCHEMA AS TableSchema, TABLE_NAME AS TableName
-                        FROM INFORMATION_SCHEMA.TABLES")
+                if (tables.Any(t => t.TableSchema == "dbo" && t.TableName == "DeployJournal"))
+                {
+                    var existingJournalScriptEntries = connection
+                        .Query<string>(@"SELECT ScriptName FROM dbo.DeployJournal")
+                        .ToHashSet();
+
+                    result.ExistingFeatures = CheckForExistingFeatures(existingJournalScriptEntries);
+
+                    var versionLevel34Check = new VersionCheckBasedOnVersionFunction(connection).Result();
+
+                    versionLevelCheckResult = versionLevel34Check ??
+                                              new VersionCheckBasedOnDeploymentJournal(existingJournalScriptEntries).Result();
+                }
+                else if (tables.Any(t => t.TableSchema == "dbo" && t.TableName == "VersionLevel"))
+                {
+                    var databaseVersionLevels = connection
+                        .Query<DatabaseVersionLevel>(
+                            @"SELECT ScriptSource, ScriptType, DatabaseType, SubType, VersionLevel FROM dbo.VersionLevel")
                         .ToList();
 
-                var edfiTableList = tableList.Where(t => t.TableSchema == "edfi")
-                    .Select(t => t.TableName)
-                    .ToList();
+                    versionLevelCheckResult =
+                        new VersionCheckBasedOnVersionLevelOnly(databaseVersionLevels).Result()
+                        ?? versionLevelCheckResult;
 
-                // Older check based on existence of tables, used pre v311
-                var versionLevelCheckResult = new SchemaCheckResultForOlderVersionsOnly(edfiTableList).Result();
+                    var edFiOdsFeatures = EdFiOdsFeature.GetAll()
+                        .Where(
+                            sf => databaseVersionLevels
+                                .Any(
+                                    y => !string.IsNullOrEmpty(y.SubType)
+                                         && y.SubType.Equals(
+                                             sf.SubTypeFolderName,
+                                             StringComparison.InvariantCultureIgnoreCase)))
+                        .ToHashSet();
 
-                // Only use newer version checks if the older version check found v31.
-                if (versionLevelCheckResult == null || versionLevelCheckResult == EdFiOdsVersion.V31)
-                {
-                    if (tableList.Any(t => t.TableSchema == "dbo" && t.TableName == "DeployJournal"))
-                    {
-                        var existingJournalScriptEntries = connection.Query<string>(
-                                @"SELECT ScriptName FROM dbo.DeployJournal")
-                            .ToHashSet();
-
-                        result.ExistingFeatures = CheckForExistingFeatures(existingJournalScriptEntries);
-
-                        var versionLevel34Check = new VersionCheckBasedOnVersionFunction(connection).Result();
-
-                        versionLevelCheckResult = versionLevel34Check ??
-                                                  new VersionCheckBasedOnDeploymentJournal(existingJournalScriptEntries).Result();
-
-                    }
-                    else if (tableList.Any(t => t.TableSchema == "dbo" && t.TableName == "VersionLevel"))
-                    {
-                        var databaseVersionLevels = connection.Query<DatabaseVersionLevel>(
-                                @"SELECT ScriptSource, ScriptType, DatabaseType, SubType, VersionLevel FROM dbo.VersionLevel")
-                            .ToList();
-
-                        versionLevelCheckResult =
-                            new VersionCheckBasedOnVersionLevelOnly(databaseVersionLevels).Result()
-                            ?? versionLevelCheckResult;
-
-                        var edFiOdsFeatures = EdFiOdsFeature.GetAll()
-                            .Where(
-                                sf => databaseVersionLevels
-                                    .Any(
-                                        y => !string.IsNullOrEmpty(y.SubType)
-                                             && y.SubType.Equals(
-                                                 sf.SubTypeFolderName,
-                                                 StringComparison.InvariantCultureIgnoreCase)))
-                            .ToHashSet();
-
-                        result.ExistingFeatures = edFiOdsFeatures;
-                    }
+                    result.ExistingFeatures = edFiOdsFeatures;
                 }
-
-                result.CurrentVersion = versionLevelCheckResult;
-
-                return result;
             }
+
+            result.CurrentVersion = versionLevelCheckResult;
+
+            return result;
         }
 
-        private HashSet<EdFiOdsFeature> CheckForExistingFeatures(HashSet<string> existingJournalScriptEntries)
+        protected override HashSet<EdFiOdsFeature> CheckForExistingFeatures(HashSet<string> existingJournalScriptEntries)
         {
-           return EdFiOdsFeature.GetAll()
-                .Where(
-                    sf => existingJournalScriptEntries
-                        .Any(
-                            y => !string.IsNullOrEmpty(y)
-                                 && y.ToLowerInvariant()
-                                     .Contains(sf.SubTypeJournalContainsExpression.ToLowerInvariant())))
+            return EdFiOdsFeature.GetAll()
+                .Where(feature => existingJournalScriptEntries
+                    .Any(y => !string.IsNullOrEmpty(y) && y.ToLowerInvariant()
+                        .Contains(feature.SubTypeJournalContainsExpressionMsSql.ToLowerInvariant())))
                 .ToHashSet();
         }
 
-        private class TableEntry
-        {
-            public string TableSchema { get; set; }
-
-            public string TableName { get; set; }
-        }
-
-        private class DatabaseVersionLevel
+        protected class DatabaseVersionLevel
         {
             public string ScriptSource { get; set; }
 
@@ -128,57 +117,6 @@ namespace EdFi.Ods.Utilities.Migration.Providers
             public int VersionLevel { get; set; }
         }
 
-        private class VersionCheckBasedOnVersionFunction
-        {
-            private readonly SqlConnection _connection;
-
-            public VersionCheckBasedOnVersionFunction(SqlConnection connection)
-            {
-                _connection = connection;
-            }
-
-            public EdFiOdsVersion Result()
-            {
-                long? objId = _connection.QueryFirstOrDefault<long?>(@"select object_id('util.GetEdFiOdsVersion', 'FN')");
-
-                if (!objId.HasValue)
-                {
-                    return null;
-                }
-
-                string version = _connection.QueryFirstOrDefault<string>(@"select util.GetEdFiOdsVersion()");
-
-                return !string.IsNullOrEmpty(version)
-                    ? EdFiOdsVersion.ParseString(version)
-                    : null;
-            }
-        }
-
-        private class VersionCheckBasedOnDeploymentJournal
-        {
-            private readonly HashSet<string> _journalScriptEntries;
-
-            public VersionCheckBasedOnDeploymentJournal(HashSet<string> journalScriptEntries)
-            {
-                _journalScriptEntries = journalScriptEntries;
-            }
-
-            public EdFiOdsVersion Result()
-            {
-                var v33VersionLevel = new EdFiOdsVersionJournal(EdFiOdsVersion.V33);
-
-                if (v33VersionLevel.GetJournalEntriesWithoutFeatures()
-                    .Select(je => je.JournalScriptEntry)
-                    .ToHashSet()
-                    .IsSubsetOf(_journalScriptEntries))
-                {
-                    return EdFiOdsVersion.V33;
-                }
-
-                return null;
-            }
-        }
-
         private class VersionCheckBasedOnVersionLevelOnly
         {
             private const string EdFiOdsScriptSource = "ED-FI-ODS";
@@ -186,14 +124,11 @@ namespace EdFi.Ods.Utilities.Migration.Providers
             private const string DataScriptType = "DATA";
             private const string EdFiDatabaseType = "EDFI";
 
-            private readonly List<DatabaseVersionLevel> _databaseVersionLevels;
             private readonly int? _edfiStructureLevel;
             private readonly int? _edfiDataLevel;
 
             public VersionCheckBasedOnVersionLevelOnly(List<DatabaseVersionLevel> databaseVersionLevels)
             {
-                _databaseVersionLevels = databaseVersionLevels;
-
                 _edfiStructureLevel = databaseVersionLevels
                     .Where(
                         dvl => dvl.ScriptSource == EdFiOdsScriptSource

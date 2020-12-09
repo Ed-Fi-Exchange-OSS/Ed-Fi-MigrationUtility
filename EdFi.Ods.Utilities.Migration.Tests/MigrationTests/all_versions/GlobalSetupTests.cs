@@ -14,6 +14,7 @@ using DbUp.Helpers;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Logging;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Queries;
 using log4net;
 using NUnit.Framework;
@@ -39,7 +40,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             DropTestDatabase();
             CreateEmptyTestDatabase();
 
-            var upgradeStatusQuery = new GetStatusOfUpgradeInProgress();
+            var upgradeStatusQuery = new GetStatusOfUpgradeInProgress(new SqlServerDatabaseConnectionProvider());
             Setup(testCase.FromVersion, testCase.ToVersion);
 
             var upgradeStatus = upgradeStatusQuery.Execute(ConnectionString);
@@ -51,14 +52,18 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             upgradeStatus.InProgress.ShouldBe(false);
 
             TestDatabaseShouldNoLongerContainUpgradeArtifacts();
-
         }
 
         private void Setup(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
         {
             var upgradeEngine = DeployChanges.To
                 .SqlDatabase(ConnectionString)
-                .WithScriptsFromFileSystem(Path.Combine(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath"), MigrationStep.Setup.FolderName), Encoding.UTF8)
+                .WithScriptsFromFileSystem(
+                    Path.Combine(
+                        MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath"),
+                        DatabaseEngine.SqlServer.ScriptsFolderName,
+                        MigrationStep.Setup.FolderName),
+                    Encoding.UTF8)
                 .WithTransactionPerScript()
                 .LogScriptOutput()
                 .JournalTo(new NullJournal())
@@ -72,7 +77,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
         {
             var upgradeEngine = DeployChanges.To
                 .SqlDatabase(ConnectionString)
-                .WithScriptsFromFileSystem(Path.Combine(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath"), MigrationStep.Cleanup.FolderName), Encoding.UTF8)
+                .WithScriptsFromFileSystem(
+                    Path.Combine(
+                        MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath"),
+                        DatabaseEngine.SqlServer.ScriptsFolderName,
+                        MigrationStep.Cleanup.FolderName),
+                    Encoding.UTF8)
                 .WithTransactionPerScript()
                 .LogScriptOutput()
                 .JournalTo(new NullJournal())
@@ -101,18 +111,21 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             {
                 connection.Open();
                 var upgradeArtifacts = connection.Query<string>(
-                        @"
+                    @"
                         SELECT OBJECT_NAME ([object_id])
                         FROM [sys].[objects]
                         WHERE [is_ms_shipped] = 0
                     ").ToList();
-                upgradeArtifacts.ShouldBeEmpty("Found unexpected objects after cleanup operation.  Ensure that all setup data created during migration is removed by the cleanup process");
+                upgradeArtifacts.ShouldBeEmpty(
+                    "Found unexpected objects after cleanup operation.  Ensure that all setup data created during migration is removed by the cleanup process");
             }
         }
+
         public class GlobalVersionUpgradeTestCase
         {
             public EdFiOdsVersion FromVersion { get; set; }
             public EdFiOdsVersion ToVersion { get; set; }
+
             public override string ToString()
             {
                 return $"v{FromVersion} => v{ToVersion}";

@@ -32,6 +32,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
 
             var v311ToV32Config = new MigrationConfigurationV311ToV32
             {
+                Engine = DatabaseEngine.SQLServer,
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),
@@ -41,6 +42,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v311_to_v33
 
             var v32ToV33Config = new MigrationConfigurationV32ToV33
             {
+                Engine = DatabaseEngine.SQLServer,
                 DatabaseConnectionString = ConnectionString,
                 BaseMigrationScriptFolderPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),

@@ -12,6 +12,7 @@ using Dapper;
 using DatabaseSchemaReader;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
@@ -24,8 +25,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 {
     public abstract class MigrationTestBase : DatabaseIntegrationTestBase
     {
-
-
         protected abstract DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; }
         protected abstract string TestDataDirectoryName { get; }
         protected virtual string OptionalTestSourceOdsBackupFullPath { get; } = null;
@@ -151,7 +150,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             if (SchemaMetadataCheckEnabled())
             {
                 var schemaMetadata = DatabaseSchemaCache.GetDatabaseSchema(TestToVersion);
-                schemaMetadata.AssertSchemaContainsAllExpectedObjects(ConnectionString, TestToVersion.Version);
+                schemaMetadata.AssertSchemaContainsAllExpectedObjects(new SqlServerDatabaseConnectionProvider(), ConnectionString, TestToVersion.Version);
             }
         }
 

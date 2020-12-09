@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
-using EdFi.Ods.Utilities.Migration.Providers;
 
 namespace EdFi.Ods.Utilities.Migration.MigrationManager
 {
@@ -23,6 +22,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             public OdsMigrationVersionRange VersionRange;
             public Type MigrationManagerType;
             public Type ConfigurationType;
+            public List<string> SupportedEngines;
         }
 
         public OdsMigrationManagerResolver()
@@ -42,12 +42,17 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 .ToList();
 
             migrationManagers.ForEach(RegisterMigrationManagerResolver);
-            _allMigrationManagerResolverConfigurations.Sort((x, y) => x.VersionRange.FromVersion.CompareTo(y.VersionRange.FromVersion));
+            _allMigrationManagerResolverConfigurations
+                .Sort((x, y) => x.VersionRange.FromVersion.CompareTo(y.VersionRange.FromVersion));
         }
 
         private void RegisterMigrationManagerResolver(Type migrationManager)
         {
-            var configurationType = GetConfigurationType(migrationManager);
+            var configurationType = migrationManager
+                .BaseType
+                .GetGenericArguments()
+                .First(t => t.BaseType == typeof(MigrationConfigurationVersionSpecific));
+
             var configuration = (MigrationConfigurationVersionSpecific) Activator.CreateInstance(configurationType);
 
             var resolverConfiguration = new OdsMigrationManagerResolverConfiguration
@@ -59,19 +64,11 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 },
                 MigrationManagerType = migrationManager,
                 ConfigurationType = configurationType,
+                SupportedEngines = configuration.SupportedEngines,
             };
 
             _allMigrationManagerResolverConfigurations.Add(resolverConfiguration);
             Validate(resolverConfiguration);
-        }
-
-        private Type GetConfigurationType(Type migrationManagerType)
-        {
-            var migrationManagerBaseType = migrationManagerType.BaseType;
-
-            return migrationManagerBaseType
-                .GetGenericArguments()
-                .First(t => t.BaseType == typeof(MigrationConfigurationVersionSpecific));
         }
 
         private void Validate(OdsMigrationManagerResolverConfiguration configuration)
@@ -82,8 +79,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     $"OdsMigrationManagerResolver configuration error:  Cannot upgrade API version {configuration.VersionRange.FromVersion.ApiVersion} to {configuration.VersionRange.ToVersion.ApiVersion}");
             }
 
-            var registeredFromVersions =
-                _allMigrationManagerResolverConfigurations.Count(x => x.VersionRange.FromVersion == configuration.VersionRange.FromVersion);
+            var registeredFromVersions = _allMigrationManagerResolverConfigurations
+                .Count(x => x.VersionRange.FromVersion == configuration.VersionRange.FromVersion);
 
             if (registeredFromVersions != 1)
             {
@@ -91,7 +88,8 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                     $"Found {registeredFromVersions} registered upgrade configurations from version {configuration.VersionRange.FromVersion}, but expected only 1");
             }
 
-            var registeredToVersions = _allMigrationManagerResolverConfigurations.Count(x => x.VersionRange.ToVersion == configuration.VersionRange.ToVersion);
+            var registeredToVersions = _allMigrationManagerResolverConfigurations
+                .Count(x => x.VersionRange.ToVersion == configuration.VersionRange.ToVersion);
 
             if (registeredToVersions != 1)
             {
@@ -100,65 +98,51 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             }
         }
 
-        public List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
-        {
-            return _allMigrationManagerResolverConfigurations
+        public List<OdsMigrationVersionRange> GetVersionRanges(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion) =>
+            _allMigrationManagerResolverConfigurations
                 .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)
                 .TakeWhile(x => x.VersionRange.ToVersion != toVersion)
                 .Union(_allMigrationManagerResolverConfigurations.Where(x => x.VersionRange.ToVersion == toVersion))
                 .Select(x => x.VersionRange)
                 .ToList();
-        }
 
-        public Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
-        {
-            return GetResolverConfiguration(fromVersion, toVersion)?.ConfigurationType;
-        }
+        public Type GetConfigurationType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion) =>
+            GetResolverConfiguration(fromVersion, toVersion)?.ConfigurationType;
 
-        public Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
-        {
-            return GetResolverConfiguration(fromVersion, toVersion)?.MigrationManagerType;
-        }
+        public Type GetMigrationManagerType(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion) =>
+            GetResolverConfiguration(fromVersion, toVersion)?.MigrationManagerType;
 
-        private OdsMigrationManagerResolverConfiguration GetResolverConfiguration(EdFiOdsVersion fromVersion, EdFiOdsVersion toVersion)
-        {
-            return _allMigrationManagerResolverConfigurations
+        private OdsMigrationManagerResolverConfiguration GetResolverConfiguration(EdFiOdsVersion fromVersion, EdFiOdsVersion _) =>
+            _allMigrationManagerResolverConfigurations
                 .First(x => x.VersionRange.FromVersion == fromVersion);
-        }
 
-        public List<EdFiOdsVersion> GetAllUpgradableVersions()
-        {
-            return _allMigrationManagerResolverConfigurations
+        public List<EdFiOdsVersion> GetAllUpgradableVersions(string engine = DatabaseEngine.SQLServer) =>
+            _allMigrationManagerResolverConfigurations
+                .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.FromVersion)
                 .ToList();
-        }
 
-        public List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion)
-        {
-            return _allMigrationManagerResolverConfigurations
+        public List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer) =>
+            _allMigrationManagerResolverConfigurations
+                .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)
                 .Select(x => x.VersionRange.ToVersion)
                 .ToList();
-        }
 
-        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion)
-        {
-            return GetSupportedUpgradeVersions(fromVersion)
-                .LastOrDefault();
-        }
-
-        public EdFiOdsVersion GetLatestSupportedUpgradeVersion()
-        {
-            return _allMigrationManagerResolverConfigurations
+        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(string engine = DatabaseEngine.SQLServer) =>
+            _allMigrationManagerResolverConfigurations
+                .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.ToVersion)
                 .LastOrDefault();
-        }
 
-        public bool VersionCanBeUpgraded(EdFiOdsVersion version)
-        {
-            return _allMigrationManagerResolverConfigurations
+        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer) =>
+            GetSupportedUpgradeVersions(fromVersion, engine)
+                .LastOrDefault();
+
+        public bool VersionCanBeUpgraded(EdFiOdsVersion version, string engine = DatabaseEngine.SQLServer) =>
+            _allMigrationManagerResolverConfigurations
+                .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.FromVersion)
                 .Contains(version);
-        }
     }
 }

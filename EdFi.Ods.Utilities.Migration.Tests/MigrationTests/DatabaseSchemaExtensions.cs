@@ -4,14 +4,12 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using DatabaseSchemaReader;
 using DatabaseSchemaReader.Compare;
 using DatabaseSchemaReader.DataSchema;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Providers;
-using EdFi.Ods.Utilities.Migration.Queries;
 using NUnit.Framework;
 using Shouldly;
 
@@ -19,11 +17,15 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
 {
     public static class DatabaseSchemaExtensions
     {
-        public static void AssertSchemaContainsAllExpectedObjects(this DatabaseSchema schemaMetadata,
-            string connectionString, EdFiOdsVersion version)
+        public static void AssertSchemaContainsAllExpectedObjects(
+            this DatabaseSchema schemaMetadata,
+            IDatabaseConnectionProvider databaseConnectionProvider,
+            string connectionString,
+            EdFiOdsVersion version
+            )
         {
             DatabaseSchema currentSchema;
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = databaseConnectionProvider.CreateConnection(connectionString))
             {
                 var reader = new DatabaseReader(conn);
                 currentSchema = reader.ReadAll();
@@ -34,7 +36,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests
             if (compareResult.Any())
                 Assert.Fail(FormatForLogMessage(compareResult));
 
-            var detectedVersion = new SqlServerCurrentOdsApiVersionProvider().Get(connectionString);
+            var detectedVersion =
+                new SqlServerCurrentOdsApiVersionProvider(new SqlServerDatabaseConnectionProvider()).Get(connectionString);
             detectedVersion.CurrentVersion.ShouldBe(version);
 
             bool CompareResultIsUnexpected(CompareResult result)
