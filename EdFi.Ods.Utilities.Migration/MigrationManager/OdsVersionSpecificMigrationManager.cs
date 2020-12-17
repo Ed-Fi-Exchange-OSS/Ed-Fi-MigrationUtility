@@ -197,7 +197,14 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             }
             else
             {
-                upgradeEngine.JournalToSqlTable("dbo", UpgradeJournalTableName);
+                if (_engine.DisplayName == DatabaseEngine.SQLServer)
+                {
+                    upgradeEngine.JournalToSqlTable("dbo", UpgradeJournalTableName);
+                }
+                else
+                {
+                    upgradeEngine.JournalToPostgresqlTable("public", UpgradeJournalTableName);
+                }
             }
 
             upgradeEngine.Build();
@@ -296,7 +303,12 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private static IEnumerable<string> GetScriptList(MigrationConfigurationVersionSpecific configuration)
         {
-            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories)
+            var engineFolderName = configuration.Engine == DatabaseEngine.SQLServer ? 
+                DatabaseEngine.SqlServer.ScriptsFolderName : 
+                DatabaseEngine.Postgres.ScriptsFolderName;
+
+            var path = Path.Combine(configuration.BaseMigrationScriptFolderPath, engineFolderName);
+            return Directory.GetFiles(path, "*.sql", SearchOption.AllDirectories)
                 .Select(Path.GetFileName);
         }
 
