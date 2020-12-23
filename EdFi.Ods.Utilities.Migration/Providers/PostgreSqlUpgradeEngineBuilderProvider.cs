@@ -11,5 +11,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
     public class PostgreSqlUpgradeEngineBuilderProvider : IUpgradeEngineBuilderProvider
     {
         public UpgradeEngineBuilder Get(string connectionString) => DeployChanges.To.PostgresqlDatabase(connectionString);
+
+        public void SetupJournalTable(UpgradeEngineBuilder upgradeEngine, string upgradeJournalTableName) => 
+            upgradeEngine.JournalToPostgresqlTable("public", upgradeJournalTableName);
     }
 }

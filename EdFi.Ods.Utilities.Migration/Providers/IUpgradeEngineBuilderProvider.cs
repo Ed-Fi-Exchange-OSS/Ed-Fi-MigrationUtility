@@ -10,5 +10,7 @@ namespace EdFi.Ods.Utilities.Migration.Providers
     public interface IUpgradeEngineBuilderProvider
     {
         UpgradeEngineBuilder Get(string connectionString);
+
+        void SetupJournalTable(UpgradeEngineBuilder upgradeEngine, string upgradeJournalTableName);
     }
 }

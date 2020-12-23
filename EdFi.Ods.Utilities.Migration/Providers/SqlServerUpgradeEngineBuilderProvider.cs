@@ -11,5 +11,8 @@ namespace EdFi.Ods.Utilities.Migration.Providers
     public class SqlServerUpgradeEngineBuilderProvider : IUpgradeEngineBuilderProvider
     {
         public UpgradeEngineBuilder Get(string connectionString) => DeployChanges.To.SqlDatabase(connectionString);
+
+        public void SetupJournalTable(UpgradeEngineBuilder upgradeEngine, string upgradeJournalTableName) =>
+            upgradeEngine.JournalToSqlTable("dbo", upgradeJournalTableName);
     }
 }
