@@ -3,8 +3,6 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Table edfi.EducationOrganizationIndicator --
 CREATE TABLE edfi.EducationOrganizationIndicator (
     EducationOrganizationId    INT          NOT NULL,
@@ -58,7 +56,7 @@ CREATE TABLE edfi.Person (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP NOT NULL,
     LastModifiedDate         TIMESTAMP NOT NULL,
-    Id                       UUID CONSTRAINT Person_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT Person_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT Person_PK PRIMARY KEY (PersonId, SourceSystemDescriptorId),
     CONSTRAINT FK_Person_SourceSystemDescriptor FOREIGN KEY (SourceSystemDescriptorId) REFERENCES edfi.SourceSystemDescriptor (SourceSystemDescriptorId)
 );
@@ -89,7 +87,7 @@ CREATE TABLE edfi.Survey (
     Discriminator              VARCHAR (128)   NULL,
     CreateDate                 TIMESTAMP       CONSTRAINT Survey_DF_CreateDate NOT NULL,
     LastModifiedDate           TIMESTAMP   CONSTRAINT Survey_DF_LastModifiedDate NOT NULL,
-    Id                         UUID CONSTRAINT Survey_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                         UUID CONSTRAINT Survey_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT Survey_PK PRIMARY KEY (Namespace, SurveyIdentifier),
     CONSTRAINT FK_Survey_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
     CONSTRAINT FK_Survey_SchoolYearType FOREIGN KEY (SchoolYear) REFERENCES edfi.SchoolYearType (SchoolYear),
@@ -128,7 +126,7 @@ CREATE TABLE edfi.SurveySection (
     Discriminator      VARCHAR (128)   NULL,
     CreateDate         TIMESTAMP       CONSTRAINT SurveySection_DF_CreateDate NOT NULL,
     LastModifiedDate   TIMESTAMP       CONSTRAINT SurveySection_DF_LastModifiedDate NOT NULL,
-    Id                 UUID CONSTRAINT SurveySection_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                 UUID CONSTRAINT SurveySection_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySection_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveySectionTitle),
     CONSTRAINT FK_SurveySection_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
@@ -153,7 +151,7 @@ CREATE TABLE edfi.SurveyCourseAssociation (
     Discriminator           VARCHAR (128)   NULL,
     CreateDate              TIMESTAMP       CONSTRAINT SurveyCourseAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate        TIMESTAMP       CONSTRAINT SurveyCourseAssociation_DF_LastModifiedDate NOT NULL,
-    Id                      UUID CONSTRAINT SurveyCourseAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                      UUID CONSTRAINT SurveyCourseAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyCourseAssociation_PK PRIMARY KEY (CourseCode, EducationOrganizationId, Namespace, SurveyIdentifier),
     CONSTRAINT FK_SurveyCourseAssociation_Course FOREIGN KEY (CourseCode, EducationOrganizationId) REFERENCES edfi.Course (CourseCode, EducationOrganizationId),
     CONSTRAINT FK_SurveyCourseAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
@@ -184,7 +182,7 @@ CREATE TABLE edfi.SurveyProgramAssociation (
     Discriminator           VARCHAR (128)   NULL,
     CreateDate              TIMESTAMP   	CONSTRAINT SurveyProgramAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate        TIMESTAMP   	CONSTRAINT SurveyProgramAssociation_DF_LastModifiedDate NOT NULL,
-    Id                      UUID CONSTRAINT SurveyProgramAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                      UUID CONSTRAINT SurveyProgramAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyProgramAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, ProgramName, ProgramTypeDescriptorId, SurveyIdentifier),
     CONSTRAINT FK_SurveyProgramAssociation_Program FOREIGN KEY (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId) REFERENCES edfi.Program (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId),
     CONSTRAINT FK_SurveyProgramAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
@@ -217,7 +215,7 @@ CREATE TABLE edfi.SurveyQuestion (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP   	 CONSTRAINT SurveyQuestion_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP   	 CONSTRAINT SurveyQuestion_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveyQuestion_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveyQuestion_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyQuestion_PK PRIMARY KEY (Namespace, QuestionCode, SurveyIdentifier),
     CONSTRAINT FK_SurveyQuestion_QuestionFormDescriptor FOREIGN KEY (QuestionFormDescriptorId) REFERENCES edfi.QuestionFormDescriptor (QuestionFormDescriptorId),
     CONSTRAINT FK_SurveyQuestion_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier),
@@ -278,7 +276,7 @@ CREATE TABLE edfi.SurveyResponse (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveyResponse_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyResponse_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveyResponse_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveyResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponse_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier),
     CONSTRAINT FK_SurveyResponse_Parent FOREIGN KEY (ParentUSI) REFERENCES edfi.Parent (ParentUSI),
     CONSTRAINT FK_SurveyResponse_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
@@ -319,7 +317,7 @@ CREATE TABLE edfi.SurveyQuestionResponse (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveyQuestionResponse_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyQuestionResponse_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveyQuestionResponse_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveyQuestionResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyQuestionResponse_PK PRIMARY KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier),
     CONSTRAINT FK_SurveyQuestionResponse_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier),
     CONSTRAINT FK_SurveyQuestionResponse_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
@@ -410,7 +408,7 @@ CREATE TABLE edfi.SurveyResponseEducationOrganizationTargetAssociation (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP   	 CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier),
     CONSTRAINT FK_SurveyResponseEducationOrganizationTargetAssociation_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
     CONSTRAINT FK_SurveyResponseEducationOrganizationTargetAssociation_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
@@ -440,7 +438,7 @@ CREATE TABLE edfi.SurveyResponseStaffTargetAssociation (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveyResponseStaffTargetAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyResponseStaffTargetAssociation_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveyResponseStaffTargetAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveyResponseStaffTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponseStaffTargetAssociation_PK PRIMARY KEY (Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier),
     CONSTRAINT FK_SurveyResponseStaffTargetAssociation_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
     CONSTRAINT FK_SurveyResponseStaffTargetAssociation_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
@@ -496,7 +494,7 @@ CREATE TABLE edfi.SurveySectionAssociation (
     Discriminator     VARCHAR (128)   NULL,
     CreateDate        TIMESTAMP       CONSTRAINT SurveySectionAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate  TIMESTAMP       CONSTRAINT SurveySectionAssociation_DF_LastModifiedDate NOT NULL,
-    Id                UUID CONSTRAINT SurveySectionAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                UUID CONSTRAINT SurveySectionAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionAssociation_PK PRIMARY KEY (LocalCourseCode, Namespace, SchoolId, SchoolYear, SectionIdentifier, SessionName, SurveyIdentifier),
     CONSTRAINT FK_SurveySectionAssociation_Section FOREIGN KEY (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) REFERENCES edfi.Section (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) ON UPDATE CASCADE,
     CONSTRAINT FK_SurveySectionAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
@@ -527,7 +525,7 @@ CREATE TABLE edfi.SurveySectionResponse (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveySectionResponse_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveySectionResponse_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveySectionResponse_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveySectionResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponse_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
     CONSTRAINT FK_SurveySectionResponse_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier),
     CONSTRAINT FK_SurveySectionResponse_SurveySection FOREIGN KEY (Namespace, SurveyIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySection (Namespace, SurveyIdentifier, SurveySectionTitle)
@@ -558,7 +556,7 @@ CREATE TABLE edfi.SurveySectionResponseEducationOrganizationTargetAssociation (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
     CONSTRAINT FK_SurveySecRespEdOrgTargetAss_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
     CONSTRAINT FK_SurveySecRespEdOrgTargetAss_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
@@ -589,7 +587,7 @@ CREATE TABLE edfi.SurveySectionResponseStaffTargetAssociation (
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP   	CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP   	CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_LastModifiedDate NOT NULL,
-    Id                       UUID CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_Id DEFAULT uuid_generate_v1() NOT NULL,
+    Id                       UUID CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponseStaffTargetAssociation_PK PRIMARY KEY (Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
     CONSTRAINT FK_SurveySecRespStaffTargetAss_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
     CONSTRAINT FK_SurveySecRespStaffTargetAss_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
