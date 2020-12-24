@@ -197,7 +197,7 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             }
             else
             {
-                upgradeEngine.JournalToSqlTable("dbo", UpgradeJournalTableName);
+                _upgradeEngineBuilderProvider.SetupJournalTable(upgradeEngine, UpgradeJournalTableName);
             }
 
             upgradeEngine.Build();
@@ -296,7 +296,11 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
 
         private static IEnumerable<string> GetScriptList(MigrationConfigurationVersionSpecific configuration)
         {
-            return Directory.GetFiles(configuration.BaseMigrationScriptFolderPath, "*.sql", SearchOption.AllDirectories)
+            DatabaseEngine engine = DatabaseEngine.TryParseEngine(configuration.Engine);
+
+            var path = Path.Combine(configuration.BaseMigrationScriptFolderPath, engine.ScriptsFolderName);
+
+            return Directory.GetFiles(path, "*.sql", SearchOption.AllDirectories)
                 .Select(Path.GetFileName);
         }
 
