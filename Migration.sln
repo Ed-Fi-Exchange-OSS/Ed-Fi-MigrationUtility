@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Project Information", "_Pr
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.Ods.Utilities.Migration.PostgreSql.Tests", "EdFi.Ods.Utilities.Migration.PostgreSql.Tests\EdFi.Ods.Utilities.Migration.PostgreSql.Tests.csproj", "{A3C17A40-6768-4D1C-9E59-4AEA5F5C08E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{F5A46373-C26B-4EB2-8163-4C2D7DCBA457}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5A46373-C26B-4EB2-8163-4C2D7DCBA457}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5A46373-C26B-4EB2-8163-4C2D7DCBA457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C17A40-6768-4D1C-9E59-4AEA5F5C08E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C17A40-6768-4D1C-9E59-4AEA5F5C08E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C17A40-6768-4D1C-9E59-4AEA5F5C08E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C17A40-6768-4D1C-9E59-4AEA5F5C08E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
