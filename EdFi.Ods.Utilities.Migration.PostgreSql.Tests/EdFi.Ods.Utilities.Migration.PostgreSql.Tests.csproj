@@ -18,9 +18,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EdFi.Ods.Utilities.Migration\EdFi.Ods.Utilities.Migration.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Autofac" Version="6.0.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
     <PackageReference Include="DatabaseSchemaReader" Version="2.7.4" />
@@ -41,6 +38,9 @@
     <None Include="MigrationTests/**/*.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EdFi.Ods.Utilities.Migration\EdFi.Ods.Utilities.Migration.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

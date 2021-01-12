@@ -48,8 +48,8 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests.all_versi
 
             var odsApiFileSystemJournalEntries = allScripts.Select(
                     s => DatabaseScriptJournalEntry.FromRelativeFilePath(Path.GetFullPath(s).Substring(relativePathStartIndex)))
-                // Only worrying about MsSql for now
-                .Where(se => se.DatabaseEngine == "MsSql")
+                // Only worrying about PgSql for now
+                .Where(se => se.DatabaseEngine == "PgSql")
                 .ToHashSet();
 
             var latestMigrationUtilityVersionJournal = new EdFiOdsVersionJournal(latestVersion);

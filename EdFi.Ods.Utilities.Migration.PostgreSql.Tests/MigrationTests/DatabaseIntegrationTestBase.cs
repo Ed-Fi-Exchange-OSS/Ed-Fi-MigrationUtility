@@ -36,21 +36,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
 
         protected void DropTestDatabase()
         {
-            var dropDatabaseSql = $@"
-            IF EXISTS 
-            (
-                SELECT 1 
-                FROM pg_catalog.pg_database 
-                WHERE datname = N'{DatabaseName}'
-            )
-            BEGIN
-                --IF DATABASEPROPERTYEX('{DatabaseName}', 'Status') != 'RESTORING'
-                --BEGIN
-                    --ALTER DATABASE [{DatabaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
-                --END
-                DROP DATABASE [{DatabaseName}]
-            END
-            ";
+            var dropDatabaseSql = $@"DROP DATABASE IF EXISTS {DatabaseName}";
 
             using (var connection = new NpgsqlConnection(MigrationTestSettingsProvider.GetConnectionString("RestoreBackupOnly")))
             {
@@ -65,7 +51,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
             using (var connection = new NpgsqlConnection(MigrationTestSettingsProvider.GetConnectionString("RestoreBackupOnly")))
             {
                 ShowStatusMessage("Creating empty test database");
-                connection.Execute($"CREATE DATABASE [{DatabaseName}]", commandTimeout: SqlCommandTimeout);
+                connection.Execute($"CREATE DATABASE {DatabaseName}", commandTimeout: SqlCommandTimeout);
                 connection.Close();
             }
         }
@@ -132,7 +118,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
                     WHERE database_id = DB_ID('{DatabaseName}')
                     AND file_id = 2
 
-                    RESTORE DATABASE [{DatabaseName}]
+                    RESTORE DATABASE {DatabaseName}
                     FROM DISK = N'{fullBackupFilePath}'
                     WITH
                         FILE = 1,
