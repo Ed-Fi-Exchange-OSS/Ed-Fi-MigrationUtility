@@ -7,7 +7,7 @@ CREATE TABLE tracked_deletes_edfi.IndicatorDescriptor (
     IndicatorDescriptorId INT              NOT NULL,
     Id                    CHAR(36) NOT NULL,
     ChangeVersion         BIGINT           NOT NULL,
-    CONSTRAINT PK_IndicatorDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_IndicatorDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -15,7 +15,7 @@ CREATE TABLE tracked_deletes_edfi.IndicatorGroupDescriptor (
     IndicatorGroupDescriptorId INT              NOT NULL,
     Id                         CHAR(36) NOT NULL,
     ChangeVersion              BIGINT           NOT NULL,
-    CONSTRAINT PK_IndicatorGroupDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_IndicatorGroupDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -23,7 +23,7 @@ CREATE TABLE tracked_deletes_edfi.IndicatorLevelDescriptor (
     IndicatorLevelDescriptorId INT              NOT NULL,
     Id                         CHAR(36) NOT NULL,
     ChangeVersion              BIGINT           NOT NULL,
-    CONSTRAINT PK_IndicatorLevelDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_IndicatorLevelDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -32,7 +32,7 @@ CREATE TABLE tracked_deletes_edfi.Person (
     SourceSystemDescriptorId INT              NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_Person PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_Person PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -40,7 +40,7 @@ CREATE TABLE tracked_deletes_edfi.QuestionFormDescriptor (
     QuestionFormDescriptorId INT              NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_QuestionFormDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_QuestionFormDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -48,7 +48,7 @@ CREATE TABLE tracked_deletes_edfi.SourceSystemDescriptor (
     SourceSystemDescriptorId INT              NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SourceSystemDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SourceSystemDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -57,15 +57,15 @@ CREATE TABLE tracked_deletes_edfi.Survey (
     SurveyIdentifier VARCHAR (60)    NOT NULL,
     Id               CHAR(36) NOT NULL,
     ChangeVersion    BIGINT           NOT NULL,
-    CONSTRAINT PK_Survey PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_Survey PRIMARY KEY (ChangeVersion )
 );
 
 
-CREATE TABLE tracked_deletes_edfi.SurveyCateryDescriptor (
-    SurveyCateryDescriptorId INT              NOT NULL,
+CREATE TABLE tracked_deletes_edfi.SurveyCategoryDescriptor (
+    SurveyCategoryDescriptorId INT              NOT NULL,
     Id                         CHAR(36) NOT NULL,
     ChangeVersion              BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyCateryDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyCategoryDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -76,7 +76,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyCourseAssociation (
     SurveyIdentifier        VARCHAR (60)    NOT NULL,
     Id                      CHAR(36) NOT NULL,
     ChangeVersion           BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyCourseAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyCourseAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -84,7 +84,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyLevelDescriptor (
     SurveyLevelDescriptorId INT              NOT NULL,
     Id                      CHAR(36) NOT NULL,
     ChangeVersion           BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyLevelDescriptor PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyLevelDescriptor PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -96,7 +96,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyProgramAssociation (
     SurveyIdentifier        VARCHAR (60)    NOT NULL,
     Id                      CHAR(36) NOT NULL,
     ChangeVersion           BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyProgramAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyProgramAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -106,7 +106,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyQuestion (
     SurveyIdentifier VARCHAR (60)    NOT NULL,
     Id               CHAR(36) NOT NULL,
     ChangeVersion    BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyQuestion PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyQuestion PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -117,7 +117,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyQuestionResponse (
     SurveyResponseIdentifier VARCHAR (60)    NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyQuestionResponse PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyQuestionResponse PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -127,7 +127,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyResponse (
     SurveyResponseIdentifier VARCHAR (60)    NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyResponse PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyResponse PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -138,7 +138,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyResponseEducationOrganizationTargetAssoc
     SurveyResponseIdentifier VARCHAR (60)    NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyResponseEducationOrganizationTargetAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyResponseEducationOrganizationTargetAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -149,7 +149,7 @@ CREATE TABLE tracked_deletes_edfi.SurveyResponseStaffTargetAssociation (
     SurveyResponseIdentifier VARCHAR (60)    NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveyResponseStaffTargetAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveyResponseStaffTargetAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -159,7 +159,7 @@ CREATE TABLE tracked_deletes_edfi.SurveySection (
     SurveySectionTitle VARCHAR (255)   NOT NULL,
     Id                 CHAR(36) NOT NULL,
     ChangeVersion      BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveySection PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveySection PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -173,7 +173,7 @@ CREATE TABLE tracked_deletes_edfi.SurveySectionAssociation (
     SurveyIdentifier  VARCHAR (60)    NOT NULL,
     Id                CHAR(36) NOT NULL,
     ChangeVersion     BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveySectionAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveySectionAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -184,7 +184,7 @@ CREATE TABLE tracked_deletes_edfi.SurveySectionResponse (
     SurveySectionTitle       VARCHAR (255)   NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveySectionResponse PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveySectionResponse PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -196,7 +196,7 @@ CREATE TABLE tracked_deletes_edfi.SurveySectionResponseEducationOrganizationTarg
     SurveySectionTitle       VARCHAR (255)   NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveySectionResponseEducationOrganizationTargetAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveySectionResponseEducationOrganizationTargetAssociation PRIMARY KEY (ChangeVersion )
 );
 
 
@@ -208,7 +208,7 @@ CREATE TABLE tracked_deletes_edfi.SurveySectionResponseStaffTargetAssociation (
     SurveySectionTitle       VARCHAR (255)   NOT NULL,
     Id                       CHAR(36) NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_SurveySectionResponseStaffTargetAssociation PRIMARY KEY (ChangeVersion ASC)
+    CONSTRAINT PK_SurveySectionResponseStaffTargetAssociation PRIMARY KEY (ChangeVersion )
 );
 
 

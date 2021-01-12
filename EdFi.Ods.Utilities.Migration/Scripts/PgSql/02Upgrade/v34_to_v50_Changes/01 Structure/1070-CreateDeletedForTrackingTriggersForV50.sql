@@ -163,7 +163,7 @@ $$
 BEGIN
  INSERT INTO tracked_deletes_edfi.Survey(Namespace, SurveyIdentifier, Id, ChangeVersion)
     SELECT  Namespace, SurveyIdentifier, Id, nextval('changes.ChangeVersionSequence')
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -186,7 +186,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.Survey u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -199,26 +198,26 @@ FOR EACH ROW
 EXECUTE PROCEDURE edfi_Survey_after_update();
 
 
--- edfi_SurveyCateryDescriptor_TR_DeleteTracking---
-CREATE OR REPLACE FUNCTION edfi_SurveyCateryDescriptor_after_delete()
+-- edfi_SurveyCategoryDescriptor_TR_DeleteTracking---
+CREATE OR REPLACE FUNCTION edfi_SurveyCategoryDescriptor_after_delete()
   RETURNS trigger AS
 $$
 BEGIN
-INSERT INTO tracked_deletes_edfi.SurveyCateryDescriptor(SurveyCateryDescriptorId, Id, ChangeVersion)
-    SELECT  d.SurveyCateryDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+INSERT INTO tracked_deletes_edfi.SurveyCategoryDescriptor(SurveyCategoryDescriptorId, Id, ChangeVersion)
+    SELECT  d.SurveyCategoryDescriptorId, Id, nextval('changes.ChangeVersionSequence')
     FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.SurveyCateryDescriptorId = b.DescriptorId;
+            INNER JOIN edfi.Descriptor b ON d.SurveyCategoryDescriptorId = b.DescriptorId;
 RETURN NEW;
 END;
 
 $$
 LANGUAGE 'plpgsql';
 
-CREATE TRIGGER edfi_SurveyCateryDescriptor_TR_DeleteTracking 
+CREATE TRIGGER edfi_SurveyCategoryDescriptor_TR_DeleteTracking 
 AFTER DELETE 
-ON edfi.SurveyCateryDescriptor
+ON edfi.SurveyCategoryDescriptor
 FOR EACH ROW 
-EXECUTE PROCEDURE edfi_SurveyCateryDescriptor_after_delete();
+EXECUTE PROCEDURE edfi_SurveyCategoryDescriptor_after_delete();
 
 
 -- edfi_SurveyCourseAssociation_TR_DeleteTracking---
@@ -228,7 +227,7 @@ $$
 BEGIN
  INSERT INTO tracked_deletes_edfi.SurveyCourseAssociation(CourseCode, EducationOrganizationId, Namespace, SurveyIdentifier, Id, ChangeVersion)
     SELECT  CourseCode, EducationOrganizationId, Namespace, SurveyIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -251,7 +250,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyCourseAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -272,7 +270,7 @@ BEGIN
  INSERT INTO tracked_deletes_edfi.SurveyLevelDescriptor(SurveyLevelDescriptorId, Id, ChangeVersion)
   SELECT  d.SurveyLevelDescriptorId, Id, (nextval('changes.ChangeVersionSequence'))
     FROM    deleted d
-    INNER JOIN edfi.Descriptor b ON d.SurveyLevelDescriptorId = b.DescriptorId
+    INNER JOIN edfi.Descriptor b ON d.SurveyLevelDescriptorId = b.DescriptorId;
 RETURN NEW;
 END;
 
@@ -293,7 +291,7 @@ $$
 BEGIN
 INSERT INTO tracked_deletes_edfi.SurveyProgramAssociation(EducationOrganizationId, Namespace, ProgramName, ProgramTypeDescriptorId, SurveyIdentifier, Id, ChangeVersion)
     SELECT  EducationOrganizationId, Namespace, ProgramName, ProgramTypeDescriptorId, SurveyIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -337,7 +335,7 @@ $$
 BEGIN
   INSERT INTO tracked_deletes_edfi.SurveyQuestion(Namespace, QuestionCode, SurveyIdentifier, Id, ChangeVersion)
     SELECT  Namespace, QuestionCode, SurveyIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -361,7 +359,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyQuestion u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -382,7 +379,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveyQuestionResponse(Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier, Id, ChangeVersion)
     SELECT  Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -405,7 +402,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyQuestionResponse u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -425,7 +421,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveyResponse(Namespace, SurveyIdentifier, SurveyResponseIdentifier, Id, ChangeVersion)
     SELECT  Namespace, SurveyIdentifier, SurveyResponseIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -447,7 +443,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyResponse u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -466,7 +461,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveyResponseEducationOrganizationTargetAssociation(EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, Id, ChangeVersion)
     SELECT  EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -489,7 +484,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyResponseEducationOrganizationTargetAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -509,7 +503,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveyResponseStaffTargetAssociation(Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, Id, ChangeVersion)
     SELECT  Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -532,7 +526,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveyResponseStaffTargetAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -552,7 +545,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveySection(Namespace, SurveyIdentifier, SurveySectionTitle, Id, ChangeVersion)
     SELECT  Namespace, SurveyIdentifier, SurveySectionTitle, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -574,7 +567,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveySection u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -595,7 +587,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveySectionAssociation(LocalCourseCode, Namespace, SchoolId, SchoolYear, SectionIdentifier, SessionName, SurveyIdentifier, Id, ChangeVersion)
     SELECT  LocalCourseCode, Namespace, SchoolId, SchoolYear, SectionIdentifier, SessionName, SurveyIdentifier, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -617,7 +609,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveySectionAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -636,7 +627,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveySectionResponse(Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, ChangeVersion)
     SELECT  Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -658,7 +649,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveySectionResponse u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -671,25 +661,25 @@ FOR EACH ROW
 EXECUTE PROCEDURE edfi_SurveySectionResponse_after_update();
 
 
--- edfi_SurveySectionResponseEducationOrganizationTargetAssociation_TR_DeleteTracking---
-CREATE OR REPLACE FUNCTION edfi_SurveySectionResponseEducationOrganizationTargetAssociation_after_delete()
+-- edfi_SurveySectionResponseEduOrgTargetAssociation_TR_DeleteTracking---
+CREATE OR REPLACE FUNCTION edfi_SurveySectionResponseEduOrgTargetAssociation_after_delete()
   RETURNS trigger AS
 $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveySectionResponseEducationOrganizationTargetAssociation(EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, ChangeVersion)
     SELECT  EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
 $$
 LANGUAGE 'plpgsql';
 
-CREATE TRIGGER edfi_SurveySectionResponseEducationOrganizationTargetAssociation_TR_DeleteTracking 
+CREATE TRIGGER edfi_SurveySectionResponseEduOrgTargetAssociation_TR_DeleteTracking 
 AFTER DELETE 
 ON edfi.SurveySectionResponseEducationOrganizationTargetAssociation
 FOR EACH ROW 
-EXECUTE PROCEDURE edfi_SurveySectionResponseEducationOrganizationTargetAssociation_after_delete();
+EXECUTE PROCEDURE edfi_SurveySectionResponseEduOrgTargetAssociation_after_delete();
 
 -- edfi_SurveySectionResponseEducationOrganizationTargetAssociation_TR_UpdateChangeVersion--
 CREATE OR REPLACE FUNCTION edfi_SurveySectionResponseEducationOrganizationTargetAssociation_after_update()
@@ -700,7 +690,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveySectionResponseEducationOrganizationTargetAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
@@ -720,7 +709,7 @@ $$
 BEGIN
     INSERT INTO tracked_deletes_edfi.SurveySectionResponseStaffTargetAssociation(Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, ChangeVersion)
     SELECT  Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle, Id, (nextval('changes.ChangeVersionSequence'))
-    FROM    deleted d
+    FROM    deleted d;
 RETURN NEW;
 END;
 
@@ -742,7 +731,6 @@ BEGIN
     SET ChangeVersion = (nextval('changes.ChangeVersionSequence'))
     FROM edfi.SurveySectionResponseStaffTargetAssociation u
     WHERE EXISTS (SELECT 1 FROM inserted i WHERE i.id = u.id);
-RETURN NEW;
 END;
 
 $$
