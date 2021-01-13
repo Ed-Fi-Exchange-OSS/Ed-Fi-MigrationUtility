@@ -242,7 +242,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
 
             var dbDeploy = new DatabaseDeploymentProvider();
 
-            dbDeploy.Deploy(version.DisplayName, "Deploy", "SQLServer", "ODS", ConnectionString);
+            dbDeploy.Deploy(version.DisplayName, "Deploy", "PostgreSQL", "ODS", ConnectionString);
         }
 
         private void LogScriptsDeployed(IEnumerable<DatabaseScriptJournalEntry> deployedDatabaseScriptJournalEntries)
@@ -250,20 +250,20 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 var hasJournalTable = conn.QueryFirstOrDefault<int?>(
-                    "select 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'DeployJournal' and TABLE_SCHEMA='dbo'");
+                    "SELECT 1 FROM information_schema.tables WHERE table_name = 'DeployJournal';");
 
                 if (!hasJournalTable.HasValue || hasJournalTable == 0)
                 {
                     conn.Execute(
-                        @"CREATE TABLE dbo.DeployJournal (
+                        @"CREATE TABLE DeployJournal (
                             Id int IDENTITY(1,1) NOT NULL,
                             ScriptName nvarchar(255) NOT NULL,
                             Applied datetime NOT NULL,
                             CONSTRAINT PK_DeployJournal_Id PRIMARY KEY CLUSTERED ([Id] ASC)
-                            )");
+                            );");
                 }
 
-                var existingDeployedScripts = conn.Query<string>("select ScriptName from dbo.DeployJournal").ToArray();
+                var existingDeployedScripts = conn.Query<string>("SELECT ScriptName FROM dbo.DeployJournal;").ToArray();
 
                 foreach (DatabaseScriptJournalEntry deployedDatabaseScriptJournalEntry in
                     deployedDatabaseScriptJournalEntries)
@@ -271,7 +271,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
                     if (!existingDeployedScripts.Contains(deployedDatabaseScriptJournalEntry.JournalScriptEntry))
                     {
                         conn.Execute(
-                            $"insert into dbo.DeployJournal (ScriptName, Applied) values ('{deployedDatabaseScriptJournalEntry.JournalScriptEntry}', getdate());");
+                            $"INSERT INTO DeployJournal (ScriptName, Applied) values ('{deployedDatabaseScriptJournalEntry.JournalScriptEntry}', getdate());");
                     }
                 }
             }
@@ -385,19 +385,24 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
         {
             using (var connection = new NpgsqlConnection(ConnectionString))
             {
-                connection.Execute(@"IF OBJECT_ID(N'[dbo].[VersionLevel]', 'U') IS NULL
-                CREATE TABLE[dbo].[VersionLevel]
-                    (
-                    [ScriptSource][varchar](256) NOT NULL,
-                    [ScriptType][varchar](256) NOT NULL,
-                    [DatabaseType][varchar](256) NOT NULL,
-                    [SubType][varchar](1024) NULL,
-                    [VersionLevel][int] NOT NULL
-                    )
+                connection.Execute(@"
+                    IF NOT EXISTS (SELECT FROM information_schema.tables 
+                                    WHERE  table_schema = 'public'
+                                    AND    table_name   = 'VersionLevel') 
+                    THEN
+                        CREATE TABLE VersionLevel
+                            (
+                            ScriptSource varchar(256) NOT NULL,
+                            ScriptType varchar(256) NOT NULL,
+                            DatabaseType varchar(256) NOT NULL,
+                            SubType varchar(1024) NULL,
+                            VersionLevel int NOT NULL
+                            )
+                    END IF;
                 ");
 
                 connection.Execute(
-                    $"INSERT INTO [dbo].[VersionLevel] (ScriptSource, ScriptType, DatabaseType, SubType, VersionLevel) VALUES ('ED-FI-ODS', 'STRUCTURE', 'EDFI', '{subType}', {versionLevel})");
+                    $"INSERT INTO VersionLevel (ScriptSource, ScriptType, DatabaseType, SubType, VersionLevel) VALUES ('ED-FI-ODS', 'STRUCTURE', 'EDFI', '{subType}', {versionLevel});");
             }
         }
 
