@@ -6,9 +6,11 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Dapper;
 using DbUp;
@@ -88,83 +90,93 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
         {
             string filename = Path.GetFileName(fullBackupFilePath);
 
-            using (var connection = new NpgsqlConnection(MigrationTestSettingsProvider.GetConnectionString("RestoreBackupOnly")))
+            try
             {
-                connection.Open();
+                ShowStatusMessage($"Restoring database backup: {filename}");
+
+                string restoreCommand = $"pg_restore -h localhost -p 5432 -d {DatabaseName} -U postgres";
+
+                //pg_restore restore database with file create with pg_dump command
+                restoreCommand = $"{restoreCommand} {fullBackupFilePath}";
+
+                Execute(restoreCommand);
+                ShowStatusMessage($"Backup {filename} restored successfully");
+            }
+            catch (Exception ex)
+            {
+                ShowStatusMessage($"Backup restore of {filename} failed. Dropping database if it exists.");
 
                 try
                 {
-                    ShowStatusMessage($"Restoring database backup: {filename}");
+                    var dropDatabaseSql = $@"DROP DATABASE IF EXISTS {DatabaseName}";
 
-                    var fileList =
-                        connection.Query($"RESTORE FILELISTONLY FROM DISK = '{fullBackupFilePath}'")
-                                  .ToList();
-
-                    var sourceDataFileName = fileList.Where(f => f.FileId == 1).Select(f => f.LogicalName).Single();
-                    var sourceLogFileName = fileList.Where(f => f.FileId == 2).Select(f => f.LogicalName).Single();
-
-                    var restoreDatabaseSql = $@"
-
-                    DECLARE @testDbDataFile VARCHAR(MAX)
-                    DECLARE @testDbLogFile VARCHAR(MAX)
-
-                    SELECT @testDbDataFile = physical_name
-                    FROM sys.master_files
-                    WHERE database_id = DB_ID('{DatabaseName}')
-                    AND file_id = 1
-
-                    SELECT @testDbLogFile = physical_name
-                    FROM sys.master_files
-                    WHERE database_id = DB_ID('{DatabaseName}')
-                    AND file_id = 2
-
-                    RESTORE DATABASE {DatabaseName}
-                    FROM DISK = N'{fullBackupFilePath}'
-                    WITH
-                        FILE = 1,
-                        STATS = 5,
-                        REPLACE,
-                        MOVE '{sourceDataFileName}' TO @testDbDataFile,
-                        MOVE '{sourceLogFileName}' TO @testDbLogFile
-
-                    ";
-
-                    connection.Execute(restoreDatabaseSql, commandTimeout: SqlCommandTimeout);
-                    ShowStatusMessage($"Backup {filename} restored successfully");
-                }
-                catch (Exception ex)
-                {
-                    ShowStatusMessage($"Backup restore of {filename} failed. Dropping database if it exists.");
-
-                    try
+                    using (var connection = new NpgsqlConnection(MigrationTestSettingsProvider.GetConnectionString("RestoreBackupOnly")))
                     {
-                        connection.Execute(
-                            $@"
-                        IF EXISTS 
-                        (
-                            SELECT 1 
-                            FROM sys.databases 
-                            WHERE name = N'{DatabaseName}'
-                        )
-                        BEGIN
-                            DROP DATABASE [{DatabaseName}]
-                        END
-                        ");
-
-                        ShowStatusMessage($"Backup restore of {filename} failed. Test database has been removed. Msg: {ex.Message}");
-                    }
-                    catch
-                    {
-                        ShowStatusMessage($"Backup restore of {filename} failed, and test database could not be removed. Msg: {ex.Message}");
+                        connection.Execute(dropDatabaseSql);
+                        connection.Close();
                     }
 
-                    throw;
+                    ShowStatusMessage($"Backup restore of {filename} failed. Test database has been removed. Msg: {ex.Message}");
                 }
-                finally
+                catch
                 {
-                    connection.Close();
+                    ShowStatusMessage($"Backup restore of {filename} failed, and test database could not be removed. Msg: {ex.Message}");
                 }
+
+                throw;
             }
+        }
+
+        private void Execute(string restoreCommand)
+        {
+            string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
+            try
+            {
+                string batchContent = "";
+                batchContent += $"{restoreCommand}";
+
+                File.WriteAllText(batFilePath, batchContent, Encoding.ASCII);
+
+                ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+
+                using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
+                proc.WaitForExit();
+                var exit = proc.ExitCode;
+                proc.Close();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (File.Exists(batFilePath)) File.Delete(batFilePath);
+            }
+        }
+
+        private static ProcessStartInfo ProcessInfoByOS(string batFilePath)
+        {
+            ProcessStartInfo info;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                info = new ProcessStartInfo(batFilePath)
+                {
+                };
+            }
+            else
+            {
+                info = new ProcessStartInfo("sh")
+                {
+                    Arguments = $"{batFilePath}"
+                };
+            }
+
+            info.CreateNoWindow = true;
+            info.UseShellExecute = false;
+            info.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            info.RedirectStandardError = true;
+
+            return info;
         }
 
         protected IEnumerable<dynamic> GetTableContents(string tableNameWithSchema)
