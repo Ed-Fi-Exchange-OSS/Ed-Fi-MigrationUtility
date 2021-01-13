@@ -112,9 +112,8 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests.all_versi
                 connection.Open();
                 var upgradeArtifacts = connection.Query<string>(
                     @"
-                        SELECT OBJECT_NAME ([object_id])
-                        FROM [sys].[objects]
-                        WHERE [is_ms_shipped] = 0
+                        SELECT relname
+                        FROM pg_stat_user_tables 
                     ").ToList();
                 upgradeArtifacts.ShouldBeEmpty(
                     "Found unexpected objects after cleanup operation.  Ensure that all setup data created during migration is removed by the cleanup process");

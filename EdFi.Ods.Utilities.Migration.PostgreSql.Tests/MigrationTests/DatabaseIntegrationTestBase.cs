@@ -59,7 +59,7 @@ namespace EdFi.Ods.Utilities.Migration.PostgreSql.Tests.MigrationTests
         protected DatabaseUpgradeResult ExecuteAllSqlScriptsInDirectory(string fullPath)
         {
             var upgradeEngine = DeployChanges.To
-                                             .SqlDatabase(ConnectionString)
+                                             .PostgresqlDatabase(ConnectionString)
                                              .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                                              .Build();
 
