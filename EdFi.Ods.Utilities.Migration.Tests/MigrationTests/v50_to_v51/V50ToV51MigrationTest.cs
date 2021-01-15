@@ -36,7 +36,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.v50_to_v51
                 BaseMigrationScriptFolderPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(MigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),
                 BypassExtensionValidationCheck = false,
-                Timeout = SqlCommandTimeout
+                Timeout = SqlCommandTimeout,
+                Engine = DatabaseEngine.SQLServer
             };
 
             var migrationManager = new OdsMigrationManagerV50ToV51(config, versionConfiguration, MigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
