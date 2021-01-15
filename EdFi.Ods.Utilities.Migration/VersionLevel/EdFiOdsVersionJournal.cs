@@ -29,7 +29,9 @@ namespace EdFi.Ods.Utilities.Migration.VersionLevel
     {
         public string BaseVersionScriptPath { get; }
         public const string DefaultRelativeBaseScriptPath = "DatabaseReference";
-
+        public const string MsSqlSubPath = "EdFi.Ods.Standard\\Artifacts\\MsSql";
+        public const string PgSqlSubPath = "EdFi.Ods.Standard\\Artifacts\\PgSql";
+       
         public EdFiOdsVersionJournal(EdFiOdsVersion version)
         {
             BaseVersionScriptPath = GetDefaultVersionScriptPath(version);
@@ -54,19 +56,20 @@ namespace EdFi.Ods.Utilities.Migration.VersionLevel
             }
         }
 
-        public HashSet<DatabaseScriptJournalEntry> GetJournalEntries()
+        public HashSet<DatabaseScriptJournalEntry> GetJournalEntries(string databaseEngine = "MsSql")
         {
-            return GetJournalEntries(true);
+            return GetJournalEntries(true, databaseEngine);
         }
 
         public HashSet<DatabaseScriptJournalEntry> GetJournalEntriesWithoutFeatures()
         {
-            return GetJournalEntries(false);
+            return GetJournalEntries(false, "MsSql");
         }
 
-        private HashSet<DatabaseScriptJournalEntry> GetJournalEntries(bool includeFeatures)
+        private HashSet<DatabaseScriptJournalEntry> GetJournalEntries(bool includeFeatures, string databaseEngine)
         {
-            var allScripts = Directory.GetFiles(BaseVersionScriptPath, "*.sql", SearchOption.AllDirectories)
+            var scriptPath=Path.GetFullPath(Path.Combine(BaseVersionScriptPath, databaseEngine.Equals("MsSql", StringComparison.InvariantCultureIgnoreCase) ? MsSqlSubPath: PgSqlSubPath));
+            var allScripts = Directory.GetFiles(scriptPath, "*.sql", SearchOption.AllDirectories)
                 .OrderBy(f => f);
 
             int relativePathStartIndex = BaseVersionScriptPath.Length;
