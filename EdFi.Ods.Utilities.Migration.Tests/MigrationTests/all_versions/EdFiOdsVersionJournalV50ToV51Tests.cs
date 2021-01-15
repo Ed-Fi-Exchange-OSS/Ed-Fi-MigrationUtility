@@ -49,7 +49,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
                 })
                 .ToList().ToHashSet();
 
-            var result = PerformTestMigration();
+            PerformTestMigration();
 
             var deployJournalList = GetTableContents("[dbo].[DeployJournal]").Select(
                 x => new
@@ -57,10 +57,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
                     ScriptName = (string)x.ScriptName,
                 }).ToList().ToHashSet();
 
-
             odsApiFileSystemJournalEntries.SetEquals(deployJournalList).ShouldBeTrue(
               $"The JournalEntries scripts did not match the scripts available to the Migration Utility for latest version {latestVersion.DisplayName}.");
-
         }
 
         private static List<EdFiOdsVersion> GetVersionLevelConfigurationsUnderTest()
