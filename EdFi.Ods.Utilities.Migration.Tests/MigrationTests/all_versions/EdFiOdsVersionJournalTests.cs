@@ -20,17 +20,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
         private static readonly List<EdFiOdsVersion> VersionLevelConfigurationsUnderTest = GetVersionLevelConfigurationsUnderTest();
 
         [Test]
-        public void MigrationUtilityScriptsShouldBeUpToDateWithCurrentEdFiOdsBuildForSqlServer()
-        {
-            VerifyCurrentEdFiOdsBuild("MsSql");
-        }
-
-        [Test]
-        public void MigrationUtilityScriptsShouldBeUpToDateWithCurrentEdFiOdsBuildForPostGreSql()
-        {
-            VerifyCurrentEdFiOdsBuild("PgSql");
-        }
-        private void VerifyCurrentEdFiOdsBuild(string databaseEngine= "PgSql")
+        public void MigrationUtilityScriptsShouldBeUpToDateWithCurrentEdFiOdsBuild()
         {
             var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
 
@@ -59,12 +49,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
             var odsApiFileSystemJournalEntries = allScripts.Select(
                     s => DatabaseScriptJournalEntry.FromRelativeFilePath(Path.GetFullPath(s).Substring(relativePathStartIndex)))
                 // Only worrying about MsSql for now
-                .Where(se => se.DatabaseEngine == databaseEngine)
+                .Where(se => se.DatabaseEngine == "MsSql")
                 .ToHashSet();
 
             var latestMigrationUtilityVersionJournal = new EdFiOdsVersionJournal(latestVersion);
 
-            var latestVersionJournalEntries = latestMigrationUtilityVersionJournal.GetJournalEntries(databaseEngine).ToHashSet();
+            var latestVersionJournalEntries = latestMigrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
 
             latestVersionJournalEntries.SetEquals(odsApiFileSystemJournalEntries).ShouldBeTrue(
                 $"The scripts found in {currentEdFiOdsScriptDirectoryRoot} did not match the scripts available to the Migration Utility for latest version {latestVersion.DisplayName}.  The scripts missing were:\n{string.Join("\n", odsApiFileSystemJournalEntries.Except(latestVersionJournalEntries).Select(je => je.RelativeFilePath))}\nThe migration utility may no longer be up to date.  Please ensure that the latest referenced ODS version set in this test ({latestVersion}) is still correct, and then ensure that the migration utility has been brought up to date with the latest Ed-Fi-ODS changes.  Finally, bring the migration utility's scripts ({EdFiOdsVersionJournal.DefaultRelativeBaseScriptPath}) up to date with the Ed-Fi-ODS build to ensure that the [dbo].[DeploymentJournal] table will be updated with the correct script information.");
@@ -82,7 +72,5 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
                 .Distinct()
                 .ToList();
         }
-
-
     }
 }
