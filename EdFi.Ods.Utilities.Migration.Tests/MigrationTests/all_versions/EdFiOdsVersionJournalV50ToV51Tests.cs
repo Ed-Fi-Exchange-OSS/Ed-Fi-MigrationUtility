@@ -16,14 +16,14 @@ using Shouldly;
 namespace EdFi.Ods.Utilities.Migration.Tests.MigrationTests.all_versions
 {
     [TestFixture]
-    public class EdFiOdsVersionJournalV50ToV51Tests : V50ToV51MigrationTest
+    public class EdFiOdsVersionJournalLatestVersionTests : V50ToV51MigrationTest
     {
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.FullRestoreBeforeEveryTest;
 
         private static readonly List<EdFiOdsVersion> VersionLevelConfigurationsUnderTest = GetVersionLevelConfigurationsUnderTest();
 
         [Test]
-        public void MigrationUtilityScriptsShouldBeUpToDateWithJournalTests()
+        public void MigrationUtilityScriptsShouldBeUpToDateWithLatestVersionJournalEntries()
         {
             var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
             var latestVersionOverride = MigrationTestSettingsProvider.GetConfigVariable("LatestEdFiOdsUpgradeVersion");
