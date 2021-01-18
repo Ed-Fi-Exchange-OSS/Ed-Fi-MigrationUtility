@@ -3,6 +3,8 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
+GO
+
 CREATE TRIGGER [edfi].[edfi_IndicatorDescriptor_TR_DeleteTracking] ON [edfi].[IndicatorDescriptor] AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
