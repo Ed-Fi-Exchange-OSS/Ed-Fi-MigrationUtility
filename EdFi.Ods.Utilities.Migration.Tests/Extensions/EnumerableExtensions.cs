@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using EdFi.Ods.Utilities.Migration.Tests.MigrationTests.Models;
 using Shouldly;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.Extensions
