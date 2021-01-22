@@ -15,6 +15,6 @@ namespace EdFi.Ods.Utilities.Migration.Configuration
 
         public override string MigrationScriptVersionSpecificDirectoryName => "v34_to_v50";
 
-        public override List<string> SupportedEngines => new List<string> {DatabaseEngine.SQLServer};
+        public override List<string> SupportedEngines => new List<string> {DatabaseEngine.SQLServer, DatabaseEngine.PostgreSQL};
     }
 }

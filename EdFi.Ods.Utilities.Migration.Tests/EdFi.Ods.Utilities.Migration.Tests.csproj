@@ -48,18 +48,29 @@
     </PackageReference>
     <PackageReference Include="Respawn" Version="3.3.0" />
     <PackageReference Include="Shouldly" Version="4.0.0" />
-    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MigrationTests/**/*.sql">
+    <None Include="MsSql/MigrationTests/**/*.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="MigrationTests/**/*.csv">
+    <None Include="MsSql/MigrationTests/**/*.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PgSql\MigrationTests/**/*.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PgSql/MigrationTests/**/*.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.mssql.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.pgsql.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="log4net.config">

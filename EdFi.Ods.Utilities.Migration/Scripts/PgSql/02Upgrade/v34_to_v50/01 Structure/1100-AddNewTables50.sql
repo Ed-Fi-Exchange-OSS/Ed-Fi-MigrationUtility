@@ -13,24 +13,24 @@ CREATE TABLE edfi.EducationOrganizationIndicator (
     IndicatorGroupDescriptorId INT          NULL,
     CreateDate                 TIMESTAMP NOT NULL,
     CONSTRAINT EducationOrganizationIndicator_PK PRIMARY KEY (EducationOrganizationId, IndicatorDescriptorId),
-    CONSTRAINT FK_EducationOrganizationIndicator_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId) ON DELETE CASCADE,
-    CONSTRAINT FK_EducationOrganizationIndicator_IndicatorDescriptor FOREIGN KEY (IndicatorDescriptorId) REFERENCES edfi.IndicatorDescriptor (IndicatorDescriptorId),
-    CONSTRAINT FK_EducationOrganizationIndicator_IndicatorGroupDescriptor FOREIGN KEY (IndicatorGroupDescriptorId) REFERENCES edfi.IndicatorGroupDescriptor (IndicatorGroupDescriptorId),
-    CONSTRAINT FK_EducationOrganizationIndicator_IndicatorLevelDescriptor FOREIGN KEY (IndicatorLevelDescriptorId) REFERENCES edfi.IndicatorLevelDescriptor (IndicatorLevelDescriptorId)
+    CONSTRAINT fk_dde098_educationorganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId) ON DELETE CASCADE,
+    CONSTRAINT fk_dde098_IndicatorDescriptor FOREIGN KEY (IndicatorDescriptorId) REFERENCES edfi.IndicatorDescriptor (IndicatorDescriptorId),
+    CONSTRAINT fk_dde098_IndicatorGroupDescriptor FOREIGN KEY (IndicatorGroupDescriptorId) REFERENCES edfi.IndicatorGroupDescriptor (IndicatorGroupDescriptorId),
+    CONSTRAINT fk_dde098_IndicatorLevelDescriptor FOREIGN KEY (IndicatorLevelDescriptorId) REFERENCES edfi.IndicatorLevelDescriptor (IndicatorLevelDescriptorId)
 );
 
 ALTER TABLE edfi.EducationOrganizationIndicator ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_EducationOrganizationIndicator_EducationOrganization
+CREATE INDEX fk_dde098__EducationOrganization
     ON edfi.EducationOrganizationIndicator(EducationOrganizationId);
 
-CREATE INDEX FK_EducationOrganizationIndicator_IndicatorDescriptor
+CREATE INDEX fk_dde098__IndicatorDescriptor
     ON edfi.EducationOrganizationIndicator(IndicatorDescriptorId);
 
-CREATE INDEX FK_EducationOrganizationIndicator_IndicatorGroupDescriptor
+CREATE INDEX fk_dde098__IndicatorGroupDescriptor
     ON edfi.EducationOrganizationIndicator(IndicatorGroupDescriptorId);
 
-CREATE INDEX FK_EducationOrganizationIndicator_IndicatorLevelDescriptor
+CREATE INDEX fk_dde098__IndicatorLevelDescriptor
     ON edfi.EducationOrganizationIndicator(IndicatorLevelDescriptorId);
 
 -- Table edfi.EducationOrganizationIndicatorPeriod --
@@ -41,12 +41,12 @@ CREATE TABLE edfi.EducationOrganizationIndicatorPeriod (
     EndDate                 DATE          NULL,
     CreateDate              TIMESTAMP NOT NULL,
     CONSTRAINT EducationOrganizationIndicatorPeriod_PK PRIMARY KEY (BeginDate, EducationOrganizationId, IndicatorDescriptorId),
-    CONSTRAINT FK_EducationOrganizationIndicatorPeriod_EducationOrganizationIndicator FOREIGN KEY (EducationOrganizationId, IndicatorDescriptorId) REFERENCES edfi.EducationOrganizationIndicator (EducationOrganizationId, IndicatorDescriptorId) ON DELETE CASCADE
+    CONSTRAINT fk_8486ae_EducationOrganizationIndicator FOREIGN KEY (EducationOrganizationId, IndicatorDescriptorId) REFERENCES edfi.EducationOrganizationIndicator (EducationOrganizationId, IndicatorDescriptorId) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.EducationOrganizationIndicatorPeriod ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_EducationOrganizationIndicatorPeriod_EducationOrganizationIndicator
+CREATE INDEX fk_8486ae_EducationOrganizationIndicator
     ON edfi.EducationOrganizationIndicatorPeriod(EducationOrganizationId, IndicatorDescriptorId);
 
 -- Table edfi.Person --
@@ -58,14 +58,14 @@ CREATE TABLE edfi.Person (
     LastModifiedDate         TIMESTAMP NOT NULL,
     Id                       UUID CONSTRAINT Person_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT Person_PK PRIMARY KEY (PersonId, SourceSystemDescriptorId),
-    CONSTRAINT FK_Person_SourceSystemDescriptor FOREIGN KEY (SourceSystemDescriptorId) REFERENCES edfi.SourceSystemDescriptor (SourceSystemDescriptorId)
+    CONSTRAINT fk_6007db_SourceSystemDescriptor FOREIGN KEY (SourceSystemDescriptorId) REFERENCES edfi.SourceSystemDescriptor (SourceSystemDescriptorId)
 );
 
 
 ALTER TABLE edfi.Person ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.Person ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_Person_SourceSystemDescriptor
+CREATE INDEX fk_6007db_SourceSystemDescriptor
     ON edfi.Person(SourceSystemDescriptorId);
 
 
@@ -89,28 +89,28 @@ CREATE TABLE edfi.Survey (
     LastModifiedDate           TIMESTAMP   CONSTRAINT Survey_DF_LastModifiedDate NOT NULL,
     Id                         UUID CONSTRAINT Survey_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT Survey_PK PRIMARY KEY (Namespace, SurveyIdentifier),
-    CONSTRAINT FK_Survey_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
-    CONSTRAINT FK_Survey_SchoolYearType FOREIGN KEY (SchoolYear) REFERENCES edfi.SchoolYearType (SchoolYear),
-    CONSTRAINT FK_Survey_Session FOREIGN KEY (SchoolId, SchoolYear, SessionName) REFERENCES edfi.Session (SchoolId, SchoolYear, SessionName) ON UPDATE CASCADE,
-    CONSTRAINT FK_Survey_SurveyCategoryDescriptor FOREIGN KEY (SurveyCategoryDescriptorId) REFERENCES edfi.SurveyCategoryDescriptor (SurveyCategoryDescriptorId)
+    CONSTRAINT fk_211bb3_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
+    CONSTRAINT fk_211bb3_SchoolYearType FOREIGN KEY (SchoolYear) REFERENCES edfi.SchoolYearType (SchoolYear),
+    CONSTRAINT fk_211bb3_Session FOREIGN KEY (SchoolId, SchoolYear, SessionName) REFERENCES edfi.Session (SchoolId, SchoolYear, SessionName) ON UPDATE CASCADE,
+    CONSTRAINT fk_211bb3_SurveyCategoryDescriptor FOREIGN KEY (SurveyCategoryDescriptorId) REFERENCES edfi.SurveyCategoryDescriptor (SurveyCategoryDescriptorId)
 );
 
 ALTER TABLE edfi.Survey ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.Survey ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_Survey_EducationOrganization
+CREATE INDEX fk_211bb3_EducationOrganization
     ON edfi.Survey(EducationOrganizationId);
 
 
-CREATE INDEX FK_Survey_SchoolYearType
+CREATE INDEX fk_211bb3_SchoolYearType
     ON edfi.Survey(SchoolYear);
 
 
-CREATE INDEX FK_Survey_Session
+CREATE INDEX fk_211bb3_Session
     ON edfi.Survey(SchoolId, SchoolYear, SessionName);
 
 
-CREATE INDEX FK_Survey_SurveyCategoryDescriptor
+CREATE INDEX fk_211bb3_SurveyCategoryDescriptor
     ON edfi.Survey(SurveyCategoryDescriptorId);
 
 
@@ -128,13 +128,13 @@ CREATE TABLE edfi.SurveySection (
     LastModifiedDate   TIMESTAMP       CONSTRAINT SurveySection_DF_LastModifiedDate NOT NULL,
     Id                 UUID CONSTRAINT SurveySection_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySection_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveySectionTitle),
-    CONSTRAINT FK_SurveySection_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
+    CONSTRAINT fk_e5572a_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
 
 ALTER TABLE edfi.SurveySection ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveySection ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveySection_Survey
+CREATE INDEX fk_e5572a_Survey
     ON edfi.SurveySection(Namespace, SurveyIdentifier);
 
 
@@ -153,18 +153,18 @@ CREATE TABLE edfi.SurveyCourseAssociation (
     LastModifiedDate        TIMESTAMP       CONSTRAINT SurveyCourseAssociation_DF_LastModifiedDate NOT NULL,
     Id                      UUID CONSTRAINT SurveyCourseAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyCourseAssociation_PK PRIMARY KEY (CourseCode, EducationOrganizationId, Namespace, SurveyIdentifier),
-    CONSTRAINT FK_SurveyCourseAssociation_Course FOREIGN KEY (CourseCode, EducationOrganizationId) REFERENCES edfi.Course (CourseCode, EducationOrganizationId),
-    CONSTRAINT FK_SurveyCourseAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
+    CONSTRAINT fk_9f1246_Course FOREIGN KEY (CourseCode, EducationOrganizationId) REFERENCES edfi.Course (CourseCode, EducationOrganizationId),
+    CONSTRAINT fk_9f1246_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
 
 ALTER TABLE edfi.SurveyCourseAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyCourseAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyCourseAssociation_Course
+CREATE INDEX fk_9f1246_Course
     ON edfi.SurveyCourseAssociation(CourseCode, EducationOrganizationId);
 
 
-CREATE INDEX FK_SurveyCourseAssociation_Survey
+CREATE INDEX fk_9f1246_Survey
     ON edfi.SurveyCourseAssociation(Namespace, SurveyIdentifier);
 
 
@@ -184,19 +184,19 @@ CREATE TABLE edfi.SurveyProgramAssociation (
     LastModifiedDate        TIMESTAMP   	CONSTRAINT SurveyProgramAssociation_DF_LastModifiedDate NOT NULL,
     Id                      UUID CONSTRAINT SurveyProgramAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyProgramAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, ProgramName, ProgramTypeDescriptorId, SurveyIdentifier),
-    CONSTRAINT FK_SurveyProgramAssociation_Program FOREIGN KEY (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId) REFERENCES edfi.Program (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId),
-    CONSTRAINT FK_SurveyProgramAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
+    CONSTRAINT fk_e3e5a4_Program FOREIGN KEY (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId) REFERENCES edfi.Program (EducationOrganizationId, ProgramName, ProgramTypeDescriptorId),
+    CONSTRAINT fk_e3e5a4_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
 
 ALTER TABLE edfi.SurveyProgramAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyProgramAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
 
-CREATE INDEX FK_SurveyProgramAssociation_Program
+CREATE INDEX fk_e3e5a4_Program
     ON edfi.SurveyProgramAssociation(EducationOrganizationId, ProgramName, ProgramTypeDescriptorId);
 
 
-CREATE INDEX FK_SurveyProgramAssociation_Survey
+CREATE INDEX fk_e3e5a4_Survey
     ON edfi.SurveyProgramAssociation(Namespace, SurveyIdentifier);
 
 
@@ -217,23 +217,23 @@ CREATE TABLE edfi.SurveyQuestion (
     LastModifiedDate         TIMESTAMP   	 CONSTRAINT SurveyQuestion_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveyQuestion_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyQuestion_PK PRIMARY KEY (Namespace, QuestionCode, SurveyIdentifier),
-    CONSTRAINT FK_SurveyQuestion_QuestionFormDescriptor FOREIGN KEY (QuestionFormDescriptorId) REFERENCES edfi.QuestionFormDescriptor (QuestionFormDescriptorId),
-    CONSTRAINT FK_SurveyQuestion_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier),
-    CONSTRAINT FK_SurveyQuestion_SurveySection FOREIGN KEY (Namespace, SurveyIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySection (Namespace, SurveyIdentifier, SurveySectionTitle)
+    CONSTRAINT fk_1bb88c_QuestionFormDescriptor FOREIGN KEY (QuestionFormDescriptorId) REFERENCES edfi.QuestionFormDescriptor (QuestionFormDescriptorId),
+    CONSTRAINT fk_1bb88c_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier),
+    CONSTRAINT fk_1bb88c_SurveySection FOREIGN KEY (Namespace, SurveyIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySection (Namespace, SurveyIdentifier, SurveySectionTitle)
 );
 
 ALTER TABLE edfi.SurveyQuestion ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyQuestion ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestion_QuestionFormDescriptor
+CREATE INDEX fk_1bb88c_QuestionFormDescriptor
     ON edfi.SurveyQuestion(QuestionFormDescriptorId);
 
 
-CREATE INDEX FK_SurveyQuestion_Survey
+CREATE INDEX fk_1bb88c_Survey
     ON edfi.SurveyQuestion(Namespace, SurveyIdentifier);
 
 
-CREATE INDEX FK_SurveyQuestion_SurveySection
+CREATE INDEX fk_1bb88c_SurveySection
     ON edfi.SurveyQuestion(Namespace, SurveyIdentifier, SurveySectionTitle);
 
 
@@ -251,12 +251,12 @@ CREATE TABLE edfi.SurveyQuestionMatrix (
     MaxRawScore      INT           NULL,
     CreateDate       TIMESTAMP    CONSTRAINT SurveyQuestionMatrix_DF_CreateDate NOT NULL,
     CONSTRAINT SurveyQuestionMatrix_PK PRIMARY KEY (MatrixElement, Namespace, QuestionCode, SurveyIdentifier),
-    CONSTRAINT FK_SurveyQuestionMatrix_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier) ON DELETE CASCADE
+    CONSTRAINT fk_64d76d_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.SurveyQuestionMatrix ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestionMatrix_SurveyQuestion
+CREATE INDEX fk_64d76d_SurveyQuestion
     ON edfi.SurveyQuestionMatrix(Namespace, QuestionCode, SurveyIdentifier);
 
 
@@ -278,28 +278,28 @@ CREATE TABLE edfi.SurveyResponse (
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyResponse_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveyResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponse_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyResponse_Parent FOREIGN KEY (ParentUSI) REFERENCES edfi.Parent (ParentUSI),
-    CONSTRAINT FK_SurveyResponse_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
-    CONSTRAINT FK_SurveyResponse_Student FOREIGN KEY (StudentUSI) REFERENCES edfi.Student (StudentUSI),
-    CONSTRAINT FK_SurveyResponse_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
+    CONSTRAINT fk_8d6383_Parent FOREIGN KEY (ParentUSI) REFERENCES edfi.Parent (ParentUSI),
+    CONSTRAINT fk_8d6383_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
+    CONSTRAINT fk_8d6383_Student FOREIGN KEY (StudentUSI) REFERENCES edfi.Student (StudentUSI),
+    CONSTRAINT fk_8d6383_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
 
 ALTER TABLE edfi.SurveyResponse ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyResponse ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyResponse_Parent
+CREATE INDEX fk_8d6383_Parent
     ON edfi.SurveyResponse(ParentUSI);
 
 
-CREATE INDEX FK_SurveyResponse_Staff
+CREATE INDEX fk_8d6383_Staff
     ON edfi.SurveyResponse(StaffUSI);
 
 
-CREATE INDEX FK_SurveyResponse_Student
+CREATE INDEX fk_8d6383_Student
     ON edfi.SurveyResponse(StudentUSI);
 
 
-CREATE INDEX FK_SurveyResponse_Survey
+CREATE INDEX fk_8d6383_Survey
     ON edfi.SurveyResponse(Namespace, SurveyIdentifier);
 
 
@@ -312,25 +312,25 @@ CREATE TABLE edfi.SurveyQuestionResponse (
     QuestionCode             VARCHAR (60)    NOT NULL,
     SurveyIdentifier         VARCHAR (60)    NOT NULL,
     SurveyResponseIdentifier VARCHAR (60)    NOT NULL,
-    NoResponse               BIT             NULL,
+    NoResponse               BOOL             NULL,
     Comment                  VARCHAR (1024)  NULL,
     Discriminator            VARCHAR (128)   NULL,
     CreateDate               TIMESTAMP       CONSTRAINT SurveyQuestionResponse_DF_CreateDate NOT NULL,
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyQuestionResponse_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveyQuestionResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyQuestionResponse_PK PRIMARY KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyQuestionResponse_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier),
-    CONSTRAINT FK_SurveyQuestionResponse_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
+    CONSTRAINT fk_eddd02_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier),
+    CONSTRAINT fk_eddd02_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
 );
 
 ALTER TABLE edfi.SurveyQuestionResponse ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyQuestionResponse ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestionResponse_SurveyQuestion
+CREATE INDEX fk_eddd02_SurveyQuestion
     ON edfi.SurveyQuestionResponse(Namespace, QuestionCode, SurveyIdentifier);
 
 
-CREATE INDEX FK_SurveyQuestionResponse_SurveyResponse
+CREATE INDEX fk_eddd02_SurveyResponse
     ON edfi.SurveyQuestionResponse(Namespace, SurveyIdentifier, SurveyResponseIdentifier);
 
 
@@ -348,12 +348,12 @@ CREATE TABLE edfi.SurveyQuestionResponseChoice (
     TextValue        VARCHAR (255) NULL,
     CreateDate       TIMESTAMP     CONSTRAINT SurveyQuestionResponseChoice_DF_CreateDate NOT NULL,
     CONSTRAINT SurveyQuestionResponseChoice_PK PRIMARY KEY (Namespace, QuestionCode, SortOrder, SurveyIdentifier),
-    CONSTRAINT FK_SurveyQuestionResponseChoice_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier) ON DELETE CASCADE
+    CONSTRAINT fk_1c624b_SurveyQuestion FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier) REFERENCES edfi.SurveyQuestion (Namespace, QuestionCode, SurveyIdentifier) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.SurveyQuestionResponseChoice ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestionResponseChoice_SurveyQuestion
+CREATE INDEX fk_1c624b_SurveyQuestion
     ON edfi.SurveyQuestionResponseChoice(Namespace, QuestionCode, SurveyIdentifier);
 
 
@@ -366,17 +366,17 @@ CREATE TABLE edfi.SurveyQuestionResponseSurveyQuestionMatrixElementResponse (
     SurveyResponseIdentifier VARCHAR (60)   NOT NULL,
     NumericResponse          INT            NULL,
     TextResponse             VARCHAR (2048) NULL,
-    NoResponse               BIT            NULL,
+    NoResponse               BOOL           NULL,
     MinNumericResponse       INT            NULL,
     MaxNumericResponse       INT            NULL,
     CreateDate               TIMESTAMP      CONSTRAINT SurveyQuestionResponseSurveyQuestionMatrixElementResponse_DF_CreateDate NOT NULL,
     CONSTRAINT SurveyQuestionResponseSurveyQuestionMatrixElementResponse_PK PRIMARY KEY (MatrixElement, Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyQuestionResponseSurveyQuestionMatrixElementResponse_SurveyQuestionResponse FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyQuestionResponse (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
+    CONSTRAINT fk_048797_SurveyQuestionResponse FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyQuestionResponse (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.SurveyQuestionResponseSurveyQuestionMatrixElementResponse ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestionResponseSurveyQuestionMatrixElementResponse_SurveyQuestionResponse
+CREATE INDEX fk_048797_SurveyQuestionResponse
     ON edfi.SurveyQuestionResponseSurveyQuestionMatrixElementResponse(Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier);
 
 
@@ -391,12 +391,12 @@ CREATE TABLE edfi.SurveyQuestionResponseValue (
     TextResponse                          VARCHAR (2048) NULL,
     CreateDate                            TIMESTAMP      CONSTRAINT SurveyQuestionResponseValue_DF_CreateDate NOT NULL,
     CONSTRAINT SurveyQuestionResponseValue_PK PRIMARY KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyQuestionResponseValueIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyQuestionResponseValue_SurveyQuestionResponse FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyQuestionResponse (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
+    CONSTRAINT fk_d047f5_SurveyQuestionResponse FOREIGN KEY (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyQuestionResponse (Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.SurveyQuestionResponseValue ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyQuestionResponseValue_SurveyQuestionResponse
+CREATE INDEX fk_d047f5_SurveyQuestionResponse
     ON edfi.SurveyQuestionResponseValue(Namespace, QuestionCode, SurveyIdentifier, SurveyResponseIdentifier);
 
 -- Table edfi.SurveyResponseEducationOrganizationTargetAssociation --
@@ -410,18 +410,18 @@ CREATE TABLE edfi.SurveyResponseEducationOrganizationTargetAssociation (
     LastModifiedDate         TIMESTAMP   	 CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponseEducationOrganizationTargetAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyResponseEducationOrganizationTargetAssociation_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
-    CONSTRAINT FK_SurveyResponseEducationOrganizationTargetAssociation_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
+    CONSTRAINT fk_b2bd0a_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
+    CONSTRAINT fk_b2bd0a_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
 );
 
 ALTER TABLE edfi.SurveyResponseEducationOrganizationTargetAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyResponseEducationOrganizationTargetAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyResponseEducationOrganizationTargetAssociation_EducationOrganization
+CREATE INDEX fk_b2bd0a_EducationOrganization
     ON edfi.SurveyResponseEducationOrganizationTargetAssociation(EducationOrganizationId);
 
 
-CREATE INDEX FK_SurveyResponseEducationOrganizationTargetAssociation_SurveyResponse
+CREATE INDEX fk_b2bd0a_SurveyResponse
     ON edfi.SurveyResponseEducationOrganizationTargetAssociation(Namespace, SurveyIdentifier, SurveyResponseIdentifier);
 
 
@@ -440,18 +440,18 @@ CREATE TABLE edfi.SurveyResponseStaffTargetAssociation (
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveyResponseStaffTargetAssociation_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveyResponseStaffTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveyResponseStaffTargetAssociation_PK PRIMARY KEY (Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyResponseStaffTargetAssociation_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
-    CONSTRAINT FK_SurveyResponseStaffTargetAssociation_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
+    CONSTRAINT fk_f9457e_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
+    CONSTRAINT fk_f9457e_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier)
 );
 
 ALTER TABLE edfi.SurveyResponseStaffTargetAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveyResponseStaffTargetAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyResponseStaffTargetAssociation_Staff
+CREATE INDEX fk_f9457e_Staff
     ON edfi.SurveyResponseStaffTargetAssociation(StaffUSI);
 
 
-CREATE INDEX FK_SurveyResponseStaffTargetAssociation_SurveyResponse
+CREATE INDEX fk_f9457e_SurveyResponse
     ON edfi.SurveyResponseStaffTargetAssociation(Namespace, SurveyIdentifier, SurveyResponseIdentifier);
 
 
@@ -467,17 +467,17 @@ CREATE TABLE edfi.SurveyResponseSurveyLevel (
     SurveyResponseIdentifier VARCHAR (60)  NOT NULL,
     CreateDate               TIMESTAMP 	   CONSTRAINT SurveyResponseSurveyLevel_DF_CreateDate NOT NULL,
     CONSTRAINT SurveyResponseSurveyLevel_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveyLevelDescriptorId, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveyResponseSurveyLevel_SurveyLevelDescriptor FOREIGN KEY (SurveyLevelDescriptorId) REFERENCES edfi.SurveyLevelDescriptor (SurveyLevelDescriptorId),
-    CONSTRAINT FK_SurveyResponseSurveyLevel_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
+    CONSTRAINT fk_03f044_SurveyLevelDescriptor FOREIGN KEY (SurveyLevelDescriptorId) REFERENCES edfi.SurveyLevelDescriptor (SurveyLevelDescriptorId),
+    CONSTRAINT fk_03f044_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier) ON DELETE CASCADE
 );
 
 ALTER TABLE edfi.SurveyResponseSurveyLevel ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveyResponseSurveyLevel_SurveyLevelDescriptor
+CREATE INDEX fk_03f044_SurveyLevelDescriptor
     ON edfi.SurveyResponseSurveyLevel(SurveyLevelDescriptorId);
 
 
-CREATE INDEX FK_SurveyResponseSurveyLevel_SurveyResponse
+CREATE INDEX fk_03f044_SurveyResponse
     ON edfi.SurveyResponseSurveyLevel(Namespace, SurveyIdentifier, SurveyResponseIdentifier);
 
 
@@ -496,18 +496,18 @@ CREATE TABLE edfi.SurveySectionAssociation (
     LastModifiedDate  TIMESTAMP       CONSTRAINT SurveySectionAssociation_DF_LastModifiedDate NOT NULL,
     Id                UUID CONSTRAINT SurveySectionAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionAssociation_PK PRIMARY KEY (LocalCourseCode, Namespace, SchoolId, SchoolYear, SectionIdentifier, SessionName, SurveyIdentifier),
-    CONSTRAINT FK_SurveySectionAssociation_Section FOREIGN KEY (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) REFERENCES edfi.Section (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) ON UPDATE CASCADE,
-    CONSTRAINT FK_SurveySectionAssociation_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
+    CONSTRAINT fk_c16804_Section FOREIGN KEY (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) REFERENCES edfi.Section (LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName) ON UPDATE CASCADE,
+    CONSTRAINT fk_c16804_Survey FOREIGN KEY (Namespace, SurveyIdentifier) REFERENCES edfi.Survey (Namespace, SurveyIdentifier)
 );
 
 ALTER TABLE edfi.SurveySectionAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveySectionAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveySectionAssociation_Section
+CREATE INDEX fk_c16804_Section
     ON edfi.SurveySectionAssociation(LocalCourseCode, SchoolId, SchoolYear, SectionIdentifier, SessionName);
 
 
-CREATE INDEX FK_SurveySectionAssociation_Survey
+CREATE INDEX fk_c16804_Survey
     ON edfi.SurveySectionAssociation(Namespace, SurveyIdentifier);
 
 
@@ -527,18 +527,18 @@ CREATE TABLE edfi.SurveySectionResponse (
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveySectionResponse_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveySectionResponse_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponse_PK PRIMARY KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
-    CONSTRAINT FK_SurveySectionResponse_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier),
-    CONSTRAINT FK_SurveySectionResponse_SurveySection FOREIGN KEY (Namespace, SurveyIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySection (Namespace, SurveyIdentifier, SurveySectionTitle)
+    CONSTRAINT fk_2189c3_SurveyResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier) REFERENCES edfi.SurveyResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier),
+    CONSTRAINT fk_2189c3_SurveySection FOREIGN KEY (Namespace, SurveyIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySection (Namespace, SurveyIdentifier, SurveySectionTitle)
 );
 
 ALTER TABLE edfi.SurveySectionResponse ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveySectionResponse ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE  INDEX FK_SurveySectionResponse_SurveyResponse
+CREATE  INDEX fk_2189c3_SurveyResponse
     ON edfi.SurveySectionResponse(Namespace, SurveyIdentifier, SurveyResponseIdentifier);
 
 
-CREATE INDEX FK_SurveySectionResponse_SurveySection
+CREATE INDEX fk_2189c3_SurveySection
     ON edfi.SurveySectionResponse(Namespace, SurveyIdentifier, SurveySectionTitle);
 
 
@@ -558,8 +558,8 @@ CREATE TABLE edfi.SurveySectionResponseEducationOrganizationTargetAssociation (
     LastModifiedDate         TIMESTAMP       CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponseEducationOrganizationTargetAssociation_PK PRIMARY KEY (EducationOrganizationId, Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
-    CONSTRAINT FK_SurveySecRespEdOrgTargetAss_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
-    CONSTRAINT FK_SurveySecRespEdOrgTargetAss_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
+    CONSTRAINT fk_730be1_EducationOrganization FOREIGN KEY (EducationOrganizationId) REFERENCES edfi.EducationOrganization (EducationOrganizationId),
+    CONSTRAINT fk_730be1_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
 );
 
 ALTER TABLE edfi.SurveySectionResponseEducationOrganizationTargetAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
@@ -569,7 +569,7 @@ CREATE INDEX FK_SurveySectionResponseEducationOrganizationTargetAssociation_Educ
     ON edfi.SurveySectionResponseEducationOrganizationTargetAssociation(EducationOrganizationId);
 
 
-CREATE INDEX FK_SurveySecRespEdOrgTargetAss_SurveySectionResponse
+CREATE INDEX fk_730be1_SurveySectionResponse
     ON edfi.SurveySectionResponseEducationOrganizationTargetAssociation(Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle);
 
 
@@ -589,18 +589,18 @@ CREATE TABLE edfi.SurveySectionResponseStaffTargetAssociation (
     LastModifiedDate         TIMESTAMP   	CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_LastModifiedDate NOT NULL,
     Id                       UUID CONSTRAINT SurveySectionResponseStaffTargetAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT SurveySectionResponseStaffTargetAssociation_PK PRIMARY KEY (Namespace, StaffUSI, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle),
-    CONSTRAINT FK_SurveySecRespStaffTargetAss_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
-    CONSTRAINT FK_SurveySecRespStaffTargetAss_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
+    CONSTRAINT fk_39073d_Staff FOREIGN KEY (StaffUSI) REFERENCES edfi.Staff (StaffUSI),
+    CONSTRAINT fk_39073d_SurveySectionResponse FOREIGN KEY (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle) REFERENCES edfi.SurveySectionResponse (Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle)
 );
 
 ALTER TABLE edfi.SurveySectionResponseStaffTargetAssociation ALTER COLUMN CreateDate SET DEFAULT current_timestamp;
 ALTER TABLE edfi.SurveySectionResponseStaffTargetAssociation ALTER COLUMN LastModifiedDate SET DEFAULT current_timestamp;
 
-CREATE INDEX FK_SurveySecRespStaffTargetAss_Staff
+CREATE INDEX fk_39073d_Staff
     ON edfi.SurveySectionResponseStaffTargetAssociation(StaffUSI);
 
 
-CREATE INDEX FK_SurveySecRespStaffTargetAss_SurveySectionResponse
+CREATE INDEX fk_39073d_SurveySectionResponse
     ON edfi.SurveySectionResponseStaffTargetAssociation(Namespace, SurveyIdentifier, SurveyResponseIdentifier, SurveySectionTitle);
 
 

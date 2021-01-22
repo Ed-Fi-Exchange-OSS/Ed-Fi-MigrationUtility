@@ -4,22 +4,22 @@
 -- See the LICENSE and NOTICES files in the project root for more information.
 
 --  Alter Table edfi.Parent---
-ALTER TABLE edfi.Parent 
-    ADD CONSTRAINT FK_Parent_Person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
+ALTER TABLE edfi.Parent
+    ADD CONSTRAINT fk_5f7953_person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
 
-CREATE INDEX FK_Parent_Person
+CREATE INDEX fk_5f7953_person
     ON edfi.Parent(PersonId, SourceSystemDescriptorId);
 
 --  Alter Table edfi.Staff---
-ALTER TABLE edfi.Staff 
-    ADD CONSTRAINT FK_Staff_Person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
+ALTER TABLE edfi.Staff
+    ADD CONSTRAINT fk_681927_person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
 
-CREATE INDEX FK_Staff_Person
+CREATE INDEX fk_681927_person
     ON edfi.Staff(PersonId, SourceSystemDescriptorId);
 
 --  Alter Table edfi.Student---
-ALTER TABLE edfi.Student 
-    ADD CONSTRAINT FK_Student_Person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
+ALTER TABLE edfi.Student
+    ADD CONSTRAINT fk_2a164d_person FOREIGN KEY (PersonId, SourceSystemDescriptorId) REFERENCES edfi.Person (PersonId, SourceSystemDescriptorId);
 
-CREATE INDEX FK_Student_Person
+CREATE INDEX fk_2a164d_person
     ON edfi.Student(PersonId, SourceSystemDescriptorId);

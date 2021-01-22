@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using EdFi.Ods.Utilities.Migration.Tests.MigrationTests;
 using log4net;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.Utilities
@@ -16,14 +15,21 @@ namespace EdFi.Ods.Utilities.Migration.Tests.Utilities
     public class DatabaseDeploymentProvider : IDatabaseDeploymentProvider
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DatabaseDeploymentProvider));
-        private readonly string _dbDeployName = MigrationTestSettingsProvider.GetConfigVariable("DbDeployName");
-        private readonly string _dbDeployVersion = MigrationTestSettingsProvider.GetConfigVariable("DbDeployVersion");
-        private readonly string _dbDeployPath = MigrationTestSettingsProvider.GetConfigVariable("DbDeployPath");
-        private readonly string _dbDeploySource = MigrationTestSettingsProvider.GetConfigVariable("DbDeploySource");
+        private readonly string _dbDeployName;
+        private readonly string _dbDeployVersion;
+        private readonly string _dbDeployPath;
+        private readonly string _dbDeploySource;
 
+        public DatabaseDeploymentProvider(string dbDeployName, string dbDeployVersion, string dbDeployPath, string dbDeploySource)
+        {
+            _dbDeployName = dbDeployName;
+            _dbDeployVersion = dbDeployVersion;
+            _dbDeployPath = dbDeployPath;
+            _dbDeploySource = dbDeploySource;
+        }
         protected void LogErrorMessage(string msg) => _logger.Error(msg);
 
-        public void Deploy(string version, string verb, string engine, string database, string connectionString)
+        public void Deploy(string version, string verb, string engine, string databaseType, string connectionString)
         {
             using (var ps = PowerShell.Create())
             {
@@ -83,7 +89,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.Utilities
                     "Error occurred while invoking PowerShell function Install-DbDeploy");
 
                 ps.AddCommand("Invoke-DbDeploy").AddParameter("Verb", verb).AddParameter("Engine", engine)
-                    .AddParameter("DatabaseType", database).AddParameter("ConnectionString", connectionString)
+                    .AddParameter("DatabaseType", databaseType).AddParameter("ConnectionString", connectionString)
                     .AddParameter("FilePaths", filePaths).AddParameter("ToolPath", _dbDeployPath).Invoke();
 
                 HandleErrors(

@@ -187,9 +187,17 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
                 .WithScriptsFromFileSystem(fullPath, Encoding.UTF8)
                 .WithTransactionPerScript()
                 .WithExecutionTimeout(TimeSpan.FromSeconds(Configuration.Timeout))
-                .WithVariables(GetSqlSubstitutionVariables())
                 .LogScriptOutput()
                 .LogTo(new DbUpLogger());
+
+            if (_engine == DatabaseEngine.SqlServer)
+            {
+                upgradeEngine.WithVariables(GetSqlSubstitutionVariables());
+            }
+            else
+            {
+                upgradeEngine.WithVariablesDisabled();
+            }
 
             if (upgradeOptions.Contains(UpgradeOption.NullJournal))
             {

@@ -9,6 +9,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.Utilities
 {
     public interface IDatabaseDeploymentProvider
     {
-        void Deploy(string version, string verb, string engine, string database, string connectionString);
+        void Deploy(string version, string verb, string engine, string databaseType, string connectionString);
     }
 }
