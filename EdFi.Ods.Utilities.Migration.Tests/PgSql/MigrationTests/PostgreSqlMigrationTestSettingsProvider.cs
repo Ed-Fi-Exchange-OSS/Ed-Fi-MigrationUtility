@@ -18,6 +18,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
         private static readonly Lazy<Dictionary<EdFiOdsVersion, string>> GrandBendBackupPaths = new Lazy<Dictionary<EdFiOdsVersion, string>>(ReadGrandBendBackupPaths);
 
+        private static readonly Lazy<Dictionary<EdFiOdsVersion, string>> GrandDaleBackupPaths = new Lazy<Dictionary<EdFiOdsVersion, string>>(ReadGrandDaleBackupPaths);
+
         static PostgreSqlMigrationTestSettingsProvider()
         {
             Config = new Lazy<IConfigurationRoot>(() => new ConfigurationBuilder()
@@ -41,6 +43,28 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
         public static string GetConnectionString(string key) => Config.Value.GetConnectionString(key);
 
         public static Dictionary<EdFiOdsVersion, string> GetGrandBendBackupPaths() => GrandBendBackupPaths.Value;
+
+        public static Dictionary<EdFiOdsVersion, string> GetGrandDaleBackupPaths() => GrandDaleBackupPaths.Value;
+
+        private static Dictionary<EdFiOdsVersion, string> ReadGrandDaleBackupPaths()
+        {
+            var result = new Dictionary<EdFiOdsVersion, string>();
+            foreach (var child in Config.Value.GetSection("GrandDaleBackupPathsByDisplayName").GetChildren())
+            {
+                if (EdFiOdsVersion.TryParse(child.Key, out EdFiOdsVersion version))
+                {
+                    result.Add(version, child.Value);
+                }
+                else
+                {
+                    throw new ApplicationException(
+                        $"Unable to convert display value {child.Key} to enumeration value for EdFiOdsVersion." +
+                        $" Possible values: {string.Join(", ", EdFiOdsVersion.GetAll().Select(eov => eov.DisplayName))}");
+                }
+            }
+
+            return result;
+        }
 
         private static Dictionary<EdFiOdsVersion, string> ReadGrandBendBackupPaths()
         {

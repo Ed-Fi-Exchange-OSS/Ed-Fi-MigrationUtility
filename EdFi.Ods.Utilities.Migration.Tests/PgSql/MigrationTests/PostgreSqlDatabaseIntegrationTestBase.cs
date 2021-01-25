@@ -147,6 +147,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
                     var sql = $"REINDEX SYSTEM \"{builder.Database}\";"
                               + $"REINDEX DATABASE \"{builder.Database}\";"
                               + "REINDEX SCHEMA edfi;";
+
                     connection.Execute(sql);
                 }
 
