@@ -18,7 +18,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
         private static readonly Lazy<Dictionary<EdFiOdsVersion, string>> GrandBendBackupPaths = new Lazy<Dictionary<EdFiOdsVersion, string>>(ReadGrandBendBackupPaths);
 
-        private static readonly Lazy<Dictionary<EdFiOdsVersion, string>> GrandDaleBackupPaths = new Lazy<Dictionary<EdFiOdsVersion, string>>(ReadGrandDaleBackupPaths);
+        private static readonly Lazy<Dictionary<EdFiOdsVersion, string>> GlenDaleBackupPaths = new Lazy<Dictionary<EdFiOdsVersion, string>>(ReadGlenDaleBackupPaths);
 
         static PostgreSqlMigrationTestSettingsProvider()
         {
@@ -44,12 +44,12 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
         public static Dictionary<EdFiOdsVersion, string> GetGrandBendBackupPaths() => GrandBendBackupPaths.Value;
 
-        public static Dictionary<EdFiOdsVersion, string> GetGrandDaleBackupPaths() => GrandDaleBackupPaths.Value;
+        public static Dictionary<EdFiOdsVersion, string> GetGlenDaleBackupPaths() => GlenDaleBackupPaths.Value;
 
-        private static Dictionary<EdFiOdsVersion, string> ReadGrandDaleBackupPaths()
+        private static Dictionary<EdFiOdsVersion, string> ReadGlenDaleBackupPaths()
         {
             var result = new Dictionary<EdFiOdsVersion, string>();
-            foreach (var child in Config.Value.GetSection("GrandDaleBackupPathsByDisplayName").GetChildren())
+            foreach (var child in Config.Value.GetSection("GlenDaleBackupPathsByDisplayName").GetChildren())
             {
                 if (EdFiOdsVersion.TryParse(child.Key, out EdFiOdsVersion version))
                 {
