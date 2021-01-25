@@ -7,7 +7,7 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 {
-    public class PostgresGrandDaleV50Tov51 : PostgreGrandDaleTests
+    public class PostgresGlendaleV50Tov51 : PostgresGlendaleTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V50;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V51;

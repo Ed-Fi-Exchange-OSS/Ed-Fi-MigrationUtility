@@ -19,7 +19,7 @@ using Shouldly;
 namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 {
     [TestFixture]
-    public abstract class PostgreGrandDaleTests : PostgreSqlMigrationTestBase
+    public abstract class PostgresGlendaleTests : PostgreSqlMigrationTestBase
     {
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.RestoreDuringFixtureSetupOnly;
         protected override string TestDataDirectoryName => "Latest";
