@@ -46,9 +46,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 
         private static string GetFullGlenDaleBackupPath()
         {
-            return string.IsNullOrEmpty(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlenDaleBackupPath"))
+            return string.IsNullOrEmpty(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"))
                 ? null
-                : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlenDaleBackupPath"));
+                : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"));
         }
         
         protected string EnsureTestGlenDaleBackupPathExists()
