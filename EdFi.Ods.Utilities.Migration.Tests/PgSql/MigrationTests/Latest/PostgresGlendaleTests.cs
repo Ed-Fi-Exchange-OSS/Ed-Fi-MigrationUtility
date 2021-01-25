@@ -29,8 +29,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 
         protected override string PsqlExecutable => EnsurePsqlExecutablePathExists();
 
-        protected override string TestDisabledReason => string.IsNullOrEmpty(GetFullGlendaleBackupPath())
-            ? "Glendale tests are currently optional due to disk space/runtime requirements. A Glendale backup file was not supplied, so this test will be automatically disabled.  To enable, specify a valid backup file path in the application config"
+        protected override string TestDisabledReason => string.IsNullOrEmpty(GetFullGlenDaleBackupPath())
+            ? "GlenDale tests are currently optional due to disk space/runtime requirements. A GlenDale backup file was not supplied, so this test will be automatically disabled.  To enable, specify a valid backup file path in the application config"
             : string.Empty;
 
         protected string GetGlenDaleBackupDownloadUrl()
@@ -41,14 +41,14 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
                 return grandBendBackupPathsByVersion[FromVersion];
             }
 
-            throw new ApplicationException($"No Grand Dale backup copy Path found for version {FromVersion.DisplayName}.");
+            throw new ApplicationException($"No GlenDale backup copy Path found for version {FromVersion.DisplayName}.");
         }
 
-        private static string GetFullGlendaleBackupPath()
+        private static string GetFullGlenDaleBackupPath()
         {
-            return string.IsNullOrEmpty(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"))
+            return string.IsNullOrEmpty(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlenDaleBackupPath"))
                 ? null
-                : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"));
+                : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlenDaleBackupPath"));
         }
         
         protected string EnsureTestGlenDaleBackupPathExists()
@@ -62,7 +62,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
             }
 
             var tempDirectory = Path.Combine(GlenDaleBackupsDirectory, FromVersion.Value.ToString());
-            var versionSpecificBackupFileName = $"EdFi_Ods_Glendale_{FromVersion.Value}_PG11.sql";
+            var versionSpecificBackupFileName = $"EdFi_Ods_GlenDale_{FromVersion.Value}_PG11.sql";
             var GlenDaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
             if (File.Exists(GlenDaleBackupFilePath))
             {
