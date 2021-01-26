@@ -64,6 +64,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
             var tempDirectory = Path.Combine(GlendaleBackupsDirectory, FromVersion.Value.ToString());
             var versionSpecificBackupFileName = $"EdFi_Ods_Glendale_{FromVersion.Value}_PG11.sql";
             var GlendaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
+
             if (File.Exists(GlendaleBackupFilePath))
             {
                 return GlendaleBackupFilePath;
