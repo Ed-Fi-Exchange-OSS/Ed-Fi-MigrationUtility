@@ -6,7 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using Dapper;
 using DatabaseSchemaReader;
 using EdFi.Ods.Utilities.Migration.Enumerations;
@@ -27,10 +29,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
     {
         protected abstract DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; }
         protected abstract string TestDataDirectoryName { get; }
-        protected virtual string OptionalTestSourceOdsBackupFullPath { get; } = null;
-
-        protected virtual string PsqlExecutable { get; } = null;
-
+        protected virtual string OptionalTestSourceOdsBackupFullPath => EnsureTestGlendaleBackupPathExists();
         protected virtual string TestDisabledReason { get; } = null;
         protected abstract EdFiOdsVersion FromVersion { get; }
         protected abstract EdFiOdsVersion ToVersion { get; }
@@ -40,6 +39,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
         protected TestSchemaVersion TestToVersion => new TestSchemaVersion(ToVersion, FeaturesBeforeUpgrade);
 
         private EdFiOdsVersion CurrentSchemaVersion { get; set; }
+        private string PsqlExecutable => EnsurePsqlExecutablePathExists();
 
         [OneTimeSetUp]
         public void BaseTestFixtureSetup()
@@ -96,6 +96,91 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
             ShowStatusMessage("Erasing all data written on source database");
             checkpoint.Reset(ConnectionString).GetAwaiter().GetResult();
+        }
+
+        private string EnsurePsqlExecutablePathExists()
+        {
+            var toolsPath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory,
+                PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("DbDeployPath")));
+
+            var pslExecutable = Path.Combine(toolsPath, "psql.exe");
+
+            if (File.Exists(pslExecutable))
+            {
+                return pslExecutable;
+            }
+
+            var tempDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "temp");
+
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, true);
+            }
+
+            Directory.CreateDirectory(tempDirectory);
+
+            var zipFileName = Path.Combine(tempDirectory, $"psql.binaries.zip");
+
+            // Download the nuget package as a .zip
+            using (var webClient = new WebClient())
+            {
+                webClient.DownloadFile(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("PsqlExecutable"), zipFileName);
+            }
+
+            ZipFile.ExtractToDirectory(zipFileName, tempDirectory);
+
+            var files = Directory.GetFiles(Path.Combine(tempDirectory, "tools"));
+
+            foreach (var file in files)
+            {
+                File.Move(file, Path.Combine(toolsPath, Path.GetFileName(file)));
+            }
+
+            File.Exists(pslExecutable).ShouldBeTrue();
+
+            return pslExecutable;
+        }
+        
+        protected string GetGlendaleBackupDownloadUrl()
+        {
+            var grandBendBackupPathsByVersion = PostgreSqlMigrationTestSettingsProvider.GetGlendaleBackupPaths();
+            if (grandBendBackupPathsByVersion.ContainsKey(FromVersion))
+            {
+                return grandBendBackupPathsByVersion[FromVersion];
+            }
+
+            throw new ApplicationException($"No Glendale backup copy Path found for version {FromVersion.DisplayName}.");
+        }
+
+        protected string EnsureTestGlendaleBackupPathExists()
+        {
+            var GlendaleBackupDownloadUrl = GetGlendaleBackupDownloadUrl();
+            var GlendaleBackupsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlendaleBackups");
+
+            if (!Directory.Exists(GlendaleBackupsDirectory))
+            {
+                Directory.CreateDirectory(GlendaleBackupsDirectory);
+            }
+
+            var tempDirectory = Path.Combine(GlendaleBackupsDirectory, FromVersion.Value.ToString());
+            var versionSpecificBackupFileName = $"EdFi_Ods_Glendale_{FromVersion.Value}_PG11.sql";
+            var GlendaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
+
+            if (File.Exists(GlendaleBackupFilePath))
+            {
+                return GlendaleBackupFilePath;
+            }
+
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory);
+            }
+
+            Directory.CreateDirectory(tempDirectory);
+
+            File.Copy(GlendaleBackupDownloadUrl, GlendaleBackupFilePath, true);
+
+            return GlendaleBackupFilePath;
         }
 
         protected string GetTestDataDirectory()

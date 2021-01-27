@@ -3,11 +3,8 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using System;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
@@ -25,24 +22,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 
         protected OdsUpgradeResult UpgradeResult { get; private set; }
 
-        protected override string OptionalTestSourceOdsBackupFullPath => EnsureTestGlendaleBackupPathExists();
-
-        protected override string PsqlExecutable => EnsurePsqlExecutablePathExists();
-
         protected override string TestDisabledReason => string.IsNullOrEmpty(GetFullGlendaleBackupPath())
             ? "Glendale tests are currently optional due to disk space/runtime requirements. A Glendale backup file was not supplied, so this test will be automatically disabled.  To enable, specify a valid backup file path in the application config"
             : string.Empty;
-
-        protected string GetGlendaleBackupDownloadUrl()
-        {
-            var grandBendBackupPathsByVersion = PostgreSqlMigrationTestSettingsProvider.GetGlendaleBackupPaths();
-            if (grandBendBackupPathsByVersion.ContainsKey(FromVersion))
-            {
-                return grandBendBackupPathsByVersion[FromVersion];
-            }
-
-            throw new ApplicationException($"No Glendale backup copy Path found for version {FromVersion.DisplayName}.");
-        }
 
         private static string GetFullGlendaleBackupPath()
         {
@@ -51,79 +33,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
                 : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"));
         }
         
-        protected string EnsureTestGlendaleBackupPathExists()
-        {
-            var GlendaleBackupDownloadUrl = GetGlendaleBackupDownloadUrl();
-            var GlendaleBackupsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlendaleBackups");
-
-            if (!Directory.Exists(GlendaleBackupsDirectory))
-            {
-                Directory.CreateDirectory(GlendaleBackupsDirectory);
-            }
-
-            var tempDirectory = Path.Combine(GlendaleBackupsDirectory, FromVersion.Value.ToString());
-            var versionSpecificBackupFileName = $"EdFi_Ods_Glendale_{FromVersion.Value}_PG11.sql";
-            var GlendaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
-
-            if (File.Exists(GlendaleBackupFilePath))
-            {
-                return GlendaleBackupFilePath;
-            }
-
-            if (Directory.Exists(tempDirectory))
-            {
-                Directory.Delete(tempDirectory);
-            }
-
-            Directory.CreateDirectory(tempDirectory);
-
-            File.Copy(GlendaleBackupDownloadUrl, GlendaleBackupFilePath, true);
-
-            return GlendaleBackupFilePath;
-        }
-        private string EnsurePsqlExecutablePathExists()
-        {
-            var toolsPath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory,
-                PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("DbDeployPath")));
-
-            var pslExecutable = Path.Combine(toolsPath, "psql.exe");
-
-            if (File.Exists(pslExecutable))
-            {
-                return pslExecutable;
-            }
-
-            var tempDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "temp");
-
-            if (Directory.Exists(tempDirectory))
-            {
-                Directory.Delete(tempDirectory, true);
-            }
-
-            Directory.CreateDirectory(tempDirectory);
-
-            var zipFileName = Path.Combine(tempDirectory,  $"psql.binaries.zip");
-
-            // Download the nuget package as a .zip
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("PsqlExecutable"), zipFileName);
-            }
-
-            ZipFile.ExtractToDirectory(zipFileName, tempDirectory);
-
-            var files = Directory.GetFiles(Path.Combine(tempDirectory, "tools"));
-
-            foreach (var file in files)
-            {
-                File.Move(file, Path.Combine(toolsPath, Path.GetFileName(file)));
-            }
-
-            File.Exists(pslExecutable).ShouldBeTrue();
-
-            return pslExecutable;
-        }
-
         [OneTimeSetUp]
         public void Setup()
         {
@@ -140,7 +49,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
                 CalendarConfigFilePath = Path.GetFullPath(
                     Path.Combine(
                         PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("BaseCalendarConfigPath"),
-                        "SampleCalendarConfig-GrandBend.csv")),
+                        "SampleCalendarConfig-Glendale.csv")),
                 BypassExtensionValidationCheck = false,
                 Timeout = SqlCommandTimeout,
                 DescriptorNamespacePrefix = "uri://ed-fi.org/",
