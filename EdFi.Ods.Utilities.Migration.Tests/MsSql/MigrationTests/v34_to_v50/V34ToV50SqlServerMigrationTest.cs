@@ -5,11 +5,15 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Tests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Models.v50;
+using NUnit.Framework;
+using Shouldly;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v34_to_v50
 {
@@ -36,7 +40,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v34_to_v50
                 BaseMigrationScriptFolderPath = Path.GetFullPath(SqlServerMigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(SqlServerMigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),
                 BypassExtensionValidationCheck = false,
-                Timeout = SqlCommandTimeout
+                Timeout = SqlCommandTimeout,
+                Engine = DatabaseEngine.SQLServer
             };
 
             var migrationManager = new OdsMigrationManagerV34ToV50(config, versionConfiguration, SqlServerMigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
@@ -46,6 +51,20 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v34_to_v50
         protected IEnumerable<T> GetV50UpgradeResult<T>() where T : Version50DbModel
         {
             return GetTableContents<T>(ToVersion);
+        }
+
+        [Test]
+        public void ValidateJournalEntries()
+        {
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToHashSet();
+
+            PerformTestMigration();
+
+            var deployJournalList = GetTableContents<DeployJournal>("[dbo].[DeployJournal]").Select(
+                x => x.ScriptName).ToList().ToHashSet();
+
+            databaseReferencesJournalEntries.SetEquals(deployJournalList).ShouldBeTrue(
+                $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
         }
     }
 }

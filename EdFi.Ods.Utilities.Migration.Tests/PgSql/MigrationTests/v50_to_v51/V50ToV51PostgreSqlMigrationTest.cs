@@ -3,13 +3,15 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
-using EdFi.Ods.Utilities.Migration.Tests.Models.v51;
+using EdFi.Ods.Utilities.Migration.Tests.Models;
+using NUnit.Framework;
+using Shouldly;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51
 {
@@ -31,16 +33,26 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51
                 BaseMigrationScriptFolderPath = Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),
                 BypassExtensionValidationCheck = false,
-                Timeout = SqlCommandTimeout
+                Timeout = SqlCommandTimeout,
+                Engine = DatabaseEngine.PostgreSQL
             };
 
             var migrationManager = new OdsMigrationManagerV50ToV51(config, versionConfiguration, PostgreSqlMigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
             return RunMigration(migrationManager);
         }
 
-        protected IEnumerable<T> GetV51UpgradeResult<T>() where T : Version51DbModel
+        [Test]
+        public void ValidateJournalEntries()
         {
-            return GetTableContents<T>(ToVersion);
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries();
+
+            PerformTestMigration();
+
+            var deployJournalList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
+                x => x.ScriptName).ToList();
+
+            databaseReferencesJournalEntries.ToHashSet().SetEquals(deployJournalList.ToHashSet()).ShouldBeTrue(
+                $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
         }
     }
 }

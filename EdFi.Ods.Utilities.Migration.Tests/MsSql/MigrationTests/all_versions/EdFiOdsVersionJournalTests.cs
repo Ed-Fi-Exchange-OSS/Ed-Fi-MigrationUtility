@@ -48,7 +48,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
             var allScripts = Directory.GetFiles(currentEdFiOdsScriptDirectoryRoot, "*.sql", SearchOption.AllDirectories).OrderBy(f => f);
             int relativePathStartIndex = new DirectoryInfo(currentEdFiOdsScriptDirectoryRoot).Parent.FullName.Length;
 
-            var odsApiFileSystemJournalEntries = allScripts.Select(
+            var databaseReferencesJournalEntries = allScripts.Select(
                     s => DatabaseScriptJournalEntry.FromRelativeFilePath(Path.GetFullPath(s).Substring(relativePathStartIndex)))
                 // Only worrying about MsSql for now
                 .Where(se => se.DatabaseEngine == "MsSql")
@@ -58,8 +58,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
 
             var latestVersionJournalEntries = latestMigrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
 
-            latestVersionJournalEntries.SetEquals(odsApiFileSystemJournalEntries).ShouldBeTrue(
-                $"The scripts found in {currentEdFiOdsScriptDirectoryRoot} did not match the scripts available to the Migration Utility for latest version {latestVersion.DisplayName}.  The scripts missing were:\n{string.Join("\n", odsApiFileSystemJournalEntries.Except(latestVersionJournalEntries).Select(je => je.RelativeFilePath))}\nThe migration utility may no longer be up to date.  Please ensure that the latest referenced ODS version set in this test ({latestVersion}) is still correct, and then ensure that the migration utility has been brought up to date with the latest Ed-Fi-ODS changes.  Finally, bring the migration utility's scripts ({EdFiOdsVersionJournal.DefaultRelativeBaseScriptPath}) up to date with the Ed-Fi-ODS build to ensure that the [dbo].[DeploymentJournal] table will be updated with the correct script information.");
+            latestVersionJournalEntries.SetEquals(databaseReferencesJournalEntries).ShouldBeTrue(
+                $"The scripts found in {currentEdFiOdsScriptDirectoryRoot} did not match the scripts available to the Migration Utility for latest version {latestVersion.DisplayName}.  The scripts missing were:\n{string.Join("\n", databaseReferencesJournalEntries.Except(latestVersionJournalEntries).Select(je => je.RelativeFilePath))}\nThe migration utility may no longer be up to date.  Please ensure that the latest referenced ODS version set in this test ({latestVersion}) is still correct, and then ensure that the migration utility has been brought up to date with the latest Ed-Fi-ODS changes.  Finally, bring the migration utility's scripts ({EdFiOdsVersionJournal.DefaultRelativeBaseScriptPath}) up to date with the Ed-Fi-ODS build to ensure that the [dbo].[DeploymentJournal] table will be updated with the correct script information.");
         }
 
         private static List<EdFiOdsVersion> GetVersionLevelConfigurationsUnderTest()

@@ -14,8 +14,10 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
+using EdFi.Ods.Utilities.Migration.Tests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using Respawn;
 using Shouldly;
@@ -162,6 +164,19 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests
             result.Successful.ShouldBe(false);
             result.Error.ShouldBeAssignableTo<SqlException>();
             (result.Error as SqlException)?.Number.ShouldBe((int) expectedErrorCode, result.Error.Message);
+        }
+
+        protected List<string> FetchDatabaseReferencesJournalEntries()
+        {
+            var migrationUtilityVersionJournal = new EdFiOdsVersionJournal(ToVersion);
+
+            var journalEntries = migrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
+
+            var databaseReferencesJournalEntries = journalEntries
+                .Where(se => se.DatabaseEngine == "MsSql" && se.IsFeature == false)
+                .Select(x => x.JournalScriptEntry)
+                .ToList();
+            return databaseReferencesJournalEntries;
         }
 
         protected OdsUpgradeResult RunMigration(IOdsVersionSpecificMigrationManager manager)

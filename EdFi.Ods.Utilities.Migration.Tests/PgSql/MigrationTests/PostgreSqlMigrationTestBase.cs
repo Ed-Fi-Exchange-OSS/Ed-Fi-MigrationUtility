@@ -13,6 +13,7 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
+using EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 using Npgsql;
@@ -144,6 +145,19 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
                 schemaMetadata.AssertSchemaContainsAllExpectedObjects(new PostgreSqlDatabaseConnectionProvider(),
                     ConnectionString, TestToVersion.Version);
             }
+        }
+
+        protected List<string> FetchDatabaseReferencesJournalEntries()
+        {
+            var migrationUtilityVersionJournal = new EdFiOdsVersionJournal(ToVersion);
+
+            var journalEntries = migrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
+
+            var databaseReferencesJournalEntries = journalEntries
+                .Where(se => se.DatabaseEngine == "PgSql" && se.IsFeature == false)
+                .Select(x => x.JournalScriptEntry)
+                .ToList();
+            return databaseReferencesJournalEntries;
         }
 
         protected OdsUpgradeResult RunMigration(IOdsVersionSpecificMigrationManager manager)
