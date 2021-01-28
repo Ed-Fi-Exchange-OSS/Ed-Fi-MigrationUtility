@@ -3,6 +3,7 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System;
 using System.IO;
 using System.Linq;
 using Dapper;
@@ -45,14 +46,18 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v34_to_v50
         [Test]
         public void ValidateJournalEntries()
         {
-            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries();
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToList();
 
             PerformTestMigration();
 
-            var deployJournalList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
-                x => x.ScriptName).ToList();
+            var deployJournalFullList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
+                x => x.ScriptName);
 
-            databaseReferencesJournalEntries.ToHashSet().SetEquals(deployJournalList.ToHashSet()).ShouldBeTrue(
+            var deployJournal50List = deployJournalFullList.Where(y => databaseReferencesJournalEntries
+                    .Any(z => z.Contains(y, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            databaseReferencesJournalEntries.ToHashSet().SetEquals(deployJournal50List.ToHashSet()).ShouldBeTrue(
                 $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
         }
     }

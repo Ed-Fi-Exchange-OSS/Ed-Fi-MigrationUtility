@@ -62,16 +62,11 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v33_to_v34
             PerformTestMigration();
 
             var deployJournalFullList = GetTableContents<DeployJournal>("[dbo].[DeployJournal]").Select(
-                x => new
-                {
-                    x.ScriptName,
-                });
+                x => x.ScriptName);
 
-            var deployJournal34List = deployJournalFullList
-                .Where(y => databaseReferencesJournalEntries
-                    .Any(z => z.Contains(y.ScriptName,StringComparison.OrdinalIgnoreCase)))
-                .Select(y => y.ScriptName)
-                .ToList();
+            var deployJournal34List = deployJournalFullList.Where(y => databaseReferencesJournalEntries
+                    .Any(z => z.Contains(y,StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
 
             databaseReferencesJournalEntries.ToHashSet().SetEquals(deployJournal34List.ToHashSet()).ShouldBeTrue(
                 $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
