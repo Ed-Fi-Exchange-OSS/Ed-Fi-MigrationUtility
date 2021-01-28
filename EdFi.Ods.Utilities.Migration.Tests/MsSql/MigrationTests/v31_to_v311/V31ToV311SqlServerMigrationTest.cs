@@ -26,7 +26,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v31_to_v311
                 InsertTestRecords(sourceDataScriptName, scriptParameters);
             }
 
-            var options = new Options {DatabaseConnectionString = ConnectionString};
+            var options = new Options {DatabaseConnectionString = ConnectionString, Engine = DatabaseEngine.SQLServer };
             var versionConfiguration =
                 SqlServerMigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 
