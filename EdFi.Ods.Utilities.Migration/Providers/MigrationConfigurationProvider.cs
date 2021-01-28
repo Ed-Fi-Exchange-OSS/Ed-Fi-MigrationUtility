@@ -62,7 +62,7 @@ namespace EdFi.Ods.Utilities.Migration.Providers
                 ? _odsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(upgradeVersionConfiguration.VersionBeforeUpgrade)
                 : GetRequestedUpgradeVersionFromUserProvidedString(optionalRequestedUpgradeVersionOverride);
 
-            RaiseErrorIfUpgradePathNotSupported(upgradeVersionConfiguration);
+            RaiseErrorIfUpgradePathNotSupported(upgradeVersionConfiguration, options);
 
             upgradeVersionConfiguration.FeaturesBeforeUpgrade =
                 autoDetectedVersion?.ExistingFeatures?.ToList() ?? new List<EdFiOdsFeature>();
@@ -70,13 +70,13 @@ namespace EdFi.Ods.Utilities.Migration.Providers
             return upgradeVersionConfiguration;
         }
 
-        private void RaiseErrorIfUpgradePathNotSupported(UpgradeVersionConfiguration upgradeVersionConfiguration)
+        private void RaiseErrorIfUpgradePathNotSupported(UpgradeVersionConfiguration upgradeVersionConfiguration, Options options)
         {
-            if (!_odsMigrationManagerResolver.VersionCanBeUpgraded(upgradeVersionConfiguration.VersionBeforeUpgrade))
+            if (!_odsMigrationManagerResolver.VersionCanBeUpgraded(upgradeVersionConfiguration.VersionBeforeUpgrade, options.Engine))
             {
                 throw new ArgumentException($"Upgrade for ODS Version {upgradeVersionConfiguration.VersionBeforeUpgrade} is not currently supported" +
                                             $"{Environment.NewLine}The following versions can be upgraded:  " +
-                                            $"{ _odsMigrationManagerResolver.GetAllUpgradableVersions().ToBulletedList() }");
+                                            $"{ _odsMigrationManagerResolver.GetAllUpgradableVersions(options.Engine).ToBulletedList() }");
             }
 
             if (upgradeVersionConfiguration.VersionBeforeUpgrade == upgradeVersionConfiguration.RequestedFinalUpgradeVersion)
