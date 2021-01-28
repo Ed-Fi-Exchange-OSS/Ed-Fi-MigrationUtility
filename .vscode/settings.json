@@ -66,6 +66,5 @@
         "exclude": [
             "css", "json", "xml", "config", "plaintext", "markdown", "batch"
         ]
-    },
-    "powershell.codeFormatting.addWhitespaceAroundPipe": true
+    }
 }
