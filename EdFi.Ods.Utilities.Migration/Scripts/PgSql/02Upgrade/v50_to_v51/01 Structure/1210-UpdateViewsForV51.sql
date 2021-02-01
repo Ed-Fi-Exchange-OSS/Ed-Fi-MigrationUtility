@@ -3,7 +3,10 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-DROP VIEW IF EXISTS auth.CommunityProviderIdToStaffUSI CASCADE;
+-- Drop dependent views
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStaffUSI;
+
+DROP VIEW IF EXISTS auth.CommunityProviderIdToStaffUSI ;
 
 CREATE VIEW auth.CommunityProviderIdToStaffUSI
 AS
@@ -83,7 +86,7 @@ AS
             ON psi.PostSecondaryInstitutionId = assgn.EducationOrganizationId;
 
 
-DROP VIEW IF EXISTS auth.SchoolIdToStaffUSI CASCADE;
+DROP VIEW IF EXISTS auth.SchoolIdToStaffUSI ;
 
 CREATE VIEW auth.SchoolIdToStaffUSI
 AS
@@ -102,4 +105,18 @@ AS
     FROM edfi.School sch
         INNER JOIN edfi.StaffEducationOrganizationAssignmentAssociation seo_assgn
             ON sch.SchoolId = seo_assgn.EducationOrganizationId;
+
+-- Recreate dependent views
+CREATE VIEW auth.EducationOrganizationIdToStaffUSI
+AS
+    SELECT SchoolId AS EducationOrganizationId
+         ,StaffUSI
+    FROM auth.SchoolIdToStaffUSI
+
+    UNION ALL
+
+    SELECT LocalEducationAgencyId AS EducationOrganizationId
+         ,StaffUSI
+    FROM auth.LocalEducationAgencyIdToStaffUSI;
+
 
