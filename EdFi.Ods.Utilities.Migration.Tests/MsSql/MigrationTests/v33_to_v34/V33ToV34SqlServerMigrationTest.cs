@@ -3,13 +3,18 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Dapper;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
+using EdFi.Ods.Utilities.Migration.Tests.Models;
 using EdFi.Ods.Utilities.Migration.Tests.Models.v34;
+using NUnit.Framework;
+using Shouldly;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v33_to_v34
 {
@@ -36,7 +41,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v33_to_v34
                 BaseMigrationScriptFolderPath = Path.GetFullPath(SqlServerMigrationTestSettingsProvider.GetConfigVariable("BaseMigrationScriptFolderPath")),
                 BaseDescriptorXmlDirectoryPath = Path.GetFullPath(SqlServerMigrationTestSettingsProvider.GetConfigVariable("BaseDescriptorXmlDirectoryPath")),
                 BypassExtensionValidationCheck = false,
-                Timeout = SqlCommandTimeout
+                Timeout = SqlCommandTimeout,
+                Engine = DatabaseEngine.SQLServer
             };
 
             var migrationManager = new OdsMigrationManagerV33ToV34(config, versionConfiguration, SqlServerMigrationTestsGlobalSetup.UpgradeEngineBuilderProvider);
@@ -46,6 +52,21 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v33_to_v34
         protected IEnumerable<T> GetV34UpgradeResult<T>() where T : Version34DbModel
         {
             return GetTableContents<T>(ToVersion);
+        }
+
+        [Test]
+        public void ValidateJournalEntries()
+        {
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToList().ToHashSet();
+
+            PerformTestMigration();
+
+            var deployJournalFullList = GetTableContents<DeployJournal>("[dbo].[DeployJournal]").Select(
+                x => x.ScriptName).ToList().ToHashSet();
+
+            bool isSubset = databaseReferencesJournalEntries.IsSubsetOf(deployJournalFullList);
+
+            isSubset.ShouldBeTrue($"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
         }
     }
 }
