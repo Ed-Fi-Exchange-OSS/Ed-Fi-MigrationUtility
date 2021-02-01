@@ -21,7 +21,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51
 
         protected OdsUpgradeResult PerformTestMigration(string sourceDataScriptName = null, DynamicParameters scriptParameters = null, string calendarConfigurationFileName = null, string namespacePrefix = null)
         {
-            var options = new Options {DatabaseConnectionString = ConnectionString};
+            var options = new Options {DatabaseConnectionString = ConnectionString, Engine = DatabaseEngine.PostgreSQL };
             var versionConfiguration =
                 PostgreSqlMigrationTestsGlobalSetup.MigrationConfigurationProvider.Get(options, FromVersion.ToString(), ToVersion.ToString());
 

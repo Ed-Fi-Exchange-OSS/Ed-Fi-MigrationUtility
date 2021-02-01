@@ -28,7 +28,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
 
             var latestVersionOverride = SqlServerMigrationTestSettingsProvider.GetConfigVariable("LatestEdFiOdsUpgradeVersion");
             var latestVersion = string.IsNullOrEmpty(latestVersionOverride)
-                ? odsMigrationManagerResolver.GetLatestSupportedUpgradeVersion()
+                ? odsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(DatabaseEngine.SQLServer)
                 : EdFiOdsVersion.ParseString(
                     SqlServerMigrationTestSettingsProvider.GetConfigVariable("LatestEdFiOdsUpgradeVersion"));
 
@@ -67,9 +67,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
             var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
             return EdFiOdsVersion.GetAll()
                 .Where(fromVersion =>
-                    odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion)
+                    odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion, DatabaseEngine.SQLServer)
                     && FromVersionIsUnderTest(fromVersion))
-                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion)
+                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion, DatabaseEngine.SQLServer)
                     .Where(ToVersionIsUnderTest))
                 .Distinct()
                 .ToList();
