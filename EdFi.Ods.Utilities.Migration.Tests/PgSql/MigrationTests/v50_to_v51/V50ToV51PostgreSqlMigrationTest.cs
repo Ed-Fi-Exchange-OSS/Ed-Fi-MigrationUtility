@@ -45,19 +45,16 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51
         [Test]
         public void ValidateJournalEntries()
         {
-            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToList();
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToList().ToHashSet();
 
             PerformTestMigration();
 
             var deployJournalFullList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
-                x => x.ScriptName);
+                x => x.ScriptName).ToList().ToHashSet();
 
-            var deployJournal51List = deployJournalFullList.Where(y => databaseReferencesJournalEntries
-                    .Any(z => z.Contains(y, StringComparison.OrdinalIgnoreCase)))
-                .ToList();
+            bool isSubset = databaseReferencesJournalEntries.IsSubsetOf(deployJournalFullList);
 
-            databaseReferencesJournalEntries.ToHashSet().SetEquals(deployJournal51List.ToHashSet()).ShouldBeTrue(
-                $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
+            isSubset.ShouldBeTrue($"The JournalEntries scripts did not match the scripts available to the Migration Utility for  version {ToVersion.DisplayName}.");
         }
     }
 }
