@@ -81,9 +81,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions.V
             var odsMigrationManagerResolver = new OdsMigrationManagerResolver();
 
             return EdFiOdsVersion.GetAll()
-                .Where(fromVersion => odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion)
+                .Where(fromVersion => odsMigrationManagerResolver.VersionCanBeUpgraded(fromVersion, DatabaseEngine.SQLServer)
                     && FromVersionIsUnderTest(fromVersion))
-                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion)
+                .SelectMany(fromVersion => odsMigrationManagerResolver.GetSupportedUpgradeVersions(fromVersion, DatabaseEngine.SQLServer)
                     .Where(ToVersionIsUnderTest))
                 .Distinct()
                 // VersionLevel tests only apply to versions before v33

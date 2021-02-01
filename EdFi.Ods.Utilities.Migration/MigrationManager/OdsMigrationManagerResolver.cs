@@ -116,30 +116,30 @@ namespace EdFi.Ods.Utilities.Migration.MigrationManager
             _allMigrationManagerResolverConfigurations
                 .First(x => x.VersionRange.FromVersion == fromVersion);
 
-        public List<EdFiOdsVersion> GetAllUpgradableVersions(string engine = DatabaseEngine.SQLServer) =>
+        public List<EdFiOdsVersion> GetAllUpgradableVersions(string engine) =>
             _allMigrationManagerResolverConfigurations
                 .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.FromVersion)
                 .ToList();
 
-        public List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer) =>
+        public List<EdFiOdsVersion> GetSupportedUpgradeVersions(EdFiOdsVersion fromVersion, string engine) =>
             _allMigrationManagerResolverConfigurations
                 .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .SkipWhile(x => x.VersionRange.FromVersion != fromVersion)
                 .Select(x => x.VersionRange.ToVersion)
                 .ToList();
 
-        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(string engine = DatabaseEngine.SQLServer) =>
+        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(string engine) =>
             _allMigrationManagerResolverConfigurations
                 .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.ToVersion)
                 .LastOrDefault();
 
-        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion, string engine = DatabaseEngine.SQLServer) =>
+        public EdFiOdsVersion GetLatestSupportedUpgradeVersion(EdFiOdsVersion fromVersion, string engine) =>
             GetSupportedUpgradeVersions(fromVersion, engine)
                 .LastOrDefault();
 
-        public bool VersionCanBeUpgraded(EdFiOdsVersion version, string engine = DatabaseEngine.SQLServer) =>
+        public bool VersionCanBeUpgraded(EdFiOdsVersion version, string engine) =>
             _allMigrationManagerResolverConfigurations
                 .Where(x => x.SupportedEngines.Contains(engine, StringComparer.InvariantCultureIgnoreCase))
                 .Select(x => x.VersionRange.FromVersion)

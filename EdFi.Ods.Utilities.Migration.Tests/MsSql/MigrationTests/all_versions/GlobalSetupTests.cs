@@ -29,7 +29,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
 
         private static readonly List<GlobalVersionUpgradeTestCase> AllVersionUpgradesUnderTest =
             new OdsMigrationManagerResolver()
-                .GetAllUpgradableVersions()
+                .GetAllUpgradableVersions(DatabaseEngine.SQLServer)
                 .Where(FromVersionIsUnderTest)
                 .SelectMany(GetAllUpgradesUnderTest)
                 .ToList();
@@ -95,7 +95,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
         public static List<GlobalVersionUpgradeTestCase> GetAllUpgradesUnderTest(EdFiOdsVersion fromVersion)
         {
             return new OdsMigrationManagerResolver()
-                .GetSupportedUpgradeVersions(fromVersion)
+                .GetSupportedUpgradeVersions(fromVersion, DatabaseEngine.SQLServer)
                 .Select(toVersion => new GlobalVersionUpgradeTestCase
                 {
                     FromVersion = fromVersion,
