@@ -82,28 +82,16 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
         [Test]
         public void ShouldPassJournalEntriesWithNoErrors()
         {
-            var latestMigrationUtilityVersionJournal = new EdFiOdsVersionJournal(ToVersion);
+            var databaseReferencesJournalEntries = FetchDatabaseReferencesJournalEntries().ToList().ToHashSet();
 
-            var latestVersionJournalEntries = latestMigrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
+            var deployJournalFullList = GetTableContents<DeployJournal>("public.\"DeployJournal\"")
+                .Select(x => x.scriptname).ToList().ToHashSet();
 
-            var odsApiFileSystemJournalEntries = latestVersionJournalEntries.
-                Where(se => se.DatabaseEngine == "PgSql" && se.IsFeature == false)
-                .Select(x => new
-                {
-                    ScriptName = x.JournalScriptEntry,
-                })
-                .ToList().ToHashSet();
+            bool isSubset = databaseReferencesJournalEntries.IsSubsetOf(deployJournalFullList);
 
-            var deployJournalList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
-                x => new
-                {
-                    ScriptName = x.scriptname,
-                }).ToList().ToHashSet();
-
-            odsApiFileSystemJournalEntries.SetEquals(deployJournalList).ShouldBeTrue(
+            isSubset.ShouldBeTrue(
               $"The JournalEntries scripts did not match the scripts available to the Migration Utility for  {EdFiOdsVersion.ParseString(ToVersion.ToString()).DisplayName}.");
         }
-
     }
 
     public class DeployJournal

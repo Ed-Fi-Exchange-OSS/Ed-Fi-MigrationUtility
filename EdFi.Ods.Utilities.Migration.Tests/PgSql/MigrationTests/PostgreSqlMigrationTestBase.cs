@@ -140,7 +140,20 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
             return pslExecutable;
         }
-        
+
+        protected List<string> FetchDatabaseReferencesJournalEntries()
+        {
+            var migrationUtilityVersionJournal = new EdFiOdsVersionJournal(ToVersion);
+
+            var journalEntries = migrationUtilityVersionJournal.GetJournalEntries().ToHashSet();
+
+            var databaseReferencesJournalEntries = journalEntries
+                .Where(se => se.DatabaseEngine == "PgSql" && se.IsFeature == false)
+                .Select(x => x.JournalScriptEntry)
+                .ToList();
+            return databaseReferencesJournalEntries;
+        }
+
         protected string GetGlendaleBackupDownloadUrl()
         {
             var grandBendBackupPathsByVersion = PostgreSqlMigrationTestSettingsProvider.GetGlendaleBackupPaths();
