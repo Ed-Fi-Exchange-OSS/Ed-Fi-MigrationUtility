@@ -15,7 +15,6 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.MigrationManager;
 using EdFi.Ods.Utilities.Migration.Providers;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
-using EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v50_to_v51;
 using EdFi.Ods.Utilities.Migration.Tests.Utilities;
 using EdFi.Ods.Utilities.Migration.VersionLevel;
 using Npgsql;
