@@ -11,6 +11,5 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V34;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V50;
-
     }
 }
