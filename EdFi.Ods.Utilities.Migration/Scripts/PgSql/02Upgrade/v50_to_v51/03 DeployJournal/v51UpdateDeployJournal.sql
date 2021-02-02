@@ -22,7 +22,7 @@ VALUES
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1022-SetVersion.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1030-AddSessionCascadeSupport.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1031-Create-SetSchoolYear-stored-procedure.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1090-MissingSecurityViews.sql'),
+('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1040-MissingSecurityViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1100-AddMoreContextToEducationIdentifiersView.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1100-CorrectCommunityOrganizationAuthViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1120-RemoveCompositesHierarchicalViews.sql'),
