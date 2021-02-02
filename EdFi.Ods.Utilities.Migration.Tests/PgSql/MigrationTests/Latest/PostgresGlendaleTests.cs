@@ -8,7 +8,6 @@ using System.Linq;
 using EdFi.Ods.Utilities.Migration.Configuration;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
-using EdFi.Ods.Utilities.Migration.VersionLevel;
 using NUnit.Framework;
 using Shouldly;
 
@@ -22,17 +21,10 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 
         protected OdsUpgradeResult UpgradeResult { get; private set; }
 
-        protected override string TestDisabledReason => string.IsNullOrEmpty(GetFullGlendaleBackupPath())
+        protected override string TestDisabledReason => string.IsNullOrEmpty(GetGlendaleSourceLocationPath())
             ? "Glendale tests are currently optional due to disk space/runtime requirements. A Glendale backup file was not supplied, so this test will be automatically disabled.  To enable, specify a valid backup file path in the application config"
             : string.Empty;
-
-        private static string GetFullGlendaleBackupPath()
-        {
-            return string.IsNullOrEmpty(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"))
-                ? null
-                : Path.GetFullPath(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("GlendaleBackupPath"));
-        }
-        
+       
         [OneTimeSetUp]
         public void Setup()
         {

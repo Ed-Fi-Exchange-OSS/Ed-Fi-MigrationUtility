@@ -141,34 +141,41 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
             return pslExecutable;
         }
 
-        protected string GetGlendaleBackupDownloadUrl()
+        protected string GetGlendaleSourceLocationPath()
         {
             var grandBendBackupPathsByVersion = PostgreSqlMigrationTestSettingsProvider.GetGlendaleBackupPaths();
+
             if (grandBendBackupPathsByVersion.ContainsKey(FromVersion))
             {
-                return grandBendBackupPathsByVersion[FromVersion];
+                string filePath = grandBendBackupPathsByVersion[FromVersion];
+                string extension =Path.GetExtension(filePath);
+
+                if (extension.Equals(".sql") && File.Exists(filePath))
+                {
+                    return filePath;
+                }
             }
 
-            throw new ApplicationException($"No Glendale backup copy Path found for version {FromVersion.DisplayName}.");
+            return string.Empty;
         }
 
         protected string EnsureTestGlendaleBackupPathExists()
         {
-            var GlendaleBackupDownloadUrl = GetGlendaleBackupDownloadUrl();
-            var GlendaleBackupsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlendaleBackups");
+            var glendaleSourceLocationPath = GetGlendaleSourceLocationPath();
+            var glendaleBackupsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlendaleBackups");
 
-            if (!Directory.Exists(GlendaleBackupsDirectory))
+            if (!Directory.Exists(glendaleBackupsDirectory))
             {
-                Directory.CreateDirectory(GlendaleBackupsDirectory);
+                Directory.CreateDirectory(glendaleBackupsDirectory);
             }
 
-            var tempDirectory = Path.Combine(GlendaleBackupsDirectory, FromVersion.Value.ToString());
+            var tempDirectory = Path.Combine(glendaleBackupsDirectory, FromVersion.Value.ToString());
             var versionSpecificBackupFileName = $"EdFi_Ods_Glendale_{FromVersion.Value}_PG11.sql";
-            var GlendaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
+            var glendaleBackupFilePath = Path.Combine(tempDirectory, versionSpecificBackupFileName);
 
-            if (File.Exists(GlendaleBackupFilePath))
+            if (File.Exists(glendaleBackupFilePath))
             {
-                return GlendaleBackupFilePath;
+                return glendaleBackupFilePath;
             }
 
             if (Directory.Exists(tempDirectory))
@@ -178,9 +185,9 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
 
             Directory.CreateDirectory(tempDirectory);
 
-            File.Copy(GlendaleBackupDownloadUrl, GlendaleBackupFilePath, true);
+            File.Copy(glendaleSourceLocationPath, glendaleBackupFilePath, true);
 
-            return GlendaleBackupFilePath;
+            return glendaleBackupFilePath;
         }
 
         protected string GetTestDataDirectory()
