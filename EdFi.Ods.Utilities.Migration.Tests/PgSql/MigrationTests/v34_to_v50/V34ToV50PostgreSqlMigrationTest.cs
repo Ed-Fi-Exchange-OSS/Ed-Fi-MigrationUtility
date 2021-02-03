@@ -3,7 +3,6 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using System;
 using System.IO;
 using System.Linq;
 using Dapper;
@@ -21,6 +20,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v34_to_v50
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V34;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V50;
         protected override string TestDataDirectoryName => "v34_to_v50";
+        protected override string OptionalTestSourceOdsBackupFullPath => null;
 
         protected OdsUpgradeResult PerformTestMigration(string sourceDataScriptName = null, DynamicParameters scriptParameters = null, string calendarConfigurationFileName = null, string namespacePrefix = null)
         {

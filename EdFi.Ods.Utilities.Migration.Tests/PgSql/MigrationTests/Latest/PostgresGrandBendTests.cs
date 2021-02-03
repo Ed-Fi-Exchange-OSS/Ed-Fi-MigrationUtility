@@ -42,8 +42,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
 
         protected override string OptionalTestSourceOdsBackupFullPath => EnsureTestGrandBendBackupPathExists();
 
-        protected override string PsqlExecutable => EnsurePsqlExecutablePathExists();
-
         protected string EnsureTestGrandBendBackupPathExists()
         {
             var grandBendBackupDownloadUrl = GetGrandBendBackupDownloadUrl();
@@ -106,48 +104,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest
             return grandBendBackupFilePath;
         }
 
-        private string EnsurePsqlExecutablePathExists()
-        {
-            var toolsPath = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory,
-                PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("DbDeployPath")));
-
-            var pslExecutable = Path.Combine(toolsPath, "psql.exe");
-
-            if (File.Exists(pslExecutable))
-            {
-                return pslExecutable;
-            }
-
-            var tempDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "temp");
-
-            if (Directory.Exists(tempDirectory))
-            {
-                Directory.Delete(tempDirectory, true);
-            }
-
-            Directory.CreateDirectory(tempDirectory);
-
-            var zipFileName = Path.Combine(tempDirectory,  $"psql.binaries.zip");
-
-            // Download the nuget package as a .zip
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(PostgreSqlMigrationTestSettingsProvider.GetConfigVariable("PsqlExecutable"), zipFileName);
-            }
-
-            ZipFile.ExtractToDirectory(zipFileName, tempDirectory);
-
-            var files = Directory.GetFiles(Path.Combine(tempDirectory, "tools"));
-
-            foreach (var file in files)
-            {
-                File.Move(file, Path.Combine(toolsPath, Path.GetFileName(file)));
-            }
-
-            File.Exists(pslExecutable).ShouldBeTrue();
-
-            return pslExecutable;
-        }
 
         [OneTimeSetUp]
         public void Setup()
