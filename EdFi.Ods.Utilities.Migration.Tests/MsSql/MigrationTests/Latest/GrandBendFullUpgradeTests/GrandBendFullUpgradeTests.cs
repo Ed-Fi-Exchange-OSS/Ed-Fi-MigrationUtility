@@ -15,7 +15,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.Latest.GrandBe
     public class GrandBendFullUpgradeTests : GrandBendTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V2UpTo24;
-        protected override EdFiOdsVersion ToVersion => SqlServerMigrationTestsGlobalSetup.OdsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(FromVersion, DatabaseEngine.SQLServer);
+        protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V51;
 
         protected override void UpdateBackupData()
         {
