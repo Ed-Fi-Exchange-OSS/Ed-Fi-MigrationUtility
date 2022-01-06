@@ -11,8 +11,7 @@ CREATE   VIEW auth.EducationOrganizationIdToParentUSI
                 ON edOrgs.TargetEducationOrganizationId = ssa.SchoolId
             INNER JOIN edfi.StudentParentAssociation spa 
                 ON ssa.StudentUSI = spa.StudentUSI
-    GROUP BY edOrgs.SourceEducationOrganizationId, spa.ParentUSI
-GO
+    GROUP BY edOrgs.SourceEducationOrganizationId, spa.ParentUSI;
 
 -- SPDX-License-Identifier: Apache-2.0
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
@@ -25,5 +24,4 @@ CREATE   VIEW auth.EducationOrganizationIdToStudentUSIThroughResponsibility
     FROM    auth.EducationOrganizationIdToEducationOrganizationId edOrgs
             INNER JOIN edfi.StudentEducationOrganizationResponsibilityAssociation seora
                 ON edOrgs.TargetEducationOrganizationId = seora.EducationOrganizationId
-    GROUP BY edOrgs.SourceEducationOrganizationId, seora.StudentUSI
-GO
+    GROUP BY edOrgs.SourceEducationOrganizationId, seora.StudentUSI;

@@ -1,18 +1,15 @@
-
-GO
-CREATE TRIGGER [edfi].[edfi_BarrierToInternetAccessInResidenceDescriptor_TR_DeleteTracking] ON [edfi].[BarrierToInternetAccessInResidenceDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_BarrierToInternetAccessInResidenceDescriptor_TR_DeleteTracking ON edfi.BarrierToInternetAccessInResidenceDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[BarrierToInternetAccessInResidenceDescriptor](BarrierToInternetAccessInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.BarrierToInternetAccessInResidenceDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.BarrierToInternetAccessInResidenceDescriptor(BarrierToInternetAccessInResidenceDescriptorId, Id, ChangeVersion)
+    SELECT  d.BarrierToInternetAccessInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.BarrierToInternetAccessInResidenceDescriptorId = b.DescriptorId
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_CommunityOrganization_TR_Delete ON edfi.CommunityOrganization AFTER DELETE AS
 BEGIN
@@ -26,10 +23,8 @@ BEGIN
                     ON SourceEducationOrganizationId = old.CommunityOrganizationId
                     AND TargetEducationOrganizationId = old.CommunityOrganizationId
 
-END
-GO
+END;
 
-GO
 -- SPDX-License-Identifier: Apache-2.0
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
@@ -46,8 +41,7 @@ BEGIN
             new.CommunityOrganizationId AS TargetEducationOrganizationId
     FROM    inserted new;
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Delete ON edfi.CommunityProvider AFTER DELETE AS
 BEGIN
@@ -86,8 +80,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.CommunityProviderId
                     AND TargetEducationOrganizationId = old.CommunityProviderId
 
-END
-GO
+END;
 
 -- edfi.CommunityProvider
 CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Insert ON edfi.CommunityProvider AFTER INSERT AS
@@ -120,8 +113,7 @@ BEGIN
         ) as targets
     WHERE sources.CommunityProviderId = targets.CommunityProviderId
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Update ON edfi.CommunityProvider AFTER UPDATE AS
 BEGIN
@@ -197,8 +189,7 @@ BEGIN
         INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
         VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_EducationOrganizationNetwork_TR_Delete ON edfi.EducationOrganizationNetwork AFTER DELETE AS
 BEGIN
@@ -212,8 +203,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.EducationOrganizationNetworkId
                     AND TargetEducationOrganizationId = old.EducationOrganizationNetworkId
 
-END
-GO
+END;
 
 -- edfi.EducationOrganizationNetwork
 CREATE   TRIGGER edfi.edfi_EducationOrganizationNetwork_TR_Insert ON edfi.EducationOrganizationNetwork AFTER INSERT AS
@@ -226,8 +216,7 @@ BEGIN
             new.EducationOrganizationNetworkId AS TargetEducationOrganizationId
     FROM    inserted new;
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Delete ON edfi.EducationServiceCenter AFTER DELETE AS
 BEGIN
@@ -266,8 +255,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.EducationServiceCenterId
                     AND TargetEducationOrganizationId = old.EducationServiceCenterId
 
-END
-GO
+END;
 
 -- edfi.EducationServiceCenter
 CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Insert ON edfi.EducationServiceCenter AFTER INSERT AS
@@ -300,8 +288,7 @@ BEGIN
         ) as targets
     WHERE sources.EducationServiceCenterId = targets.EducationServiceCenterId
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Update ON edfi.EducationServiceCenter AFTER UPDATE AS
 BEGIN
@@ -377,36 +364,33 @@ BEGIN
         INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
         VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
 
-END
-GO
+END;
 
-CREATE TRIGGER [edfi].[edfi_InternetAccessTypeInResidenceDescriptor_TR_DeleteTracking] ON [edfi].[InternetAccessTypeInResidenceDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_InternetAccessTypeInResidenceDescriptor_TR_DeleteTracking ON edfi.InternetAccessTypeInResidenceDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[InternetAccessTypeInResidenceDescriptor](InternetAccessTypeInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.InternetAccessTypeInResidenceDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.InternetAccessTypeInResidenceDescriptor(InternetAccessTypeInResidenceDescriptorId, Id, ChangeVersion)
+    SELECT  d.InternetAccessTypeInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.InternetAccessTypeInResidenceDescriptorId = b.DescriptorId
-END
-GO
+END;
 
-CREATE TRIGGER [edfi].[edfi_InternetPerformanceInResidenceDescriptor_TR_DeleteTracking] ON [edfi].[InternetPerformanceInResidenceDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_InternetPerformanceInResidenceDescriptor_TR_DeleteTracking ON edfi.InternetPerformanceInResidenceDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[InternetPerformanceInResidenceDescriptor](InternetPerformanceInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.InternetPerformanceInResidenceDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.InternetPerformanceInResidenceDescriptor(InternetPerformanceInResidenceDescriptorId, Id, ChangeVersion)
+    SELECT  d.InternetPerformanceInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.InternetPerformanceInResidenceDescriptorId = b.DescriptorId
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Delete ON edfi.LocalEducationAgency AFTER DELETE AS
 BEGIN
@@ -463,8 +447,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.LocalEducationAgencyId
                     AND TargetEducationOrganizationId = old.LocalEducationAgencyId
 
-END
-GO
+END;
 
 -- edfi.LocalEducationAgency
 CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Insert ON edfi.LocalEducationAgency AFTER INSERT AS
@@ -515,8 +498,7 @@ BEGIN
         ) as targets
     WHERE sources.LocalEducationAgencyId = targets.LocalEducationAgencyId
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Update ON edfi.LocalEducationAgency AFTER UPDATE AS
 BEGIN
@@ -658,8 +640,7 @@ BEGIN
         INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
         VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Delete ON edfi.OrganizationDepartment AFTER DELETE AS
 BEGIN
@@ -698,8 +679,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.OrganizationDepartmentId
                     AND TargetEducationOrganizationId = old.OrganizationDepartmentId
 
-END
-GO
+END;
 
 -- edfi.OrganizationDepartment
 CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Insert ON edfi.OrganizationDepartment AFTER INSERT AS
@@ -732,8 +712,7 @@ BEGIN
         ) as targets
     WHERE sources.OrganizationDepartmentId = targets.OrganizationDepartmentId
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Update ON edfi.OrganizationDepartment AFTER UPDATE AS
 BEGIN
@@ -809,8 +788,7 @@ BEGIN
         INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
         VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_PostSecondaryInstitution_TR_Delete ON edfi.PostSecondaryInstitution AFTER DELETE AS
 BEGIN
@@ -824,8 +802,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.PostSecondaryInstitutionId
                     AND TargetEducationOrganizationId = old.PostSecondaryInstitutionId
 
-END
-GO
+END;
 
 -- edfi.PostSecondaryInstitution
 CREATE   TRIGGER edfi.edfi_PostSecondaryInstitution_TR_Insert ON edfi.PostSecondaryInstitution AFTER INSERT AS
@@ -838,50 +815,46 @@ BEGIN
             new.PostSecondaryInstitutionId AS TargetEducationOrganizationId
     FROM    inserted new;
 
-END
-GO
+END;
 
-CREATE TRIGGER [edfi].[edfi_PrimaryLearningDeviceAccessDescriptor_TR_DeleteTracking] ON [edfi].[PrimaryLearningDeviceAccessDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceAccessDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceAccessDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[PrimaryLearningDeviceAccessDescriptor](PrimaryLearningDeviceAccessDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceAccessDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAccessDescriptor(PrimaryLearningDeviceAccessDescriptorId, Id, ChangeVersion)
+    SELECT  d.PrimaryLearningDeviceAccessDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceAccessDescriptorId = b.DescriptorId
-END
-GO
+END;
 
-CREATE TRIGGER [edfi].[edfi_PrimaryLearningDeviceAwayFromSchoolDescriptor_TR_DeleteTracking] ON [edfi].[PrimaryLearningDeviceAwayFromSchoolDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceAwayFromSchoolDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[PrimaryLearningDeviceAwayFromSchoolDescriptor](PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor(PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, ChangeVersion)
+    SELECT  d.PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceAwayFromSchoolDescriptorId = b.DescriptorId
-END
-GO
+END;
 
-CREATE TRIGGER [edfi].[edfi_PrimaryLearningDeviceProviderDescriptor_TR_DeleteTracking] ON [edfi].[PrimaryLearningDeviceProviderDescriptor] AFTER DELETE AS
+CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceProviderDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceProviderDescriptor AFTER DELETE AS
 BEGIN
     IF @@rowcount = 0 
         RETURN
 
     SET NOCOUNT ON
 
-    INSERT INTO [tracked_deletes_edfi].[PrimaryLearningDeviceProviderDescriptor](PrimaryLearningDeviceProviderDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceProviderDescriptorId, Id, (NEXT VALUE FOR [changes].[ChangeVersionSequence])
+    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceProviderDescriptor(PrimaryLearningDeviceProviderDescriptorId, Id, ChangeVersion)
+    SELECT  d.PrimaryLearningDeviceProviderDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
     FROM    deleted d
             INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceProviderDescriptorId = b.DescriptorId
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_School_TR_Delete ON edfi.School AFTER DELETE AS
 BEGIN
@@ -920,8 +893,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.SchoolId
                     AND TargetEducationOrganizationId = old.SchoolId
 
-END
-GO
+END;
 
 -- edfi.School
 CREATE   TRIGGER edfi.edfi_School_TR_Insert ON edfi.School AFTER INSERT AS
@@ -954,8 +926,7 @@ BEGIN
         ) as targets
     WHERE sources.SchoolId = targets.SchoolId
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_School_TR_Update ON edfi.School AFTER UPDATE AS
 BEGIN
@@ -1031,8 +1002,7 @@ BEGIN
         INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
         VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
 
-END
-GO
+END;
 
 CREATE   TRIGGER edfi.edfi_StateEducationAgency_TR_Delete ON edfi.StateEducationAgency AFTER DELETE AS
 BEGIN
@@ -1046,8 +1016,7 @@ BEGIN
                     ON SourceEducationOrganizationId = old.StateEducationAgencyId
                     AND TargetEducationOrganizationId = old.StateEducationAgencyId
 
-END
-GO
+END;
 
 -- edfi.StateEducationAgency
 CREATE   TRIGGER edfi.edfi_StateEducationAgency_TR_Insert ON edfi.StateEducationAgency AFTER INSERT AS
@@ -1060,8 +1029,7 @@ BEGIN
             new.StateEducationAgencyId AS TargetEducationOrganizationId
     FROM    inserted new;
 
-END
-GO
+END;
 -- SPDX-License-Identifier: Apache-2.0
 -- Licensed to the Ed-Fi Alliance under one or more agreements.
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.

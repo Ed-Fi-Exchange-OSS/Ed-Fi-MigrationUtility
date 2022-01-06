@@ -1,204 +1,164 @@
-DROP VIEW [auth].[CommunityOrganizationIdToCommunityProviderId];
+DROP VIEW auth.CommunityOrganizationIdToCommunityProviderId;
 
-GO
-DROP VIEW [auth].[CommunityOrganizationIdToEducationOrganizationId];
 
+DROP VIEW auth.CommunityOrganizationIdToEducationOrganizationId;
 
-GO
 
-DROP VIEW [auth].[CommunityProviderIdToEducationOrganizationId];
 
+DROP VIEW auth.CommunityProviderIdToEducationOrganizationId;
 
-GO
 
-DROP VIEW [auth].[CommunityProviderIdToStaffUSI];
 
+DROP VIEW auth.CommunityProviderIdToStaffUSI;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdToEducationServiceCenterId];
 
+DROP VIEW auth.EducationOrganizationIdToEducationServiceCenterId;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdToStateAgencyId];
 
+DROP VIEW auth.EducationOrganizationIdToStateAgencyId;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdToLocalEducationAgencyId];
 
+DROP VIEW auth.EducationOrganizationIdToLocalEducationAgencyId;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdToPostSecondaryInstitutionId];
 
+DROP VIEW auth.EducationOrganizationIdToPostSecondaryInstitutionId;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdToSchoolId];
 
+DROP VIEW auth.EducationOrganizationIdToSchoolId;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToStaffUSI];
 
+DROP VIEW auth.LocalEducationAgencyIdToStaffUSI;
 
-GO
 
-DROP VIEW [auth].[PostSecondaryInstitutionIdToStaffUSI];
 
+DROP VIEW auth.PostSecondaryInstitutionIdToStaffUSI;
 
-GO
 
-DROP INDEX [UCIX_EducationOrganizationToStaffUSI_Employment]
-    ON [auth].[EducationOrganizationToStaffUSI_Employment];
 
+DROP INDEX UCIX_EducationOrganizationToStaffUSI_Employment
+    ON auth.EducationOrganizationToStaffUSI_Employment;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationToStaffUSI_Employment];
 
+DROP VIEW auth.EducationOrganizationToStaffUSI_Employment;
 
-GO
 
-DROP INDEX [IX_LocalEducationAgency_LocalEducationAgencyId]
-    ON [auth].[LocalEducationAgency];
 
+DROP INDEX IX_LocalEducationAgency_LocalEducationAgencyId
+    ON auth.LocalEducationAgency;
 
-GO
 
-DROP INDEX [UCIX_LocalEducationAgency]
-    ON [auth].[LocalEducationAgency];
 
+DROP INDEX UCIX_LocalEducationAgency
+    ON auth.LocalEducationAgency;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgency];
 
+DROP VIEW auth.LocalEducationAgency;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToOrganizationDepartmentId];
 
+DROP VIEW auth.LocalEducationAgencyIdToOrganizationDepartmentId;
 
-GO
 
-DROP INDEX [UCIX_LocalEducationAgencyIdToParentUSI]
-    ON [auth].[LocalEducationAgencyIdToParentUSI];
 
+DROP INDEX UCIX_LocalEducationAgencyIdToParentUSI
+    ON auth.LocalEducationAgencyIdToParentUSI;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToParentUSI];
 
+DROP VIEW auth.LocalEducationAgencyIdToParentUSI;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToSchoolId];
 
+DROP VIEW auth.LocalEducationAgencyIdToSchoolId;
 
-GO
 
-DROP INDEX [UCIX_LocalEducationAgencyToStudentUSI]
-    ON [auth].[LocalEducationAgencyIdToStudentUSI];
 
+DROP INDEX UCIX_LocalEducationAgencyToStudentUSI
+    ON auth.LocalEducationAgencyIdToStudentUSI;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToStudentUSI];
 
+DROP VIEW auth.LocalEducationAgencyIdToStudentUSI;
 
-GO
 
-DROP VIEW [auth].[LocalEducationAgencyIdToStudentUSIThroughEdOrgAssociation];
 
+DROP VIEW auth.LocalEducationAgencyIdToStudentUSIThroughEdOrgAssociation;
 
-GO
 
-DROP VIEW [auth].[OrganizationDepartmentIdToSchoolId];
 
+DROP VIEW auth.OrganizationDepartmentIdToSchoolId;
 
-GO
 
-DROP VIEW [auth].[ParentUSIToSchoolId];
 
+DROP VIEW auth.ParentUSIToSchoolId;
 
-GO
 
-DROP INDEX [IX_ParentUSIToStudentUSI]
-    ON [auth].[ParentUSIToStudentUSI];
 
+DROP INDEX IX_ParentUSIToStudentUSI
+    ON auth.ParentUSIToStudentUSI;
 
-GO
 
-DROP INDEX [UCIX_ParentUSIToStudentUSI]
-    ON [auth].[ParentUSIToStudentUSI];
 
+DROP INDEX UCIX_ParentUSIToStudentUSI
+    ON auth.ParentUSIToStudentUSI;
 
-GO
 
-DROP VIEW [auth].[ParentUSIToStudentUSI];
 
+DROP VIEW auth.ParentUSIToStudentUSI;
 
-GO
 
-DROP INDEX [IX_School_LocalEducationAgencyId]
-    ON [auth].[School];
 
+DROP INDEX IX_School_LocalEducationAgencyId
+    ON auth.School;
 
-GO
 
-DROP INDEX [IX_School_SchoolId]
-    ON [auth].[School];
 
+DROP INDEX IX_School_SchoolId
+    ON auth.School;
 
-GO
 
-DROP INDEX [UCIX_School]
-    ON [auth].[School];
 
+DROP INDEX UCIX_School
+    ON auth.School;
 
-GO
 
-DROP VIEW [auth].[School];
 
+DROP VIEW auth.School;
 
-GO
 
-DROP VIEW [auth].[SchoolIdToStaffUSI];
 
+DROP VIEW auth.SchoolIdToStaffUSI;
 
-GO
 
-DROP INDEX [UCIX_SchoolIdToStudentUSI]
-    ON [auth].[SchoolIdToStudentUSI];
 
+DROP INDEX UCIX_SchoolIdToStudentUSI
+    ON auth.SchoolIdToStudentUSI;
 
-GO
 
-DROP VIEW [auth].[SchoolIdToStudentUSI];
 
+DROP VIEW auth.SchoolIdToStudentUSI;
 
-GO
 
-DROP VIEW [auth].[SchoolIdToStudentUSIThroughEdOrgAssociation];
 
+DROP VIEW auth.SchoolIdToStudentUSIThroughEdOrgAssociation;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationIdentifiers];
 
+DROP VIEW auth.EducationOrganizationIdentifiers;
 
-GO
 
-DROP INDEX [UCIX_EducationOrganizationToStaffUSI_Assignment]
-    ON [auth].[EducationOrganizationToStaffUSI_Assignment];
 
+DROP INDEX UCIX_EducationOrganizationToStaffUSI_Assignment
+    ON auth.EducationOrganizationToStaffUSI_Assignment;
 
-GO
 
-DROP VIEW [auth].[EducationOrganizationToStaffUSI_Assignment];
 
-
-GO
+DROP VIEW auth.EducationOrganizationToStaffUSI_Assignment;
