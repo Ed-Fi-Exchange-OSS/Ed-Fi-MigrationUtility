@@ -1,1117 +1,1206 @@
-CREATE TRIGGER edfi.edfi_BarrierToInternetAccessInResidenceDescriptor_TR_DeleteTracking ON edfi.BarrierToInternetAccessInResidenceDescriptor AFTER DELETE AS
+-- SPDX-License-Identifier: Apache-2.0
+-- Licensed to the Ed-Fi Alliance under one or more agreements.
+-- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+-- See the LICENSE and NOTICES files in the project root for more information.
+
+CREATE FUNCTION edfi.edfi_communityorganization_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
 BEGIN
-    IF @@rowcount = 0 
-        RETURN
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.communityorganizationid
+            AND targeteducationorganizationid = OLD.communityorganizationid;
 
-    SET NOCOUNT ON
+    RETURN NULL;
+END;
+$BODY$;
 
+ALTER FUNCTION edfi.edfi_communityorganization_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_communityorganization_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.communityorganizationid AS SourceEducationOrganizationId, 
+            NEW.communityorganizationid AS targeteducationorganizationid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_communityorganization_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_communityprovider_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove affected tuples
+    WITH cj AS (
+        SELECT sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+            -- Determine the source ancestors affected by this change
+            -- Find ancestors to be deleted by clearing or changing the communityorganizationid
+            SELECT  tuples.sourceeducationorganizationid, OLD.communityproviderid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.communityorganizationid 
+                    AND OLD.communityorganizationid IS NOT NULL
+            ) AS sources
+        CROSS JOIN
+            -- Get all the descendants of the communityprovider (to be cross joined with all the affected ancestor sources)
+            (SELECT tuples.targeteducationorganizationid, OLD.communityproviderid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = OLD.communityproviderid
+            ) as targets
+        WHERE sources.communityproviderid = targets.communityproviderid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.communityproviderid
+            AND targeteducationorganizationid = OLD.communityproviderid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_communityprovider_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_communityprovider_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.communityproviderid AS SourceEducationOrganizationId, 
+            NEW.communityproviderid AS targeteducationorganizationid;
+
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT sources.SourceEducationOrganizationId, targets.targeteducationorganizationid
+    FROM (
+        -- Find ancestors that need to have tuples inserted due to assignment of the communityorganizationid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.communityproviderid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.communityorganizationid  
+                AND NEW.communityorganizationid IS NOT NULL
+        ) AS sources
+    CROSS JOIN
+        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
+        (
+            SELECT  NEW.communityproviderid, tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.SourceEducationOrganizationId = NEW.communityproviderid
+        ) as targets
+    WHERE sources.communityproviderid = targets.communityproviderid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_communityprovider_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_communityprovider_tr_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
+    WITH cj AS (
+        SELECT d1.sourceeducationorganizationid, d2.targeteducationorganizationid
+        FROM (
+            -- Find ancestors to be deleted by clearing or changing the communityorganizationid
+            SELECT  tuples.sourceeducationorganizationid, new.communityproviderid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.communityorganizationid  
+                    AND OLD.communityorganizationid IS NOT NULL 
+                    AND (NEW.communityorganizationid IS NULL OR OLD.communityorganizationid <> NEW.communityorganizationid)
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the communityorganizationid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.communityproviderid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.communityorganizationid 
+            ) AS d1
+
+        CROSS JOIN
+            -- Get all the descendants of the communityprovider (to be cross joined with all the affected ancestor sources)
+            (SELECT	tuples.targeteducationorganizationid, NEW.communityproviderid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   NEW.communityproviderid = tuples.sourceeducationorganizationid
+            ) as d2
+        WHERE d1.communityproviderid = d2.communityproviderid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+    
+    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
+    WITH source(sourceeducationorganizationid, targeteducationorganizationid) AS (
+        SELECT  sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+        -- Determine the source ancestors affected by this change
+            -- Find ancestors to be inserted by initializing or changing the communityorganizationid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.communityorganizationid
+                AND ((OLD.communityorganizationid IS NULL AND NEW.communityorganizationid IS NOT NULL)
+                OR OLD.communityorganizationid <> NEW.communityorganizationid)
+        ) as sources
+        CROSS JOIN (
+            -- Get all the descendants of the communityprovider (to be cross joined with all the affected ancestor sources)
+            SELECT  tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = NEW.communityproviderid
+        ) AS targets
+    )
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(sourceeducationorganizationid, targeteducationorganizationid)
+    SELECT source.sourceeducationorganizationid, source.targeteducationorganizationid
+    FROM source
+    ON CONFLICT DO NOTHING;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_communityprovider_tr_update()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_educationorganizationnetwork_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.educationorganizationnetworkid
+            AND targeteducationorganizationid = OLD.educationorganizationnetworkid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_educationorganizationnetwork_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_educationorganizationnetwork_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.educationorganizationnetworkid AS SourceEducationOrganizationId, 
+            NEW.educationorganizationnetworkid AS targeteducationorganizationid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_educationorganizationnetwork_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_educationservicecenter_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove affected tuples
+    WITH cj AS (
+        SELECT sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+            -- Determine the source ancestors affected by this change
+            -- Find ancestors to be deleted by clearing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, OLD.educationservicecenterid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.stateeducationagencyid 
+                    AND OLD.stateeducationagencyid IS NOT NULL
+            ) AS sources
+        CROSS JOIN
+            -- Get all the descendants of the educationservicecenter (to be cross joined with all the affected ancestor sources)
+            (SELECT tuples.targeteducationorganizationid, OLD.educationservicecenterid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = OLD.educationservicecenterid
+            ) as targets
+        WHERE sources.educationservicecenterid = targets.educationservicecenterid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.educationservicecenterid
+            AND targeteducationorganizationid = OLD.educationservicecenterid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_educationservicecenter_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_educationservicecenter_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.educationservicecenterid AS SourceEducationOrganizationId, 
+            NEW.educationservicecenterid AS targeteducationorganizationid;
+
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT sources.SourceEducationOrganizationId, targets.targeteducationorganizationid
+    FROM (
+        -- Find ancestors that need to have tuples inserted due to assignment of the stateeducationagencyid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.educationservicecenterid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid  
+                AND NEW.stateeducationagencyid IS NOT NULL
+        ) AS sources
+    CROSS JOIN
+        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
+        (
+            SELECT  NEW.educationservicecenterid, tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.SourceEducationOrganizationId = NEW.educationservicecenterid
+        ) as targets
+    WHERE sources.educationservicecenterid = targets.educationservicecenterid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_educationservicecenter_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_educationservicecenter_tr_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
+    WITH cj AS (
+        SELECT d1.sourceeducationorganizationid, d2.targeteducationorganizationid
+        FROM (
+            -- Find ancestors to be deleted by clearing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, new.educationservicecenterid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.stateeducationagencyid  
+                    AND OLD.stateeducationagencyid IS NOT NULL 
+                    AND (NEW.stateeducationagencyid IS NULL OR OLD.stateeducationagencyid <> NEW.stateeducationagencyid)
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the stateeducationagencyid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.educationservicecenterid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid 
+            ) AS d1
+
+        CROSS JOIN
+            -- Get all the descendants of the educationservicecenter (to be cross joined with all the affected ancestor sources)
+            (SELECT	tuples.targeteducationorganizationid, NEW.educationservicecenterid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   NEW.educationservicecenterid = tuples.sourceeducationorganizationid
+            ) as d2
+        WHERE d1.educationservicecenterid = d2.educationservicecenterid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+    
+    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
+    WITH source(sourceeducationorganizationid, targeteducationorganizationid) AS (
+        SELECT  sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+        -- Determine the source ancestors affected by this change
+            -- Find ancestors to be inserted by initializing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid
+                AND ((OLD.stateeducationagencyid IS NULL AND NEW.stateeducationagencyid IS NOT NULL)
+                OR OLD.stateeducationagencyid <> NEW.stateeducationagencyid)
+        ) as sources
+        CROSS JOIN (
+            -- Get all the descendants of the educationservicecenter (to be cross joined with all the affected ancestor sources)
+            SELECT  tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = NEW.educationservicecenterid
+        ) AS targets
+    )
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(sourceeducationorganizationid, targeteducationorganizationid)
+    SELECT source.sourceeducationorganizationid, source.targeteducationorganizationid
+    FROM source
+    ON CONFLICT DO NOTHING;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_educationservicecenter_tr_update()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_localeducationagency_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove affected tuples
+    WITH cj AS (
+        SELECT sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+            -- Determine the source ancestors affected by this change
+            -- Find ancestors to be deleted by clearing or changing the parentlocaleducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, OLD.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.parentlocaleducationagencyid 
+                    AND OLD.parentlocaleducationagencyid IS NOT NULL
+
+            UNION
+
+            -- Find ancestors to be deleted by clearing or changing the educationservicecenterid
+            SELECT  tuples.sourceeducationorganizationid, OLD.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.educationservicecenterid 
+                    AND OLD.educationservicecenterid IS NOT NULL
+
+            UNION
+
+            -- Find ancestors to be deleted by clearing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, OLD.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.stateeducationagencyid 
+                    AND OLD.stateeducationagencyid IS NOT NULL
+            ) AS sources
+        CROSS JOIN
+            -- Get all the descendants of the localeducationagency (to be cross joined with all the affected ancestor sources)
+            (SELECT tuples.targeteducationorganizationid, OLD.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = OLD.localeducationagencyid
+            ) as targets
+        WHERE sources.localeducationagencyid = targets.localeducationagencyid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.localeducationagencyid
+            AND targeteducationorganizationid = OLD.localeducationagencyid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_localeducationagency_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_localeducationagency_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.localeducationagencyid AS SourceEducationOrganizationId, 
+            NEW.localeducationagencyid AS targeteducationorganizationid;
+
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT sources.SourceEducationOrganizationId, targets.targeteducationorganizationid
+    FROM (
+        -- Find ancestors that need to have tuples inserted due to assignment of the parentlocaleducationagencyid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.localeducationagencyid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.parentlocaleducationagencyid  
+                AND NEW.parentlocaleducationagencyid IS NOT NULL
+
+                        UNION
+
+        -- Find ancestors that need to have tuples inserted due to assignment of the educationservicecenterid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.localeducationagencyid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.educationservicecenterid  
+                AND NEW.educationservicecenterid IS NOT NULL
+
+                        UNION
+
+        -- Find ancestors that need to have tuples inserted due to assignment of the stateeducationagencyid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.localeducationagencyid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid  
+                AND NEW.stateeducationagencyid IS NOT NULL
+        ) AS sources
+    CROSS JOIN
+        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
+        (
+            SELECT  NEW.localeducationagencyid, tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.SourceEducationOrganizationId = NEW.localeducationagencyid
+        ) as targets
+    WHERE sources.localeducationagencyid = targets.localeducationagencyid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_localeducationagency_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_localeducationagency_tr_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
+    WITH cj AS (
+        SELECT d1.sourceeducationorganizationid, d2.targeteducationorganizationid
+        FROM (
+            -- Find ancestors to be deleted by clearing or changing the parentlocaleducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, new.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.parentlocaleducationagencyid  
+                    AND OLD.parentlocaleducationagencyid IS NOT NULL 
+                    AND (NEW.parentlocaleducationagencyid IS NULL OR OLD.parentlocaleducationagencyid <> NEW.parentlocaleducationagencyid)
+
+                UNION
+
+            -- Find ancestors to be deleted by clearing or changing the educationservicecenterid
+            SELECT  tuples.sourceeducationorganizationid, new.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.educationservicecenterid  
+                    AND OLD.educationservicecenterid IS NOT NULL 
+                    AND (NEW.educationservicecenterid IS NULL OR OLD.educationservicecenterid <> NEW.educationservicecenterid)
+
+                UNION
+
+            -- Find ancestors to be deleted by clearing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, new.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.stateeducationagencyid  
+                    AND OLD.stateeducationagencyid IS NOT NULL 
+                    AND (NEW.stateeducationagencyid IS NULL OR OLD.stateeducationagencyid <> NEW.stateeducationagencyid)
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the parentlocaleducationagencyid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.parentlocaleducationagencyid 
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the educationservicecenterid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.educationservicecenterid 
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the stateeducationagencyid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid 
+            ) AS d1
+
+        CROSS JOIN
+            -- Get all the descendants of the localeducationagency (to be cross joined with all the affected ancestor sources)
+            (SELECT	tuples.targeteducationorganizationid, NEW.localeducationagencyid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   NEW.localeducationagencyid = tuples.sourceeducationorganizationid
+            ) as d2
+        WHERE d1.localeducationagencyid = d2.localeducationagencyid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+    
+    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
+    WITH source(sourceeducationorganizationid, targeteducationorganizationid) AS (
+        SELECT  sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+        -- Determine the source ancestors affected by this change
+            -- Find ancestors to be inserted by initializing or changing the parentlocaleducationagencyid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.parentlocaleducationagencyid
+                AND ((OLD.parentlocaleducationagencyid IS NULL AND NEW.parentlocaleducationagencyid IS NOT NULL)
+                OR OLD.parentlocaleducationagencyid <> NEW.parentlocaleducationagencyid)
+
+            UNION
+
+            -- Find ancestors to be inserted by initializing or changing the educationservicecenterid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.educationservicecenterid
+                AND ((OLD.educationservicecenterid IS NULL AND NEW.educationservicecenterid IS NOT NULL)
+                OR OLD.educationservicecenterid <> NEW.educationservicecenterid)
+
+            UNION
+
+            -- Find ancestors to be inserted by initializing or changing the stateeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.stateeducationagencyid
+                AND ((OLD.stateeducationagencyid IS NULL AND NEW.stateeducationagencyid IS NOT NULL)
+                OR OLD.stateeducationagencyid <> NEW.stateeducationagencyid)
+        ) as sources
+        CROSS JOIN (
+            -- Get all the descendants of the localeducationagency (to be cross joined with all the affected ancestor sources)
+            SELECT  tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = NEW.localeducationagencyid
+        ) AS targets
+    )
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(sourceeducationorganizationid, targeteducationorganizationid)
+    SELECT source.sourceeducationorganizationid, source.targeteducationorganizationid
+    FROM source
+    ON CONFLICT DO NOTHING;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_localeducationagency_tr_update()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_organizationdepartment_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove affected tuples
+    WITH cj AS (
+        SELECT sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+            -- Determine the source ancestors affected by this change
+            -- Find ancestors to be deleted by clearing or changing the parenteducationorganizationid
+            SELECT  tuples.sourceeducationorganizationid, OLD.organizationdepartmentid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.parenteducationorganizationid 
+                    AND OLD.parenteducationorganizationid IS NOT NULL
+            ) AS sources
+        CROSS JOIN
+            -- Get all the descendants of the organizationdepartment (to be cross joined with all the affected ancestor sources)
+            (SELECT tuples.targeteducationorganizationid, OLD.organizationdepartmentid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = OLD.organizationdepartmentid
+            ) as targets
+        WHERE sources.organizationdepartmentid = targets.organizationdepartmentid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.organizationdepartmentid
+            AND targeteducationorganizationid = OLD.organizationdepartmentid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_organizationdepartment_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_organizationdepartment_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.organizationdepartmentid AS SourceEducationOrganizationId, 
+            NEW.organizationdepartmentid AS targeteducationorganizationid;
+
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT sources.SourceEducationOrganizationId, targets.targeteducationorganizationid
+    FROM (
+        -- Find ancestors that need to have tuples inserted due to assignment of the parenteducationorganizationid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.organizationdepartmentid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.parenteducationorganizationid  
+                AND NEW.parenteducationorganizationid IS NOT NULL
+        ) AS sources
+    CROSS JOIN
+        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
+        (
+            SELECT  NEW.organizationdepartmentid, tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.SourceEducationOrganizationId = NEW.organizationdepartmentid
+        ) as targets
+    WHERE sources.organizationdepartmentid = targets.organizationdepartmentid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_organizationdepartment_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_organizationdepartment_tr_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
+    WITH cj AS (
+        SELECT d1.sourceeducationorganizationid, d2.targeteducationorganizationid
+        FROM (
+            -- Find ancestors to be deleted by clearing or changing the parenteducationorganizationid
+            SELECT  tuples.sourceeducationorganizationid, new.organizationdepartmentid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.parenteducationorganizationid  
+                    AND OLD.parenteducationorganizationid IS NOT NULL 
+                    AND (NEW.parenteducationorganizationid IS NULL OR OLD.parenteducationorganizationid <> NEW.parenteducationorganizationid)
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the parenteducationorganizationid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.organizationdepartmentid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.parenteducationorganizationid 
+            ) AS d1
+
+        CROSS JOIN
+            -- Get all the descendants of the organizationdepartment (to be cross joined with all the affected ancestor sources)
+            (SELECT	tuples.targeteducationorganizationid, NEW.organizationdepartmentid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   NEW.organizationdepartmentid = tuples.sourceeducationorganizationid
+            ) as d2
+        WHERE d1.organizationdepartmentid = d2.organizationdepartmentid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+    
+    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
+    WITH source(sourceeducationorganizationid, targeteducationorganizationid) AS (
+        SELECT  sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+        -- Determine the source ancestors affected by this change
+            -- Find ancestors to be inserted by initializing or changing the parenteducationorganizationid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.parenteducationorganizationid
+                AND ((OLD.parenteducationorganizationid IS NULL AND NEW.parenteducationorganizationid IS NOT NULL)
+                OR OLD.parenteducationorganizationid <> NEW.parenteducationorganizationid)
+        ) as sources
+        CROSS JOIN (
+            -- Get all the descendants of the organizationdepartment (to be cross joined with all the affected ancestor sources)
+            SELECT  tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = NEW.organizationdepartmentid
+        ) AS targets
+    )
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(sourceeducationorganizationid, targeteducationorganizationid)
+    SELECT source.sourceeducationorganizationid, source.targeteducationorganizationid
+    FROM source
+    ON CONFLICT DO NOTHING;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_organizationdepartment_tr_update()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_postsecondaryinstitution_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.postsecondaryinstitutionid
+            AND targeteducationorganizationid = OLD.postsecondaryinstitutionid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_postsecondaryinstitution_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_postsecondaryinstitution_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.postsecondaryinstitutionid AS SourceEducationOrganizationId, 
+            NEW.postsecondaryinstitutionid AS targeteducationorganizationid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_postsecondaryinstitution_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_school_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove affected tuples
+    WITH cj AS (
+        SELECT sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+            -- Determine the source ancestors affected by this change
+            -- Find ancestors to be deleted by clearing or changing the localeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, OLD.schoolid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.localeducationagencyid 
+                    AND OLD.localeducationagencyid IS NOT NULL
+            ) AS sources
+        CROSS JOIN
+            -- Get all the descendants of the school (to be cross joined with all the affected ancestor sources)
+            (SELECT tuples.targeteducationorganizationid, OLD.schoolid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = OLD.schoolid
+            ) as targets
+        WHERE sources.schoolid = targets.schoolid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.schoolid
+            AND targeteducationorganizationid = OLD.schoolid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_school_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_school_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.schoolid AS SourceEducationOrganizationId, 
+            NEW.schoolid AS targeteducationorganizationid;
+
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT sources.SourceEducationOrganizationId, targets.targeteducationorganizationid
+    FROM (
+        -- Find ancestors that need to have tuples inserted due to assignment of the localeducationagencyid
+        SELECT  tuples.SourceEducationOrganizationId, NEW.schoolid
+        FROM    auth.educationorganizationidtoeducationorganizationid tuples
+        WHERE   tuples.targeteducationorganizationid = NEW.localeducationagencyid  
+                AND NEW.localeducationagencyid IS NOT NULL
+        ) AS sources
+    CROSS JOIN
+        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
+        (
+            SELECT  NEW.schoolid, tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.SourceEducationOrganizationId = NEW.schoolid
+        ) as targets
+    WHERE sources.schoolid = targets.schoolid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_school_tr_insert()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_school_tr_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
+    WITH cj AS (
+        SELECT d1.sourceeducationorganizationid, d2.targeteducationorganizationid
+        FROM (
+            -- Find ancestors to be deleted by clearing or changing the localeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid, new.schoolid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = OLD.localeducationagencyid  
+                    AND OLD.localeducationagencyid IS NOT NULL 
+                    AND (NEW.localeducationagencyid IS NULL OR OLD.localeducationagencyid <> NEW.localeducationagencyid)
+                
+                EXCEPT
+                
+            -- Find ancestors that should remain due to new value for the localeducationagencyid 
+            SELECT  tuples.sourceeducationorganizationid, NEW.schoolid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.localeducationagencyid 
+            ) AS d1
+
+        CROSS JOIN
+            -- Get all the descendants of the school (to be cross joined with all the affected ancestor sources)
+            (SELECT	tuples.targeteducationorganizationid, NEW.schoolid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   NEW.schoolid = tuples.sourceeducationorganizationid
+            ) as d2
+        WHERE d1.schoolid = d2.schoolid
+    )
+    DELETE FROM auth.educationorganizationidtoeducationorganizationid AS tbd USING cj
+    WHERE tbd.sourceeducationorganizationid = cj.sourceeducationorganizationid
+        AND tbd.targeteducationorganizationid = cj.targeteducationorganizationid;
+    
+    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
+    WITH source(sourceeducationorganizationid, targeteducationorganizationid) AS (
+        SELECT  sources.sourceeducationorganizationid, targets.targeteducationorganizationid
+        FROM (
+        -- Determine the source ancestors affected by this change
+            -- Find ancestors to be inserted by initializing or changing the localeducationagencyid
+            SELECT  tuples.sourceeducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.targeteducationorganizationid = NEW.localeducationagencyid
+                AND ((OLD.localeducationagencyid IS NULL AND NEW.localeducationagencyid IS NOT NULL)
+                OR OLD.localeducationagencyid <> NEW.localeducationagencyid)
+        ) as sources
+        CROSS JOIN (
+            -- Get all the descendants of the school (to be cross joined with all the affected ancestor sources)
+            SELECT  tuples.targeteducationorganizationid
+            FROM    auth.educationorganizationidtoeducationorganizationid tuples
+            WHERE   tuples.sourceeducationorganizationid = NEW.schoolid
+        ) AS targets
+    )
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(sourceeducationorganizationid, targeteducationorganizationid)
+    SELECT source.sourceeducationorganizationid, source.targeteducationorganizationid
+    FROM source
+    ON CONFLICT DO NOTHING;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_school_tr_update()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_stateeducationagency_tr_delete()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Delete self-referencing tuple
+    DELETE
+    FROM    auth.educationorganizationidtoeducationorganizationid
+    WHERE   sourceeducationorganizationid = OLD.stateeducationagencyid
+            AND targeteducationorganizationid = OLD.stateeducationagencyid;
+
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_stateeducationagency_tr_delete()
+    OWNER TO postgres;
+
+CREATE FUNCTION edfi.edfi_stateeducationagency_tr_insert()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    -- Add new tuple for current record
+    INSERT INTO auth.educationorganizationidtoeducationorganizationid(SourceEducationOrganizationId, targeteducationorganizationid)
+    SELECT  NEW.stateeducationagencyid AS SourceEducationOrganizationId, 
+            NEW.stateeducationagencyid AS targeteducationorganizationid;
+
+    
+    RETURN NULL;
+END;
+$BODY$;
+
+ALTER FUNCTION edfi.edfi_stateeducationagency_tr_insert()
+    OWNER TO postgres;
+
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.barriertointernetaccessinresidencedescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
+BEGIN
     INSERT INTO tracked_deletes_edfi.BarrierToInternetAccessInResidenceDescriptor(BarrierToInternetAccessInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.BarrierToInternetAccessInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.BarrierToInternetAccessInResidenceDescriptorId = b.DescriptorId
+    SELECT OLD.BarrierToInternetAccessInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.BarrierToInternetAccessInResidenceDescriptorId;
+    RETURN NULL;
 END;
-
-CREATE   TRIGGER edfi.edfi_CommunityOrganization_TR_Delete ON edfi.CommunityOrganization AFTER DELETE AS
+$BODY$;
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.internetaccesstypeinresidencedescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
 BEGIN
-    SET NOCOUNT ON
-
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.CommunityOrganizationId
-                    AND TargetEducationOrganizationId = old.CommunityOrganizationId
-
-END;
-
--- SPDX-License-Identifier: Apache-2.0
--- Licensed to the Ed-Fi Alliance under one or more agreements.
--- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
--- See the LICENSE and NOTICES files in the project root for more information.
-
--- edfi.CommunityOrganization
-CREATE   TRIGGER edfi.edfi_CommunityOrganization_TR_Insert ON edfi.CommunityOrganization AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.CommunityOrganizationId AS SourceEducationOrganizationId, 
-            new.CommunityOrganizationId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-END;
-
-CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Delete ON edfi.CommunityProvider AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove affected tuples
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-                FROM (
-                    -- Determine the source ancestors affected by this change
-                    -- Find ancestors to be deleted by clearing or changing the CommunityOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, old.CommunityProviderId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.CommunityOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.CommunityOrganizationId IS NOT NULL
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the CommunityProvider (to be cross joined with all the affected ancestor sources)
-                    (SELECT tuples.TargetEducationOrganizationId, old.CommunityProviderId
-                    FROM    deleted old
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.CommunityProviderId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE sources.CommunityProviderId = targets.CommunityProviderId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.CommunityProviderId
-                    AND TargetEducationOrganizationId = old.CommunityProviderId
-
-END;
-
--- edfi.CommunityProvider
-CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Insert ON edfi.CommunityProvider AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.CommunityProviderId AS SourceEducationOrganizationId, 
-            new.CommunityProviderId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-    FROM (
-        -- Find ancestors that need to have tuples inserted due to assignment of the CommunityOrganizationId
-        SELECT  tuples.SourceEducationOrganizationId, new.CommunityProviderId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.CommunityOrganizationId = tuples.TargetEducationOrganizationId 
-        WHERE   new.CommunityOrganizationId IS NOT NULL
-        ) AS sources
-    CROSS JOIN
-        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
-        (
-            SELECT  new.CommunityProviderId, tuples.TargetEducationOrganizationId
-            FROM    inserted new
-                    INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                        ON new.CommunityProviderId = tuples.SourceEducationOrganizationId
-        ) as targets
-    WHERE sources.CommunityProviderId = targets.CommunityProviderId
-
-END;
-
-CREATE   TRIGGER edfi.edfi_CommunityProvider_TR_Update ON edfi.CommunityProvider AFTER UPDATE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT d1.SourceEducationOrganizationId, d2.TargetEducationOrganizationId
-                FROM (
-                    -- Find ancestors to be deleted by clearing or changing the CommunityOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, new.CommunityProviderId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.CommunityProviderId = new.CommunityProviderId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.CommunityOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.CommunityOrganizationId IS NOT NULL 
-                            AND (new.CommunityOrganizationId IS NULL OR old.CommunityOrganizationId <> new.CommunityOrganizationId)
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the CommunityOrganizationId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.CommunityProviderId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.CommunityOrganizationId = tuples.TargetEducationOrganizationId 
-                    ) AS d1
-    
-                CROSS JOIN
-                    -- Get all the descendants of the CommunityProvider (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.CommunityProviderId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.CommunityProviderId = tuples.SourceEducationOrganizationId
-                    ) as d2
-                WHERE d1.CommunityProviderId = d2.CommunityProviderId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-    
-    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
-    MERGE INTO auth.EducationOrganizationIdToEducationOrganizationId target
-    USING (
-        SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-        FROM    (
-                -- Determine the source ancestors affected by this change
-    
-                    -- Find ancestors to be inserted by initializing or changing the CommunityOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, new.CommunityProviderId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.CommunityProviderId = old.CommunityProviderId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.CommunityOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.CommunityOrganizationId IS NULL AND new.CommunityOrganizationId IS NOT NULL)
-                            OR old.CommunityOrganizationId <> new.CommunityOrganizationId
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the CommunityProvider (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.CommunityProviderId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.CommunityProviderId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE
-                    sources.CommunityProviderId = targets.CommunityProviderId
-        ) AS source
-        ON target.SourceEducationOrganizationId = source.SourceEducationOrganizationId 
-            AND target.TargetEducationOrganizationId = source.TargetEducationOrganizationId
-    WHEN NOT MATCHED BY TARGET THEN
-        INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
-        VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
-
-END;
-
-CREATE   TRIGGER edfi.edfi_EducationOrganizationNetwork_TR_Delete ON edfi.EducationOrganizationNetwork AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
-
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.EducationOrganizationNetworkId
-                    AND TargetEducationOrganizationId = old.EducationOrganizationNetworkId
-
-END;
-
--- edfi.EducationOrganizationNetwork
-CREATE   TRIGGER edfi.edfi_EducationOrganizationNetwork_TR_Insert ON edfi.EducationOrganizationNetwork AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.EducationOrganizationNetworkId AS SourceEducationOrganizationId, 
-            new.EducationOrganizationNetworkId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-END;
-
-CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Delete ON edfi.EducationServiceCenter AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove affected tuples
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-                FROM (
-                    -- Determine the source ancestors affected by this change
-                    -- Find ancestors to be deleted by clearing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, old.EducationServiceCenterId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.StateEducationAgencyId IS NOT NULL
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the EducationServiceCenter (to be cross joined with all the affected ancestor sources)
-                    (SELECT tuples.TargetEducationOrganizationId, old.EducationServiceCenterId
-                    FROM    deleted old
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.EducationServiceCenterId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE sources.EducationServiceCenterId = targets.EducationServiceCenterId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.EducationServiceCenterId
-                    AND TargetEducationOrganizationId = old.EducationServiceCenterId
-
-END;
-
--- edfi.EducationServiceCenter
-CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Insert ON edfi.EducationServiceCenter AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.EducationServiceCenterId AS SourceEducationOrganizationId, 
-            new.EducationServiceCenterId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-    FROM (
-        -- Find ancestors that need to have tuples inserted due to assignment of the StateEducationAgencyId
-        SELECT  tuples.SourceEducationOrganizationId, new.EducationServiceCenterId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-        WHERE   new.StateEducationAgencyId IS NOT NULL
-        ) AS sources
-    CROSS JOIN
-        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
-        (
-            SELECT  new.EducationServiceCenterId, tuples.TargetEducationOrganizationId
-            FROM    inserted new
-                    INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                        ON new.EducationServiceCenterId = tuples.SourceEducationOrganizationId
-        ) as targets
-    WHERE sources.EducationServiceCenterId = targets.EducationServiceCenterId
-
-END;
-
-CREATE   TRIGGER edfi.edfi_EducationServiceCenter_TR_Update ON edfi.EducationServiceCenter AFTER UPDATE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT d1.SourceEducationOrganizationId, d2.TargetEducationOrganizationId
-                FROM (
-                    -- Find ancestors to be deleted by clearing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.EducationServiceCenterId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.EducationServiceCenterId = new.EducationServiceCenterId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.StateEducationAgencyId IS NOT NULL 
-                            AND (new.StateEducationAgencyId IS NULL OR old.StateEducationAgencyId <> new.StateEducationAgencyId)
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the StateEducationAgencyId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.EducationServiceCenterId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    ) AS d1
-    
-                CROSS JOIN
-                    -- Get all the descendants of the EducationServiceCenter (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.EducationServiceCenterId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.EducationServiceCenterId = tuples.SourceEducationOrganizationId
-                    ) as d2
-                WHERE d1.EducationServiceCenterId = d2.EducationServiceCenterId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-    
-    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
-    MERGE INTO auth.EducationOrganizationIdToEducationOrganizationId target
-    USING (
-        SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-        FROM    (
-                -- Determine the source ancestors affected by this change
-    
-                    -- Find ancestors to be inserted by initializing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.EducationServiceCenterId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.EducationServiceCenterId = old.EducationServiceCenterId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.StateEducationAgencyId IS NULL AND new.StateEducationAgencyId IS NOT NULL)
-                            OR old.StateEducationAgencyId <> new.StateEducationAgencyId
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the EducationServiceCenter (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.EducationServiceCenterId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.EducationServiceCenterId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE
-                    sources.EducationServiceCenterId = targets.EducationServiceCenterId
-        ) AS source
-        ON target.SourceEducationOrganizationId = source.SourceEducationOrganizationId 
-            AND target.TargetEducationOrganizationId = source.TargetEducationOrganizationId
-    WHEN NOT MATCHED BY TARGET THEN
-        INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
-        VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
-
-END;
-
-CREATE TRIGGER edfi.edfi_InternetAccessTypeInResidenceDescriptor_TR_DeleteTracking ON edfi.InternetAccessTypeInResidenceDescriptor AFTER DELETE AS
-BEGIN
-    IF @@rowcount = 0 
-        RETURN
-
-    SET NOCOUNT ON
-
     INSERT INTO tracked_deletes_edfi.InternetAccessTypeInResidenceDescriptor(InternetAccessTypeInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.InternetAccessTypeInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.InternetAccessTypeInResidenceDescriptorId = b.DescriptorId
+    SELECT OLD.InternetAccessTypeInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.InternetAccessTypeInResidenceDescriptorId;
+    RETURN NULL;
 END;
-
-CREATE TRIGGER edfi.edfi_InternetPerformanceInResidenceDescriptor_TR_DeleteTracking ON edfi.InternetPerformanceInResidenceDescriptor AFTER DELETE AS
+$BODY$;
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.internetperformanceinresidencedescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
 BEGIN
-    IF @@rowcount = 0 
-        RETURN
-
-    SET NOCOUNT ON
-
     INSERT INTO tracked_deletes_edfi.InternetPerformanceInResidenceDescriptor(InternetPerformanceInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT  d.InternetPerformanceInResidenceDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.InternetPerformanceInResidenceDescriptorId = b.DescriptorId
+    SELECT OLD.InternetPerformanceInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.InternetPerformanceInResidenceDescriptorId;
+    RETURN NULL;
 END;
-
-CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Delete ON edfi.LocalEducationAgency AFTER DELETE AS
+$BODY$;
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.primarylearningdeviceaccessdescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
 BEGIN
-    SET NOCOUNT ON
-
-    -- Remove affected tuples
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-                FROM (
-                    -- Determine the source ancestors affected by this change
-                    -- Find ancestors to be deleted by clearing or changing the ParentLocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, old.LocalEducationAgencyId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.ParentLocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.ParentLocalEducationAgencyId IS NOT NULL
-    
-                    UNION
-
-                    -- Find ancestors to be deleted by clearing or changing the EducationServiceCenterId
-                    SELECT  tuples.SourceEducationOrganizationId, old.LocalEducationAgencyId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.EducationServiceCenterId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.EducationServiceCenterId IS NOT NULL
-    
-                    UNION
-
-                    -- Find ancestors to be deleted by clearing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, old.LocalEducationAgencyId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.StateEducationAgencyId IS NOT NULL
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the LocalEducationAgency (to be cross joined with all the affected ancestor sources)
-                    (SELECT tuples.TargetEducationOrganizationId, old.LocalEducationAgencyId
-                    FROM    deleted old
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.LocalEducationAgencyId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE sources.LocalEducationAgencyId = targets.LocalEducationAgencyId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.LocalEducationAgencyId
-                    AND TargetEducationOrganizationId = old.LocalEducationAgencyId
-
-END;
-
--- edfi.LocalEducationAgency
-CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Insert ON edfi.LocalEducationAgency AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.LocalEducationAgencyId AS SourceEducationOrganizationId, 
-            new.LocalEducationAgencyId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-    FROM (
-        -- Find ancestors that need to have tuples inserted due to assignment of the ParentLocalEducationAgencyId
-        SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.ParentLocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-        WHERE   new.ParentLocalEducationAgencyId IS NOT NULL
-
-                        UNION
-
-        -- Find ancestors that need to have tuples inserted due to assignment of the EducationServiceCenterId
-        SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.EducationServiceCenterId = tuples.TargetEducationOrganizationId 
-        WHERE   new.EducationServiceCenterId IS NOT NULL
-
-                        UNION
-
-        -- Find ancestors that need to have tuples inserted due to assignment of the StateEducationAgencyId
-        SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-        WHERE   new.StateEducationAgencyId IS NOT NULL
-        ) AS sources
-    CROSS JOIN
-        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
-        (
-            SELECT  new.LocalEducationAgencyId, tuples.TargetEducationOrganizationId
-            FROM    inserted new
-                    INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                        ON new.LocalEducationAgencyId = tuples.SourceEducationOrganizationId
-        ) as targets
-    WHERE sources.LocalEducationAgencyId = targets.LocalEducationAgencyId
-
-END;
-
-CREATE   TRIGGER edfi.edfi_LocalEducationAgency_TR_Update ON edfi.LocalEducationAgency AFTER UPDATE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT d1.SourceEducationOrganizationId, d2.TargetEducationOrganizationId
-                FROM (
-                    -- Find ancestors to be deleted by clearing or changing the ParentLocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.LocalEducationAgencyId = new.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.ParentLocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.ParentLocalEducationAgencyId IS NOT NULL 
-                            AND (new.ParentLocalEducationAgencyId IS NULL OR old.ParentLocalEducationAgencyId <> new.ParentLocalEducationAgencyId)
-
-                        UNION
-
-                    -- Find ancestors to be deleted by clearing or changing the EducationServiceCenterId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.LocalEducationAgencyId = new.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.EducationServiceCenterId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.EducationServiceCenterId IS NOT NULL 
-                            AND (new.EducationServiceCenterId IS NULL OR old.EducationServiceCenterId <> new.EducationServiceCenterId)
-
-                        UNION
-
-                    -- Find ancestors to be deleted by clearing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.LocalEducationAgencyId = new.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.StateEducationAgencyId IS NOT NULL 
-                            AND (new.StateEducationAgencyId IS NULL OR old.StateEducationAgencyId <> new.StateEducationAgencyId)
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the ParentLocalEducationAgencyId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.ParentLocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the EducationServiceCenterId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.EducationServiceCenterId = tuples.TargetEducationOrganizationId 
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the StateEducationAgencyId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    ) AS d1
-    
-                CROSS JOIN
-                    -- Get all the descendants of the LocalEducationAgency (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.LocalEducationAgencyId = tuples.SourceEducationOrganizationId
-                    ) as d2
-                WHERE d1.LocalEducationAgencyId = d2.LocalEducationAgencyId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-    
-    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
-    MERGE INTO auth.EducationOrganizationIdToEducationOrganizationId target
-    USING (
-        SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-        FROM    (
-                -- Determine the source ancestors affected by this change
-    
-                    -- Find ancestors to be inserted by initializing or changing the ParentLocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.LocalEducationAgencyId = old.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.ParentLocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.ParentLocalEducationAgencyId IS NULL AND new.ParentLocalEducationAgencyId IS NOT NULL)
-                            OR old.ParentLocalEducationAgencyId <> new.ParentLocalEducationAgencyId
-    
-                    UNION
-
-    
-                    -- Find ancestors to be inserted by initializing or changing the EducationServiceCenterId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.LocalEducationAgencyId = old.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.EducationServiceCenterId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.EducationServiceCenterId IS NULL AND new.EducationServiceCenterId IS NOT NULL)
-                            OR old.EducationServiceCenterId <> new.EducationServiceCenterId
-    
-                    UNION
-
-    
-                    -- Find ancestors to be inserted by initializing or changing the StateEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.LocalEducationAgencyId = old.LocalEducationAgencyId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.StateEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.StateEducationAgencyId IS NULL AND new.StateEducationAgencyId IS NOT NULL)
-                            OR old.StateEducationAgencyId <> new.StateEducationAgencyId
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the LocalEducationAgency (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.LocalEducationAgencyId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.LocalEducationAgencyId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE
-                    sources.LocalEducationAgencyId = targets.LocalEducationAgencyId
-        ) AS source
-        ON target.SourceEducationOrganizationId = source.SourceEducationOrganizationId 
-            AND target.TargetEducationOrganizationId = source.TargetEducationOrganizationId
-    WHEN NOT MATCHED BY TARGET THEN
-        INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
-        VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
-
-END;
-
-CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Delete ON edfi.OrganizationDepartment AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove affected tuples
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-                FROM (
-                    -- Determine the source ancestors affected by this change
-                    -- Find ancestors to be deleted by clearing or changing the ParentEducationOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, old.OrganizationDepartmentId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.ParentEducationOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.ParentEducationOrganizationId IS NOT NULL
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the OrganizationDepartment (to be cross joined with all the affected ancestor sources)
-                    (SELECT tuples.TargetEducationOrganizationId, old.OrganizationDepartmentId
-                    FROM    deleted old
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.OrganizationDepartmentId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE sources.OrganizationDepartmentId = targets.OrganizationDepartmentId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.OrganizationDepartmentId
-                    AND TargetEducationOrganizationId = old.OrganizationDepartmentId
-
-END;
-
--- edfi.OrganizationDepartment
-CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Insert ON edfi.OrganizationDepartment AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.OrganizationDepartmentId AS SourceEducationOrganizationId, 
-            new.OrganizationDepartmentId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-    FROM (
-        -- Find ancestors that need to have tuples inserted due to assignment of the ParentEducationOrganizationId
-        SELECT  tuples.SourceEducationOrganizationId, new.OrganizationDepartmentId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.ParentEducationOrganizationId = tuples.TargetEducationOrganizationId 
-        WHERE   new.ParentEducationOrganizationId IS NOT NULL
-        ) AS sources
-    CROSS JOIN
-        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
-        (
-            SELECT  new.OrganizationDepartmentId, tuples.TargetEducationOrganizationId
-            FROM    inserted new
-                    INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                        ON new.OrganizationDepartmentId = tuples.SourceEducationOrganizationId
-        ) as targets
-    WHERE sources.OrganizationDepartmentId = targets.OrganizationDepartmentId
-
-END;
-
-CREATE   TRIGGER edfi.edfi_OrganizationDepartment_TR_Update ON edfi.OrganizationDepartment AFTER UPDATE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT d1.SourceEducationOrganizationId, d2.TargetEducationOrganizationId
-                FROM (
-                    -- Find ancestors to be deleted by clearing or changing the ParentEducationOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, new.OrganizationDepartmentId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.OrganizationDepartmentId = new.OrganizationDepartmentId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.ParentEducationOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.ParentEducationOrganizationId IS NOT NULL 
-                            AND (new.ParentEducationOrganizationId IS NULL OR old.ParentEducationOrganizationId <> new.ParentEducationOrganizationId)
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the ParentEducationOrganizationId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.OrganizationDepartmentId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.ParentEducationOrganizationId = tuples.TargetEducationOrganizationId 
-                    ) AS d1
-    
-                CROSS JOIN
-                    -- Get all the descendants of the OrganizationDepartment (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.OrganizationDepartmentId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.OrganizationDepartmentId = tuples.SourceEducationOrganizationId
-                    ) as d2
-                WHERE d1.OrganizationDepartmentId = d2.OrganizationDepartmentId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-    
-    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
-    MERGE INTO auth.EducationOrganizationIdToEducationOrganizationId target
-    USING (
-        SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-        FROM    (
-                -- Determine the source ancestors affected by this change
-    
-                    -- Find ancestors to be inserted by initializing or changing the ParentEducationOrganizationId
-                    SELECT  tuples.SourceEducationOrganizationId, new.OrganizationDepartmentId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.OrganizationDepartmentId = old.OrganizationDepartmentId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.ParentEducationOrganizationId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.ParentEducationOrganizationId IS NULL AND new.ParentEducationOrganizationId IS NOT NULL)
-                            OR old.ParentEducationOrganizationId <> new.ParentEducationOrganizationId
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the OrganizationDepartment (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.OrganizationDepartmentId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.OrganizationDepartmentId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE
-                    sources.OrganizationDepartmentId = targets.OrganizationDepartmentId
-        ) AS source
-        ON target.SourceEducationOrganizationId = source.SourceEducationOrganizationId 
-            AND target.TargetEducationOrganizationId = source.TargetEducationOrganizationId
-    WHEN NOT MATCHED BY TARGET THEN
-        INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
-        VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
-
-END;
-
-CREATE   TRIGGER edfi.edfi_PostSecondaryInstitution_TR_Delete ON edfi.PostSecondaryInstitution AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
-
-
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.PostSecondaryInstitutionId
-                    AND TargetEducationOrganizationId = old.PostSecondaryInstitutionId
-
-END;
-
--- edfi.PostSecondaryInstitution
-CREATE   TRIGGER edfi.edfi_PostSecondaryInstitution_TR_Insert ON edfi.PostSecondaryInstitution AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.PostSecondaryInstitutionId AS SourceEducationOrganizationId, 
-            new.PostSecondaryInstitutionId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-END;
-
-CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceAccessDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceAccessDescriptor AFTER DELETE AS
-BEGIN
-    IF @@rowcount = 0 
-        RETURN
-
-    SET NOCOUNT ON
-
     INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAccessDescriptor(PrimaryLearningDeviceAccessDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceAccessDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceAccessDescriptorId = b.DescriptorId
+    SELECT OLD.PrimaryLearningDeviceAccessDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceAccessDescriptorId;
+    RETURN NULL;
 END;
-
-CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceAwayFromSchoolDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor AFTER DELETE AS
+$BODY$;
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.primarylearningdeviceawayfromschooldescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
 BEGIN
-    IF @@rowcount = 0 
-        RETURN
-
-    SET NOCOUNT ON
-
     INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor(PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceAwayFromSchoolDescriptorId = b.DescriptorId
+    SELECT OLD.PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceAwayFromSchoolDescriptorId;
+    RETURN NULL;
 END;
-
-CREATE TRIGGER edfi.edfi_PrimaryLearningDeviceProviderDescriptor_TR_DeleteTracking ON edfi.PrimaryLearningDeviceProviderDescriptor AFTER DELETE AS
+$BODY$;
+CREATE OR REPLACE FUNCTION tracked_deletes_edfi.primarylearningdeviceproviderdescriptor_tr_deltrkg()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    COST 100
+AS $BODY$
 BEGIN
-    IF @@rowcount = 0 
-        RETURN
-
-    SET NOCOUNT ON
-
     INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceProviderDescriptor(PrimaryLearningDeviceProviderDescriptorId, Id, ChangeVersion)
-    SELECT  d.PrimaryLearningDeviceProviderDescriptorId, Id, (NEXT VALUE FOR changes.ChangeVersionSequence)
-    FROM    deleted d
-            INNER JOIN edfi.Descriptor b ON d.PrimaryLearningDeviceProviderDescriptorId = b.DescriptorId
+    SELECT OLD.PrimaryLearningDeviceProviderDescriptorId, Id, nextval('changes.ChangeVersionSequence')
+    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceProviderDescriptorId;
+    RETURN NULL;
 END;
+$BODY$;
 
-CREATE   TRIGGER edfi.edfi_School_TR_Delete ON edfi.School AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
+CREATE TRIGGER trackdeletes
+    AFTER DELETE
+    ON edfi.barriertointernetaccessinresidencedescriptor
+    FOR EACH ROW
+    EXECUTE FUNCTION tracked_deletes_edfi.barriertointernetaccessinresidencedescriptor_tr_deltrkg();
 
-    -- Remove affected tuples
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-                FROM (
-                    -- Determine the source ancestors affected by this change
-                    -- Find ancestors to be deleted by clearing or changing the LocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, old.SchoolId
-                    FROM    deleted old 
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.LocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.LocalEducationAgencyId IS NOT NULL
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the School (to be cross joined with all the affected ancestor sources)
-                    (SELECT tuples.TargetEducationOrganizationId, old.SchoolId
-                    FROM    deleted old
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.SchoolId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE sources.SchoolId = targets.SchoolId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.communityorganization
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_communityorganization_tr_delete();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.communityorganization
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_communityorganization_tr_insert();
 
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.SchoolId
-                    AND TargetEducationOrganizationId = old.SchoolId
-
-END;
-
--- edfi.School
-CREATE   TRIGGER edfi.edfi_School_TR_Insert ON edfi.School AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.SchoolId AS SourceEducationOrganizationId, 
-            new.SchoolId AS TargetEducationOrganizationId
-    FROM    inserted new;
-
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-    FROM (
-        -- Find ancestors that need to have tuples inserted due to assignment of the LocalEducationAgencyId
-        SELECT  tuples.SourceEducationOrganizationId, new.SchoolId
-        FROM    inserted new
-                INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                    ON new.LocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-        WHERE   new.LocalEducationAgencyId IS NOT NULL
-        ) AS sources
-    CROSS JOIN
-        -- Get all the existing targets/descendants (to be cross joined with all the affected ancestor sources)
-        (
-            SELECT  new.SchoolId, tuples.TargetEducationOrganizationId
-            FROM    inserted new
-                    INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                        ON new.SchoolId = tuples.SourceEducationOrganizationId
-        ) as targets
-    WHERE sources.SchoolId = targets.SchoolId
-
-END;
-
-CREATE   TRIGGER edfi.edfi_School_TR_Update ON edfi.School AFTER UPDATE AS
-BEGIN
-    SET NOCOUNT ON
-
-    -- Remove all tuples impacted by the clearing or changing of the parent education organizations
-    DELETE  tbd
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tbd
-            INNER JOIN (
-                SELECT d1.SourceEducationOrganizationId, d2.TargetEducationOrganizationId
-                FROM (
-                    -- Find ancestors to be deleted by clearing or changing the LocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.SchoolId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON old.SchoolId = new.SchoolId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON old.LocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   old.LocalEducationAgencyId IS NOT NULL 
-                            AND (new.LocalEducationAgencyId IS NULL OR old.LocalEducationAgencyId <> new.LocalEducationAgencyId)
-                        
-                        EXCEPT
-                        
-                    -- Find ancestors that should remain due to new value for the LocalEducationAgencyId 
-                    SELECT  tuples.SourceEducationOrganizationId, new.SchoolId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.LocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    ) AS d1
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.communityprovider
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_communityprovider_tr_delete();
+CREATE TRIGGER updateauthtuples
+    AFTER UPDATE 
+    ON edfi.communityprovider
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_communityprovider_tr_update();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.communityprovider
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_communityprovider_tr_insert();
     
-                CROSS JOIN
-                    -- Get all the descendants of the School (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.SchoolId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.SchoolId = tuples.SourceEducationOrganizationId
-                    ) as d2
-                WHERE d1.SchoolId = d2.SchoolId
-                ) AS cj
-                ON tbd.SourceEducationOrganizationId = cj.SourceEducationOrganizationId
-                    and tbd.TargetEducationOrganizationId = cj.TargetEducationOrganizationId;
-    
-    -- Add new tuples resulting from the changes/initializations of parent Education Organization ids
-    MERGE INTO auth.EducationOrganizationIdToEducationOrganizationId target
-    USING (
-        SELECT sources.SourceEducationOrganizationId, targets.TargetEducationOrganizationId
-        FROM    (
-                -- Determine the source ancestors affected by this change
-    
-                    -- Find ancestors to be inserted by initializing or changing the LocalEducationAgencyId
-                    SELECT  tuples.SourceEducationOrganizationId, new.SchoolId
-                    FROM    inserted new
-                            INNER JOIN deleted old 
-                                ON new.SchoolId = old.SchoolId
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.LocalEducationAgencyId = tuples.TargetEducationOrganizationId 
-                    WHERE   (old.LocalEducationAgencyId IS NULL AND new.LocalEducationAgencyId IS NOT NULL)
-                            OR old.LocalEducationAgencyId <> new.LocalEducationAgencyId
-                    ) AS sources
-                CROSS JOIN
-                    -- Get all the descendants of the School (to be cross joined with all the affected ancestor sources)
-                    (SELECT	tuples.TargetEducationOrganizationId, new.SchoolId
-                    FROM    inserted new
-                            INNER JOIN auth.EducationOrganizationIdToEducationOrganizationId tuples
-                                ON new.SchoolId = tuples.SourceEducationOrganizationId
-                    ) as targets
-                WHERE
-                    sources.SchoolId = targets.SchoolId
-        ) AS source
-        ON target.SourceEducationOrganizationId = source.SourceEducationOrganizationId 
-            AND target.TargetEducationOrganizationId = source.TargetEducationOrganizationId
-    WHEN NOT MATCHED BY TARGET THEN
-        INSERT(SourceEducationOrganizationId, TargetEducationOrganizationId)
-        VALUES(source.SourceEducationOrganizationId, source.TargetEducationOrganizationId);
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.educationorganizationnetwork
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_educationorganizationnetwork_tr_delete();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.educationorganizationnetwork
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_educationorganizationnetwork_tr_insert();
 
-END;
-
-CREATE   TRIGGER edfi.edfi_StateEducationAgency_TR_Delete ON edfi.StateEducationAgency AFTER DELETE AS
-BEGIN
-    SET NOCOUNT ON
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.educationservicecenter
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_educationservicecenter_tr_delete();
+CREATE TRIGGER updateauthtuples
+    AFTER UPDATE 
+    ON edfi.educationservicecenter
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_educationservicecenter_tr_update();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.educationservicecenter
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_educationservicecenter_tr_insert();
 
 
-        -- Delete self-referencing tuple
-        DELETE  tuples
-        FROM    auth.EducationOrganizationIdToEducationOrganizationId AS tuples
-                INNER JOIN deleted old
-                    ON SourceEducationOrganizationId = old.StateEducationAgencyId
-                    AND TargetEducationOrganizationId = old.StateEducationAgencyId
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.localeducationagency
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_localeducationagency_tr_delete();
+CREATE TRIGGER updateauthtuples
+    AFTER UPDATE 
+    ON edfi.localeducationagency
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_localeducationagency_tr_update();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.localeducationagency
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_localeducationagency_tr_insert();
 
-END;
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.organizationdepartment
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_organizationdepartment_tr_delete();
+CREATE TRIGGER updateauthtuples
+    AFTER UPDATE 
+    ON edfi.organizationdepartment
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_organizationdepartment_tr_update();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.organizationdepartment
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_organizationdepartment_tr_insert();
 
--- edfi.StateEducationAgency
-CREATE   TRIGGER edfi.edfi_StateEducationAgency_TR_Insert ON edfi.StateEducationAgency AFTER INSERT AS
-BEGIN
-    SET NOCOUNT ON
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.postsecondaryinstitution
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_postsecondaryinstitution_tr_delete();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.postsecondaryinstitution
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_postsecondaryinstitution_tr_insert();
 
-    -- Add new tuple for current record
-    INSERT INTO auth.EducationOrganizationIdToEducationOrganizationId(SourceEducationOrganizationId, TargetEducationOrganizationId)
-    SELECT  new.StateEducationAgencyId AS SourceEducationOrganizationId, 
-            new.StateEducationAgencyId AS TargetEducationOrganizationId
-    FROM    inserted new;
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.school
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_school_tr_delete();
+CREATE TRIGGER updateauthtuples
+    AFTER UPDATE 
+    ON edfi.school
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_school_tr_update();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.school
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_school_tr_insert();
 
-END;
--- SPDX-License-Identifier: Apache-2.0
--- Licensed to the Ed-Fi Alliance under one or more agreements.
--- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
--- See the LICENSE and NOTICES files in the project root for more information.
-
-ALTER   VIEW auth.EducationOrganizationIdToStaffUSI 
-    WITH SCHEMABINDING AS
-
-    -- EdOrg Assignments
-    SELECT  edOrgs.SourceEducationOrganizationId, seo_assign.StaffUSI
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId edOrgs
-            INNER JOIN edfi.StaffEducationOrganizationAssignmentAssociation seo_assign
-                ON edOrgs.TargetEducationOrganizationId =  seo_assign.EducationOrganizationId
-    
-    UNION
-
-    -- EdOrg Employment
-    SELECT  edOrgs.SourceEducationOrganizationId, seo_empl.StaffUSI
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId edOrgs
-            INNER JOIN edfi.StaffEducationOrganizationEmploymentAssociation seo_empl
-                ON edOrgs.TargetEducationOrganizationId = seo_empl.EducationOrganizationId
-GO
--- SPDX-License-Identifier: Apache-2.0
--- Licensed to the Ed-Fi Alliance under one or more agreements.
--- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
--- See the LICENSE and NOTICES files in the project root for more information.
-
-ALTER   VIEW auth.EducationOrganizationIdToStudentUSI 
-    WITH SCHEMABINDING AS
-    SELECT  edOrgs.SourceEducationOrganizationId, ssa.StudentUSI
-    FROM    auth.EducationOrganizationIdToEducationOrganizationId edOrgs
-        INNER JOIN edfi.StudentSchoolAssociation ssa
-            ON edOrgs.TargetEducationOrganizationId = ssa.SchoolId
-    GROUP BY edOrgs.SourceEducationOrganizationId, ssa.StudentUSI
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'An indication of the barrier to having internet access in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'BarrierToInternetAccessInResidenceDescriptor';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The result from the student''s attempt to take the course, for example:
-        Pass
-        Fail
-        Incomplete
-        Withdrawn.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'CourseTranscript', @level2type = N'COLUMN', @level2name = N'CourseAttemptResultDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The result from the student''s attempt to take the course, for example:
-        Pass
-        Fail
-        Incomplete
-        Withdrawn.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'CourseTranscriptPartialCourseTranscriptAwards', @level2type = N'COLUMN', @level2name = N'CourseAttemptResultDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The primary type of internet service used in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'InternetAccessTypeInResidenceDescriptor';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'Reflects the type of employment or contract; for example:
-        Probationary
-        Contractual
-        Substitute/temporary
-        Tenured or permanent
-        Volunteer/no contract
-        ...', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StaffEducationOrganizationAssignmentAssociation', @level2type = N'COLUMN', @level2name = N'EmploymentStatusDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'An indication of the barrier to having internet access in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociation', @level2type = N'COLUMN', @level2name = N'BarrierToInternetAccessInResidenceDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The primary type of internet service used in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociation', @level2type = N'COLUMN', @level2name = N'InternetAccessTypeInResidenceDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'Previous definition of Ethnicity combining Hispanic/Latino and race:
-        1 - American Indian or Alaskan Native
-        2 - Asian or Pacific Islander
-        3 - Black, not of Hispanic origin
-        4 - Hispanic
-        5 - White, not of Hispanic origin.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociation', @level2type = N'COLUMN', @level2name = N'OldEthnicityDescriptorId';
-GO
-
-EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'A code describing the attendance event, for example:
-        Present
-        Unexcused absence
-        Excused absence
-        Tardy.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentSectionAttendanceEventClassPeriod', @level2type = N'COLUMN', @level2name = N'AttendanceEventCategoryDescriptorId';
-GO
+CREATE TRIGGER deleteauthtuples
+    AFTER DELETE
+    ON edfi.stateeducationagency
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_stateeducationagency_tr_delete();
+CREATE TRIGGER insertauthtuples
+    AFTER INSERT
+    ON edfi.stateeducationagency
+    FOR EACH ROW
+    EXECUTE FUNCTION edfi.edfi_stateeducationagency_tr_insert();
