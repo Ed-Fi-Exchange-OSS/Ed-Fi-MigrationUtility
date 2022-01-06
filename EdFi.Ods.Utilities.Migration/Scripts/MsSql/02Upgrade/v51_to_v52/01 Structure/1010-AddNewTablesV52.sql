@@ -15,12 +15,12 @@ CREATE TABLE [edfi].[AssessmentScoreRangeLearningStandard] (
     [CreateDate]                            DATETIME2 (7)    CONSTRAINT [AssessmentScoreRangeLearningStandard_DF_CreateDate] DEFAULT (getdate()) NOT NULL,
     [LastModifiedDate]                      DATETIME2 (7)    CONSTRAINT [AssessmentScoreRangeLearningStandard_DF_LastModifiedDate] DEFAULT (getdate()) NOT NULL,
     [Id]                                    UNIQUEIDENTIFIER CONSTRAINT [AssessmentScoreRangeLearningStandard_DF_Id] DEFAULT (newid()) NOT NULL,
-    [ChangeVersion]                         BIGINT           DEFAULT (NEXT VALUE FOR [changes].[ChangeVersionSequence]) NOT NULL,
     CONSTRAINT [AssessmentScoreRangeLearningStandard_PK] PRIMARY KEY CLUSTERED ([AssessmentIdentifier] ASC, [Namespace] ASC, [ScoreRangeId] ASC),
     CONSTRAINT [FK_AssessmentScoreRangeLearningStandard_Assessment] FOREIGN KEY ([AssessmentIdentifier], [Namespace]) REFERENCES [edfi].[Assessment] ([AssessmentIdentifier], [Namespace]),
     CONSTRAINT [FK_AssessmentScoreRangeLearningStandard_AssessmentReportingMethodDescriptor] FOREIGN KEY ([AssessmentReportingMethodDescriptorId]) REFERENCES [edfi].[AssessmentReportingMethodDescriptor] ([AssessmentReportingMethodDescriptorId]),
     CONSTRAINT [FK_AssessmentScoreRangeLearningStandard_ObjectiveAssessment] FOREIGN KEY ([AssessmentIdentifier], [IdentificationCode], [Namespace]) REFERENCES [edfi].[ObjectiveAssessment] ([AssessmentIdentifier], [IdentificationCode], [Namespace])
 );
+
 GO
 
 CREATE NONCLUSTERED INDEX [FK_AssessmentScoreRangeLearningStandard_Assessment]
@@ -33,10 +33,6 @@ GO
 
 CREATE NONCLUSTERED INDEX [FK_AssessmentScoreRangeLearningStandard_ObjectiveAssessment]
     ON [edfi].[AssessmentScoreRangeLearningStandard]([AssessmentIdentifier] ASC, [IdentificationCode] ASC, [Namespace] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [UX_AssessmentScoreRangeLearningStandard_ChangeVersion]
-    ON [edfi].[AssessmentScoreRangeLearningStandard]([ChangeVersion] ASC);
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UX_AssessmentScoreRangeLearningStandard_Id]
@@ -62,6 +58,43 @@ GO
 CREATE NONCLUSTERED INDEX [FK_AssessmentScoreRangeLearningStandardLearningStandard_LearningStandard]
     ON [edfi].[AssessmentScoreRangeLearningStandardLearningStandard]([LearningStandardId] ASC);
 GO
+
+
+CREATE TABLE [edfi].[StudentDisciplineIncidentBehaviorAssociation] (
+    [BehaviorDescriptorId]        INT              NOT NULL,
+    [IncidentIdentifier]          NVARCHAR (20)    NOT NULL,
+    [SchoolId]                    INT              NOT NULL,
+    [StudentUSI]                  INT              NOT NULL,
+    [BehaviorDetailedDescription] NVARCHAR (1024)  NULL,
+    [Discriminator]               NVARCHAR (128)   NULL,
+    [CreateDate]                  DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_CreateDate] DEFAULT (getdate()) NOT NULL,
+    [LastModifiedDate]            DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_LastModifiedDate] DEFAULT (getdate()) NOT NULL,
+    [Id]                          UNIQUEIDENTIFIER CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_Id] DEFAULT (newid()) NOT NULL,
+    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_PK] PRIMARY KEY CLUSTERED ([BehaviorDescriptorId] ASC, [IncidentIdentifier] ASC, [SchoolId] ASC, [StudentUSI] ASC),
+    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor] FOREIGN KEY ([BehaviorDescriptorId]) REFERENCES [edfi].[BehaviorDescriptor] ([BehaviorDescriptorId]),
+    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident] FOREIGN KEY ([IncidentIdentifier], [SchoolId]) REFERENCES [edfi].[DisciplineIncident] ([IncidentIdentifier], [SchoolId]),
+    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_Student] FOREIGN KEY ([StudentUSI]) REFERENCES [edfi].[Student] ([StudentUSI])
+);
+GO
+
+CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor]
+    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([BehaviorDescriptorId] ASC);
+GO
+
+CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident]
+    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([IncidentIdentifier] ASC, [SchoolId] ASC);
+GO
+
+CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_Student]
+    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([StudentUSI] ASC);
+GO
+
+
+CREATE UNIQUE NONCLUSTERED INDEX [UX_StudentDisciplineIncidentBehaviorAssociation_Id]
+    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([Id] ASC) WITH (FILLFACTOR = 75, PAD_INDEX = ON);
+GO
+
+
 
 CREATE TABLE [edfi].[DisciplineActionStudentDisciplineIncidentBehaviorAssociation] (
     [BehaviorDescriptorId]       INT           NOT NULL,
@@ -148,44 +181,6 @@ CREATE NONCLUSTERED INDEX [FK_StaffAncestryEthnicOrigin_Staff]
     ON [edfi].[StaffAncestryEthnicOrigin]([StaffUSI] ASC);
 GO
 
-CREATE TABLE [edfi].[StudentDisciplineIncidentBehaviorAssociation] (
-    [BehaviorDescriptorId]        INT              NOT NULL,
-    [IncidentIdentifier]          NVARCHAR (20)    NOT NULL,
-    [SchoolId]                    INT              NOT NULL,
-    [StudentUSI]                  INT              NOT NULL,
-    [BehaviorDetailedDescription] NVARCHAR (1024)  NULL,
-    [Discriminator]               NVARCHAR (128)   NULL,
-    [CreateDate]                  DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_CreateDate] DEFAULT (getdate()) NOT NULL,
-    [LastModifiedDate]            DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_LastModifiedDate] DEFAULT (getdate()) NOT NULL,
-    [Id]                          UNIQUEIDENTIFIER CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_DF_Id] DEFAULT (newid()) NOT NULL,
-    [ChangeVersion]               BIGINT           DEFAULT (NEXT VALUE FOR [changes].[ChangeVersionSequence]) NOT NULL,
-    CONSTRAINT [StudentDisciplineIncidentBehaviorAssociation_PK] PRIMARY KEY CLUSTERED ([BehaviorDescriptorId] ASC, [IncidentIdentifier] ASC, [SchoolId] ASC, [StudentUSI] ASC),
-    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor] FOREIGN KEY ([BehaviorDescriptorId]) REFERENCES [edfi].[BehaviorDescriptor] ([BehaviorDescriptorId]),
-    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident] FOREIGN KEY ([IncidentIdentifier], [SchoolId]) REFERENCES [edfi].[DisciplineIncident] ([IncidentIdentifier], [SchoolId]),
-    CONSTRAINT [FK_StudentDisciplineIncidentBehaviorAssociation_Student] FOREIGN KEY ([StudentUSI]) REFERENCES [edfi].[Student] ([StudentUSI])
-);
-GO
-
-CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor]
-    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([BehaviorDescriptorId] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident]
-    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([IncidentIdentifier] ASC, [SchoolId] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentBehaviorAssociation_Student]
-    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([StudentUSI] ASC);
-GO
-
-CREATE NONCLUSTERED INDEX [UX_StudentDisciplineIncidentBehaviorAssociation_ChangeVersion]
-    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([ChangeVersion] ASC);
-GO
-
-CREATE UNIQUE NONCLUSTERED INDEX [UX_StudentDisciplineIncidentBehaviorAssociation_Id]
-    ON [edfi].[StudentDisciplineIncidentBehaviorAssociation]([Id] ASC) WITH (FILLFACTOR = 75, PAD_INDEX = ON);
-GO
-
 CREATE TABLE [edfi].[StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode] (
     [BehaviorDescriptorId]                            INT           NOT NULL,
     [DisciplineIncidentParticipationCodeDescriptorId] INT           NOT NULL,
@@ -215,7 +210,6 @@ CREATE TABLE [edfi].[StudentDisciplineIncidentNonOffenderAssociation] (
     [CreateDate]         DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentNonOffenderAssociation_DF_CreateDate] DEFAULT (getdate()) NOT NULL,
     [LastModifiedDate]   DATETIME2 (7)    CONSTRAINT [StudentDisciplineIncidentNonOffenderAssociation_DF_LastModifiedDate] DEFAULT (getdate()) NOT NULL,
     [Id]                 UNIQUEIDENTIFIER CONSTRAINT [StudentDisciplineIncidentNonOffenderAssociation_DF_Id] DEFAULT (newid()) NOT NULL,
-    [ChangeVersion]      BIGINT           DEFAULT (NEXT VALUE FOR [changes].[ChangeVersionSequence]) NOT NULL,
     CONSTRAINT [StudentDisciplineIncidentNonOffenderAssociation_PK] PRIMARY KEY CLUSTERED ([IncidentIdentifier] ASC, [SchoolId] ASC, [StudentUSI] ASC),
     CONSTRAINT [FK_StudentDisciplineIncidentNonOffenderAssociation_DisciplineIncident] FOREIGN KEY ([IncidentIdentifier], [SchoolId]) REFERENCES [edfi].[DisciplineIncident] ([IncidentIdentifier], [SchoolId]),
     CONSTRAINT [FK_StudentDisciplineIncidentNonOffenderAssociation_Student] FOREIGN KEY ([StudentUSI]) REFERENCES [edfi].[Student] ([StudentUSI])
@@ -230,9 +224,6 @@ CREATE NONCLUSTERED INDEX [FK_StudentDisciplineIncidentNonOffenderAssociation_St
     ON [edfi].[StudentDisciplineIncidentNonOffenderAssociation]([StudentUSI] ASC);
 GO
 
-CREATE NONCLUSTERED INDEX [UX_StudentDisciplineIncidentNonOffenderAssociation_ChangeVersion]
-    ON [edfi].[StudentDisciplineIncidentNonOffenderAssociation]([ChangeVersion] ASC);
-GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UX_StudentDisciplineIncidentNonOffenderAssociation_Id]
     ON [edfi].[StudentDisciplineIncidentNonOffenderAssociation]([Id] ASC) WITH (FILLFACTOR = 75, PAD_INDEX = ON);
@@ -277,7 +268,3 @@ GO
 CREATE NONCLUSTERED INDEX [FK_StudentEducationOrganizationAssociationAncestryEthnicOrigin_StudentEducationOrganizationAssociation]
     ON [edfi].[StudentEducationOrganizationAssociationAncestryEthnicOrigin]([EducationOrganizationId] ASC, [StudentUSI] ASC);
 GO
-
-
-
-

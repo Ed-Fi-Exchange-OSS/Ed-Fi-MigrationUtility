@@ -8,5 +8,5 @@ CREATE TABLE [edfi].[AncestryEthnicOriginDescriptor] (
     CONSTRAINT [AncestryEthnicOriginDescriptor_PK] PRIMARY KEY CLUSTERED ([AncestryEthnicOriginDescriptorId] ASC),
     CONSTRAINT [FK_AncestryEthnicOriginDescriptor_Descriptor] FOREIGN KEY ([AncestryEthnicOriginDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE
 );
-GO
 
+GO

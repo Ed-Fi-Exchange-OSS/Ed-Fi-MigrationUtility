@@ -3,8 +3,7 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE OR ALTER VIEW auth.LocalEducationAgencyIdToOrganizationDepartmentId 
-  WITH SCHEMABINDING 
+CREATE OR ALTER VIEW [auth].[LocalEducationAgencyIdToOrganizationDepartmentId]
 AS
     SELECT  LocalEducationAgencyId, OrganizationDepartmentId
     FROM    edfi.LocalEducationAgency lea
@@ -19,9 +18,7 @@ AS
             ON sch.SchoolId = od.ParentEducationOrganizationId
 GO
 
-CREATE OR ALTER VIEW auth.OrganizationDepartmentIdToSchoolId 
-  WITH SCHEMABINDING 
-
+CREATE OR ALTER VIEW [auth].[OrganizationDepartmentIdToSchoolId]
 AS
     SELECT  SchoolId, OrganizationDepartmentId
     FROM    edfi.School sch
@@ -31,8 +28,7 @@ GO
 
 
 -- ALTER VIEW auth.educationorganizationidentifiers;
-CREATE OR ALTER VIEW auth.EducationOrganizationIdentifiers 
-WITH SCHEMABINDING 
+CREATE OR ALTER VIEW [auth].[EducationOrganizationIdentifiers]
 AS
 -- NOTE: Multiple results for a single Education Organization are possible if they are a part of multiple Education Organization Networks
 SELECT
@@ -92,8 +88,7 @@ WHERE   --Use same CASE as above to eliminate non-institutions (e.g. Networks)
     END IS NOT NULL
 GO
 
-CREATE OR ALTER VIEW auth.EducationOrganizationIdToLocalEducationAgencyId 
-WITH SCHEMABINDING 
+CREATE OR ALTER VIEW [auth].[EducationOrganizationIdToLocalEducationAgencyId]
 
 AS
     -- Schools in the LEA
@@ -129,7 +124,6 @@ GO
 
 
 CREATE OR ALTER VIEW [auth].[EducationOrganizationIdToSchoolId]
-WITH SCHEMABINDING 
 AS
 -- School-level claims only can access the school
 SELECT SchoolId

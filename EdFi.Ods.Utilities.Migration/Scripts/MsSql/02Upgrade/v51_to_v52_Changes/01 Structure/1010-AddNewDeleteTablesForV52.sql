@@ -41,5 +41,11 @@ CREATE TABLE [tracked_deletes_edfi].[StudentDisciplineIncidentBehaviorAssociatio
 GO
 
 CREATE TABLE [tracked_deletes_edfi].[StudentDisciplineIncidentNonOffenderAssociation] (
-
-
+    [IncidentIdentifier] NVARCHAR (20)    NOT NULL,
+    [SchoolId]           INT              NOT NULL,
+    [StudentUSI]         INT              NOT NULL,
+    [Id]                 UNIQUEIDENTIFIER NOT NULL,
+    [ChangeVersion]      BIGINT           NOT NULL,
+    CONSTRAINT [PK_StudentDisciplineIncidentNonOffenderAssociation] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
+);
+GO

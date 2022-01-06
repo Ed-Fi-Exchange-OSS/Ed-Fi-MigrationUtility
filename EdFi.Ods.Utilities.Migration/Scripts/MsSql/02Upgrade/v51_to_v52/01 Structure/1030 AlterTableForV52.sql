@@ -3,11 +3,12 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-ALTER TABLE [edfi].[EducationOrganizationIndicator] ALTER COLUMN   [IndicatorValue]  NVARCHAR (60) NULL;
-
+ALTER TABLE [edfi].[EducationOrganizationIndicator] 
+ALTER COLUMN  [IndicatorValue]  NVARCHAR (60) NULL;
 GO
 
-ALTER TABLE [edfi].[Parent] ADD [HighestCompletedLevelOfEducationDescriptorId] INT NULL;
+ALTER TABLE [edfi].[Parent] 
+ADD [HighestCompletedLevelOfEducationDescriptorId] INT NULL;
 GO 
 
 CREATE NONCLUSTERED INDEX [FK_Parent_LevelOfEducationDescriptor]
@@ -19,10 +20,12 @@ GO
     REFERENCES [edfi].[LevelOfEducationDescriptor] ([LevelOfEducationDescriptorId])
 GO
 
-ALTER TABLE [edfi].[StudentEducationOrganizationAssociationStudentIndicator] ALTER COLUMN   [Indicator]  NVARCHAR (60) NOT NULL;
+ALTER TABLE [edfi].[StudentEducationOrganizationAssociationStudentIndicator] 
+ALTER COLUMN   [Indicator]  NVARCHAR (60) NOT NULL;
 
 GO
 
-ALTER TABLE [edfi].[StudentParentAssociation] ALTER COLUMN   [LegalGuardian]  BIT NULL;
+ALTER TABLE [edfi].[StudentParentAssociation] 
+ADD  [LegalGuardian]  BIT NULL;
 
 GO

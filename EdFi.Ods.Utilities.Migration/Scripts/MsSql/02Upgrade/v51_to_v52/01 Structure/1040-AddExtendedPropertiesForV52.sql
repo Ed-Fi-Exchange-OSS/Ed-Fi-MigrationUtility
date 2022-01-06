@@ -201,24 +201,24 @@ GO
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The original peoples or cultures with which the individual identifies.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociationAncestryEthnicOrigin';
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'EducationOrganizationAddress';
+EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The set of elements that describes an address for the education entity, including the street address, city, state, ZIP code, and ZIP code + 4.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'EducationOrganizationAddress';
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The fiscal year for which the federal funds are received.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'LocalEducationAgencyFederalFunds', @level2type = N'COLUMN', @level2name = N'FiscalYear';
+EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The fiscal year for which the federal funds are received.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'LocalEducationAgencyFederalFunds', @level2type = N'COLUMN', @level2name = N'FiscalYear';
 GO
 
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The extent of formal instruction an individual has received (e.g., the highest grade in school completed or its equivalent or the highest degree received).', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'Parent', @level2type = N'COLUMN', @level2name = N'HighestCompletedLevelOfEducationDescriptorId';
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Reflects important characteristics of a student. If a student has a characteristic present, that characteristic is considered true or active for that student. If a characteristic is not present, no assumption is made as to the applicability of the characteristic, but local policy may dictate otherwise.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociationStudentCharacteristic';
+EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'Reflects important characteristics of a student. If a student has a characteristic present, that characteristic is considered true or active for that student. If a characteristic is not present, no assumption is made as to the applicability of the characteristic, but local policy may dictate otherwise.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociationStudentCharacteristic';
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'An indicator or metric computed for the student (e.g., at risk).', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociationStudentIndicator';
+EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'An indicator or metric computed for the student (e.g., at risk).', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentEducationOrganizationAssociationStudentIndicator';
 GO
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Indicator of whether the person is a legal guardian for the Student.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentParentAssociation', @level2type = N'COLUMN', @level2name = N'LegalGuardian';
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The nature of an individual''s relationship to a student, primarily used to capture family relationships.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentParentAssociation', @level2type = N'COLUMN', @level2name = N'RelationDescriptorId';
+EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The nature of an individual''s relationship to a student, primarily used to capture family relationships.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentParentAssociation', @level2type = N'COLUMN', @level2name = N'RelationDescriptorId';
 GO
