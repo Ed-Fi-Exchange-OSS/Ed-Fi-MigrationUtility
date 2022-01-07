@@ -116,66 +116,6 @@ CREATE NONCLUSTERED INDEX [FK_StudentSectionAttendanceEventClassPeriod_StudentSe
 
 GO
 
-CREATE TABLE [tracked_deletes_edfi].[BarrierToInternetAccessInResidenceDescriptor] (
-    [BarrierToInternetAccessInResidenceDescriptorId] INT              NOT NULL,
-    [Id]                                             UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                                  BIGINT           NOT NULL,
-    CONSTRAINT [PK_BarrierToInternetAccessInResidenceDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
-CREATE TABLE [tracked_deletes_edfi].[InternetAccessTypeInResidenceDescriptor] (
-    [InternetAccessTypeInResidenceDescriptorId] INT              NOT NULL,
-    [Id]                                        UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                             BIGINT           NOT NULL,
-    CONSTRAINT [PK_InternetAccessTypeInResidenceDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
-CREATE TABLE [tracked_deletes_edfi].[InternetPerformanceInResidenceDescriptor] (
-    [InternetPerformanceInResidenceDescriptorId] INT              NOT NULL,
-    [Id]                                         UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                              BIGINT           NOT NULL,
-    CONSTRAINT [PK_InternetPerformanceInResidenceDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
-CREATE TABLE [tracked_deletes_edfi].[PrimaryLearningDeviceAccessDescriptor] (
-    [PrimaryLearningDeviceAccessDescriptorId] INT              NOT NULL,
-    [Id]                                      UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                           BIGINT           NOT NULL,
-    CONSTRAINT [PK_PrimaryLearningDeviceAccessDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
-CREATE TABLE [tracked_deletes_edfi].[PrimaryLearningDeviceAwayFromSchoolDescriptor] (
-    [PrimaryLearningDeviceAwayFromSchoolDescriptorId] INT              NOT NULL,
-    [Id]                                              UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                                   BIGINT           NOT NULL,
-    CONSTRAINT [PK_PrimaryLearningDeviceAwayFromSchoolDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
-CREATE TABLE [tracked_deletes_edfi].[PrimaryLearningDeviceProviderDescriptor] (
-    [PrimaryLearningDeviceProviderDescriptorId] INT              NOT NULL,
-    [Id]                                        UNIQUEIDENTIFIER NOT NULL,
-    [ChangeVersion]                             BIGINT           NOT NULL,
-    CONSTRAINT [PK_PrimaryLearningDeviceProviderDescriptor] PRIMARY KEY CLUSTERED ([ChangeVersion] ASC)
-);
-
-
-GO
-
 ALTER TABLE [edfi].[CourseTranscriptPartialCourseTranscriptAwards]
     ADD CONSTRAINT [CourseTranscriptPartialCourseTranscriptAwards_DF_CreateDate] DEFAULT (getdate()) FOR [CreateDate];
 
