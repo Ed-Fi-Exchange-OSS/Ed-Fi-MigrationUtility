@@ -3,7 +3,9 @@
 -- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 -- See the LICENSE and NOTICES files in the project root for more information.
 
-CREATE OR ALTER VIEW [auth].[LocalEducationAgencyIdToOrganizationDepartmentId]
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToOrganizationDepartmentId ;
+
+CREATE  VIEW auth.LocalEducationAgencyIdToOrganizationDepartmentId
 AS
     SELECT  LocalEducationAgencyId, OrganizationDepartmentId
     FROM    edfi.LocalEducationAgency lea
@@ -15,20 +17,23 @@ AS
     SELECT  LocalEducationAgencyId, OrganizationDepartmentId
     FROM    edfi.School sch
         INNER JOIN edfi.OrganizationDepartment od
-            ON sch.SchoolId = od.ParentEducationOrganizationId
-GO
+            ON sch.SchoolId = od.ParentEducationOrganizationId;
 
-CREATE OR ALTER VIEW [auth].[OrganizationDepartmentIdToSchoolId]
+DROP VIEW IF EXISTS auth.OrganizationDepartmentIdToSchoolId ;
+
+CREATE  VIEW auth.OrganizationDepartmentIdToSchoolId
 AS
     SELECT  SchoolId, OrganizationDepartmentId
     FROM    edfi.School sch
         INNER JOIN edfi.OrganizationDepartment od
-            ON sch.SchoolId = od.ParentEducationOrganizationId
-GO
+            ON sch.SchoolId = od.ParentEducationOrganizationId;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToEducationServiceCenterId ;
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStateAgencyId;
+DROP VIEW IF EXISTS auth.EducationOrganizationIdentifiers ;
 
 -- ALTER VIEW auth.educationorganizationidentifiers;
-CREATE OR ALTER VIEW [auth].[EducationOrganizationIdentifiers]
+CREATE  VIEW auth.EducationOrganizationIdentifiers
 AS
 -- NOTE: Multiple results for a single Education Organization are possible if they are a part of multiple Education Organization Networks
 SELECT
@@ -85,10 +90,58 @@ WHERE   --Use same CASE as above to eliminate non-institutions (e.g. Networks)
         WHEN cp.CommunityProviderId IS NOT NULL THEN N'CommunityProvider'
         WHEN psi.PostSecondaryInstitutionId IS NOT NULL THEN N'PostSecondaryInstitution'
         WHEN od.OrganizationDepartmentId IS NOT NULL THEN N'OrganizationDepartment'
-    END IS NOT NULL
-GO
+    END IS NOT NULL;
 
-CREATE OR ALTER VIEW [auth].[EducationOrganizationIdToLocalEducationAgencyId]
+CREATE OR REPLACE VIEW auth.EducationOrganizationIdToStateAgencyId
+AS
+-- Only ESCs, LEAs and Schools are accessible to State-level claims
+    SELECT StateEducationAgencyId
+         ,EducationServiceCenterId AS EducationOrganizationId
+    FROM auth.EducationOrganizationIdentifiers
+    WHERE EducationServiceCenterId IS NOT NULL
+
+    UNION
+    SELECT StateEducationAgencyId
+         ,LocalEducationAgencyId AS EducationOrganizationId
+    FROM auth.EducationOrganizationIdentifiers
+    WHERE LocalEducationAgencyId IS NOT NULL
+
+    UNION
+    SELECT StateEducationAgencyId
+         ,SchoolId AS EducationOrganizationId
+    FROM auth.EducationOrganizationIdentifiers
+    WHERE SchoolId IS NOT NULL
+
+    UNION
+-- State-level claims also can access the State
+    SELECT StateEducationAgencyId
+         ,StateEducationAgencyId AS EducationOrganizationId
+    FROM edfi.StateEducationAgency;
+
+CREATE  OR REPLACE VIEW auth.EducationOrganizationIdToEducationServiceCenterId
+AS
+-- Only LEAs and Schools are accessible to ESC-level claims
+    SELECT EducationServiceCenterId
+         ,LocalEducationAgencyId AS EducationOrganizationId
+    FROM auth.EducationOrganizationIdentifiers
+    WHERE LocalEducationAgencyId IS NOT NULL
+
+    UNION
+    SELECT EducationServiceCenterId
+         ,SchoolId AS EducationOrganizationId
+    FROM auth.EducationOrganizationIdentifiers
+    WHERE SchoolId IS NOT NULL
+
+    UNION
+-- ESC-level claims also can access the ESC
+    SELECT EducationServiceCenterId
+         ,EducationServiceCenterId AS EducationOrganizationId
+    FROM edfi.EducationServiceCenter;
+
+
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToLocalEducationAgencyId ;
+
+CREATE  VIEW auth.EducationOrganizationIdToLocalEducationAgencyId
 
 AS
     -- Schools in the LEA
@@ -119,11 +172,11 @@ AS
          ,OrganizationDepartmentId AS EducationOrganizationId
     FROM edfi.LocalEducationAgency lea
         INNER JOIN edfi.OrganizationDepartment od
-            ON lea.LocalEducationAgencyId = od.ParentEducationOrganizationId
-GO
+            ON lea.LocalEducationAgencyId = od.ParentEducationOrganizationId;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToSchoolId ;
 
-CREATE OR ALTER VIEW [auth].[EducationOrganizationIdToSchoolId]
+CREATE  VIEW auth.EducationOrganizationIdToSchoolId
 AS
 -- School-level claims only can access the school
 SELECT SchoolId
@@ -138,10 +191,11 @@ SELECT SchoolId
 FROM edfi.School sch
     INNER JOIN edfi.OrganizationDepartment od
         ON sch.SchoolId = od.ParentEducationOrganizationId;
-GO
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStaffUSI;
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToStaffUSI ;
 
-CREATE OR ALTER VIEW [auth].[LocalEducationAgencyIdToStaffUSI]
+CREATE  VIEW auth.LocalEducationAgencyIdToStaffUSI
 AS
     -- LEA to Staff (through LEA employment)
     SELECT lea.LocalEducationAgencyId
@@ -220,22 +274,26 @@ AS
             ON sch.SchoolId = od.ParentEducationOrganizationId
         INNER JOIN auth.EducationOrganizationToStaffUSI_Assignment assgn
             ON od.OrganizationDepartmentId = assgn.EducationOrganizationId;
-GO
 
-CREATE OR ALTER VIEW [auth].[ParentUSIToSchoolId]
+DROP VIEW IF EXISTS auth.ParentUSIToSchoolId ;
+
+CREATE  VIEW auth.ParentUSIToSchoolId
+
 AS
     -- School to Parent USI
     SELECT ssa.SchoolId
         ,spa.ParentUSI
-        ,COUNT_BIG(*) AS Count
+        ,COUNT(*) AS Count
     FROM edfi.StudentSchoolAssociation ssa
             INNER JOIN edfi.StudentParentAssociation spa ON
             ssa.StudentUSI = spa.StudentUSI
     GROUP BY spa.ParentUSI
         ,SchoolId;
-GO
 
-CREATE OR ALTER VIEW [auth].[SchoolIdToStaffUSI]
+
+DROP VIEW IF EXISTS auth.SchoolIdToStaffUSI ;
+
+CREATE  VIEW auth.SchoolIdToStaffUSI
 AS
     -- School to Staff (through School employment)
     SELECT sch.SchoolId
@@ -274,5 +332,16 @@ AS
             ON sch.SchoolId = od.ParentEducationOrganizationId
         INNER JOIN edfi.StaffEducationOrganizationAssignmentAssociation seo_assgn
             ON od.OrganizationDepartmentId = seo_assgn.EducationOrganizationId;
-GO
+
+CREATE VIEW auth.EducationOrganizationIdToStaffUSI
+AS
+    SELECT SchoolId AS EducationOrganizationId
+         ,StaffUSI
+    FROM auth.SchoolIdToStaffUSI
+
+    UNION ALL
+
+    SELECT LocalEducationAgencyId AS EducationOrganizationId
+         ,StaffUSI
+    FROM auth.LocalEducationAgencyIdToStaffUSI;
 
