@@ -1,105 +1,3 @@
-CREATE FUNCTION tracked_deletes_edfi.barriertointernetaccessinresidencedescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.BarrierToInternetAccessInResidenceDescriptor(BarrierToInternetAccessInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT OLD.BarrierToInternetAccessInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.BarrierToInternetAccessInResidenceDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.barriertointernetaccessinresidencedescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
-CREATE FUNCTION tracked_deletes_edfi.internetaccesstypeinresidencedescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.InternetAccessTypeInResidenceDescriptor(InternetAccessTypeInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT OLD.InternetAccessTypeInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.InternetAccessTypeInResidenceDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.internetaccesstypeinresidencedescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
-CREATE FUNCTION tracked_deletes_edfi.internetperformanceinresidencedescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.InternetPerformanceInResidenceDescriptor(InternetPerformanceInResidenceDescriptorId, Id, ChangeVersion)
-    SELECT OLD.InternetPerformanceInResidenceDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.InternetPerformanceInResidenceDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.internetperformanceinresidencedescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
-CREATE FUNCTION tracked_deletes_edfi.primarylearningdeviceaccessdescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAccessDescriptor(PrimaryLearningDeviceAccessDescriptorId, Id, ChangeVersion)
-    SELECT OLD.PrimaryLearningDeviceAccessDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceAccessDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.primarylearningdeviceaccessdescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
-CREATE FUNCTION tracked_deletes_edfi.primarylearningdeviceawayfromschooldescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor(PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, ChangeVersion)
-    SELECT OLD.PrimaryLearningDeviceAwayFromSchoolDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceAwayFromSchoolDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.primarylearningdeviceawayfromschooldescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
-CREATE FUNCTION tracked_deletes_edfi.primarylearningdeviceproviderdescriptor_tr_deltrkg()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF
-AS $BODY$
-BEGIN
-    INSERT INTO tracked_deletes_edfi.PrimaryLearningDeviceProviderDescriptor(PrimaryLearningDeviceProviderDescriptorId, Id, ChangeVersion)
-    SELECT OLD.PrimaryLearningDeviceProviderDescriptorId, Id, nextval('changes.ChangeVersionSequence')
-    FROM edfi.Descriptor WHERE DescriptorId = OLD.PrimaryLearningDeviceProviderDescriptorId;
-    RETURN NULL;
-END;
-$BODY$;
-
-ALTER FUNCTION tracked_deletes_edfi.primarylearningdeviceproviderdescriptor_tr_deltrkg()
-    OWNER TO postgres;
-
 CREATE TABLE auth.educationorganizationidtoeducationorganizationid
 (
     sourceeducationorganizationid integer NOT NULL,
@@ -248,11 +146,6 @@ COMMENT ON TABLE edfi.internetaccesstypeinresidencedescriptor
 COMMENT ON COLUMN edfi.internetaccesstypeinresidencedescriptor.internetaccesstypeinresidencedescriptorid
     IS 'A unique identifier used as Primary Key, not derived from business logic, when acting as Foreign Key, references the parent table.';
 
-CREATE TRIGGER trackdeletes
-    AFTER DELETE
-    ON edfi.internetaccesstypeinresidencedescriptor
-    FOR EACH ROW
-    EXECUTE FUNCTION tracked_deletes_edfi.internetaccesstypeinresidencedescriptor_tr_deltrkg();
 CREATE TABLE edfi.internetperformanceinresidencedescriptor
 (
     internetperformanceinresidencedescriptorid integer NOT NULL,
@@ -276,11 +169,6 @@ COMMENT ON TABLE edfi.internetperformanceinresidencedescriptor
 COMMENT ON COLUMN edfi.internetperformanceinresidencedescriptor.internetperformanceinresidencedescriptorid
     IS 'A unique identifier used as Primary Key, not derived from business logic, when acting as Foreign Key, references the parent table.';
 
-CREATE TRIGGER trackdeletes
-    AFTER DELETE
-    ON edfi.internetperformanceinresidencedescriptor
-    FOR EACH ROW
-    EXECUTE FUNCTION tracked_deletes_edfi.internetperformanceinresidencedescriptor_tr_deltrkg();
 CREATE TABLE edfi.primarylearningdeviceaccessdescriptor
 (
     primarylearningdeviceaccessdescriptorid integer NOT NULL,
@@ -304,11 +192,6 @@ COMMENT ON TABLE edfi.primarylearningdeviceaccessdescriptor
 COMMENT ON COLUMN edfi.primarylearningdeviceaccessdescriptor.primarylearningdeviceaccessdescriptorid
     IS 'A unique identifier used as Primary Key, not derived from business logic, when acting as Foreign Key, references the parent table.';
 
-CREATE TRIGGER trackdeletes
-    AFTER DELETE
-    ON edfi.primarylearningdeviceaccessdescriptor
-    FOR EACH ROW
-    EXECUTE FUNCTION tracked_deletes_edfi.primarylearningdeviceaccessdescriptor_tr_deltrkg();
 CREATE TABLE edfi.primarylearningdeviceawayfromschooldescriptor
 (
     primarylearningdeviceawayfromschooldescriptorid integer NOT NULL,
@@ -332,11 +215,6 @@ COMMENT ON TABLE edfi.primarylearningdeviceawayfromschooldescriptor
 COMMENT ON COLUMN edfi.primarylearningdeviceawayfromschooldescriptor.primarylearningdeviceawayfromschooldescriptorid
     IS 'A unique identifier used as Primary Key, not derived from business logic, when acting as Foreign Key, references the parent table.';
 
-CREATE TRIGGER trackdeletes
-    AFTER DELETE
-    ON edfi.primarylearningdeviceawayfromschooldescriptor
-    FOR EACH ROW
-    EXECUTE FUNCTION tracked_deletes_edfi.primarylearningdeviceawayfromschooldescriptor_tr_deltrkg();
 CREATE TABLE edfi.primarylearningdeviceproviderdescriptor
 (
     primarylearningdeviceproviderdescriptorid integer NOT NULL,
@@ -359,14 +237,6 @@ COMMENT ON TABLE edfi.primarylearningdeviceproviderdescriptor
 
 COMMENT ON COLUMN edfi.primarylearningdeviceproviderdescriptor.primarylearningdeviceproviderdescriptorid
     IS 'A unique identifier used as Primary Key, not derived from business logic, when acting as Foreign Key, references the parent table.';
-
-CREATE TRIGGER trackdeletes
-    AFTER DELETE
-    ON edfi.primarylearningdeviceproviderdescriptor
-    FOR EACH ROW
-    EXECUTE FUNCTION tracked_deletes_edfi.primarylearningdeviceproviderdescriptor_tr_deltrkg();
-
-
 
 CREATE TABLE edfi.studentsectionattendanceeventclassperiod
 (
@@ -435,62 +305,8 @@ CREATE INDEX fk_80c6c1_classperiod
     ON edfi.studentsectionattendanceeventclassperiod USING btree
     (classperiodname COLLATE pg_catalog."default" ASC NULLS LAST, schoolid ASC NULLS LAST)
     TABLESPACE pg_default;
+
 CREATE INDEX fk_80c6c1_studentsectionattendanceevent
     ON edfi.studentsectionattendanceeventclassperiod USING btree
     (attendanceeventcategorydescriptorid ASC NULLS LAST, eventdate ASC NULLS LAST, localcoursecode COLLATE pg_catalog."default" ASC NULLS LAST, schoolid ASC NULLS LAST, schoolyear ASC NULLS LAST, sectionidentifier COLLATE pg_catalog."default" ASC NULLS LAST, sessionname COLLATE pg_catalog."default" ASC NULLS LAST, studentusi ASC NULLS LAST)
     TABLESPACE pg_default;
-
-
-CREATE TABLE tracked_deletes_edfi.BarrierToInternetAccessInResidenceDescriptor (
-    BarrierToInternetAccessInResidenceDescriptorId INT              NOT NULL,
-    Id                                             uuid NOT NULL,
-    ChangeVersion                                  BIGINT           NOT NULL,
-    CONSTRAINT PK_BarrierToInternetAccessInResidenceDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
-
-CREATE TABLE tracked_deletes_edfi.InternetAccessTypeInResidenceDescriptor (
-    InternetAccessTypeInResidenceDescriptorId INT              NOT NULL,
-    Id                                        uuid NOT NULL,
-    ChangeVersion                             BIGINT           NOT NULL,
-    CONSTRAINT PK_InternetAccessTypeInResidenceDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
-
-CREATE TABLE tracked_deletes_edfi.InternetPerformanceInResidenceDescriptor (
-    InternetPerformanceInResidenceDescriptorId INT              NOT NULL,
-    Id                                         uuid NOT NULL,
-    ChangeVersion                              BIGINT           NOT NULL,
-    CONSTRAINT PK_InternetPerformanceInResidenceDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
-
-CREATE TABLE tracked_deletes_edfi.PrimaryLearningDeviceAccessDescriptor (
-    PrimaryLearningDeviceAccessDescriptorId INT              NOT NULL,
-    Id                                      uuid NOT NULL,
-    ChangeVersion                           BIGINT           NOT NULL,
-    CONSTRAINT PK_PrimaryLearningDeviceAccessDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
-
-CREATE TABLE tracked_deletes_edfi.PrimaryLearningDeviceAwayFromSchoolDescriptor (
-    PrimaryLearningDeviceAwayFromSchoolDescriptorId INT              NOT NULL,
-    Id                                              uuid NOT NULL,
-    ChangeVersion                                   BIGINT           NOT NULL,
-    CONSTRAINT PK_PrimaryLearningDeviceAwayFromSchoolDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
-
-CREATE TABLE tracked_deletes_edfi.PrimaryLearningDeviceProviderDescriptor (
-    PrimaryLearningDeviceProviderDescriptorId INT              NOT NULL,
-    Id                                        uuid NOT NULL,
-    ChangeVersion                             BIGINT           NOT NULL,
-    CONSTRAINT PK_PrimaryLearningDeviceProviderDescriptor PRIMARY KEY (ChangeVersion)
-);
-
-
