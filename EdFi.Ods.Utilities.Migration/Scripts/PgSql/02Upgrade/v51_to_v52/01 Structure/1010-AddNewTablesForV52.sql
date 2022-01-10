@@ -80,7 +80,7 @@ CREATE  INDEX FK_f4934f_DisciplineIncident
 CREATE  INDEX FK_f4934f_Student
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(StudentUSI );
 
-CREATE  INDEX UX_StudentDisciplineIncidentBehaviorAssociation_Id
+CREATE UNIQUE INDEX ux_f4934f_id
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(Id );
 
 CREATE TABLE edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation (

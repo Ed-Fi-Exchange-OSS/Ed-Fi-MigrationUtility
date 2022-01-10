@@ -16,7 +16,7 @@ ALTER TABLE edfi.StudentDisciplineIncidentBehaviorAssociation
     ADD ChangeVersion BIGINT DEFAULT nextval('changes.ChangeVersionSequence') NOT NULL;
 
 
-CREATE  INDEX UX_StudentDisciplineIncidentBehaviorAssociation_ChangeVersion
+CREATE  INDEX ux_f4934f_changeversion
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(ChangeVersion );
 
 
@@ -24,7 +24,7 @@ ALTER TABLE edfi.StudentDisciplineIncidentNonOffenderAssociation
     ADD ChangeVersion BIGINT DEFAULT nextval('changes.ChangeVersionSequence') NOT NULL;
 
 
-CREATE  INDEX UX_StudentDisciplineIncidentNonOffenderAssociation_ChangeVersion
+CREATE  INDEX ux_4b43da_changeversion
     ON edfi.StudentDisciplineIncidentNonOffenderAssociation(ChangeVersion );
 
 
