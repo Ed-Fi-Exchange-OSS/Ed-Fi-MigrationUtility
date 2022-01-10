@@ -26,6 +26,4 @@ ALTER COLUMN Indicator  TYPE character varying(60) ,
 ALTER COLUMN Indicator SET NOT NULL;
 
 ALTER TABLE edfi.StudentParentAssociation
-ADD COLUMN LegalGuardian bit(1),
-ALTER COLUMN legalguardian SET NOT NULL,
-ALTER COLUMN legalguardian SET STORAGE EXTENDED;
+ADD COLUMN LegalGuardian BOOLEAN NULL;

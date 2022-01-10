@@ -65,19 +65,19 @@ CREATE TABLE edfi.StudentDisciplineIncidentBehaviorAssociation (
     LastModifiedDate            TIMESTAMP    DEFAULT current_timestamp NOT NULL,
     Id                          UUID DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT StudentDisciplineIncidentBehaviorAssociation_PK PRIMARY KEY (BehaviorDescriptorId , IncidentIdentifier , SchoolId , StudentUSI ),
-    CONSTRAINT FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor FOREIGN KEY (BehaviorDescriptorId) REFERENCES edfi.BehaviorDescriptor (BehaviorDescriptorId),
-    CONSTRAINT FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident FOREIGN KEY (IncidentIdentifier, SchoolId) REFERENCES edfi.DisciplineIncident (IncidentIdentifier, SchoolId),
-    CONSTRAINT FK_StudentDisciplineIncidentBehaviorAssociation_Student FOREIGN KEY (StudentUSI) REFERENCES edfi.Student (StudentUSI)
+    CONSTRAINT FK_f4934f_BehaviorDescriptor FOREIGN KEY (BehaviorDescriptorId) REFERENCES edfi.BehaviorDescriptor (BehaviorDescriptorId),
+    CONSTRAINT FK_f4934f_DisciplineIncident FOREIGN KEY (IncidentIdentifier, SchoolId) REFERENCES edfi.DisciplineIncident (IncidentIdentifier, SchoolId),
+    CONSTRAINT FK_f4934f_Student FOREIGN KEY (StudentUSI) REFERENCES edfi.Student (StudentUSI)
 );
 
 
-CREATE  INDEX FK_StudentDisciplineIncidentBehaviorAssociation_BehaviorDescriptor
+CREATE  INDEX FK_f4934f_BehaviorDescriptor
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(BehaviorDescriptorId );
 
-CREATE  INDEX FK_StudentDisciplineIncidentBehaviorAssociation_DisciplineIncident
+CREATE  INDEX FK_f4934f_DisciplineIncident
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(IncidentIdentifier , SchoolId );
 
-CREATE  INDEX FK_StudentDisciplineIncidentBehaviorAssociation_Student
+CREATE  INDEX FK_f4934f_Student
     ON edfi.StudentDisciplineIncidentBehaviorAssociation(StudentUSI );
 
 CREATE  INDEX UX_StudentDisciplineIncidentBehaviorAssociation_Id
@@ -163,25 +163,25 @@ CREATE  INDEX fk_a4a6ae_staff
     ON edfi.StaffAncestryEthnicOrigin(StaffUSI );
 
 
-CREATE TABLE edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode (
+CREATE TABLE edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21 (
     BehaviorDescriptorId                            INT           NOT NULL,
     DisciplineIncidentParticipationCodeDescriptorId INT           NOT NULL,
     IncidentIdentifier                              VARCHAR (20) NOT NULL,
     SchoolId                                        INT           NOT NULL,
     StudentUSI                                      INT           NOT NULL,
     CreateDate                                      TIMESTAMP    DEFAULT current_timestamp NOT NULL,
-    CONSTRAINT DisciplineIncidentParticipationCode_PK PRIMARY KEY  (BehaviorDescriptorId , DisciplineIncidentParticipationCodeDescriptorId , IncidentIdentifier , SchoolId , StudentUSI ),
-    CONSTRAINT FK_DisciplineIncidentParticipationCode_DisciplineIncidentParticipationCodeDescriptor FOREIGN KEY (DisciplineIncidentParticipationCodeDescriptorId) REFERENCES edfi.DisciplineIncidentParticipationCodeDescriptor (DisciplineIncidentParticipationCodeDescriptorId),
-    CONSTRAINT FK_DisciplineIncidentParticipationCode_StudentDisciplineIncidentBehaviorAssociation FOREIGN KEY (BehaviorDescriptorId, IncidentIdentifier, SchoolId, StudentUSI) REFERENCES edfi.StudentDisciplineIncidentBehaviorAssociation (BehaviorDescriptorId, IncidentIdentifier, SchoolId, StudentUSI) ON DELETE CASCADE
+    CONSTRAINT StudentDisciplineIncidentBehaviorAssociationDiscip_ae6a21_PK PRIMARY KEY  (BehaviorDescriptorId , DisciplineIncidentParticipationCodeDescriptorId , IncidentIdentifier , SchoolId , StudentUSI ),
+    CONSTRAINT FK_ae6a21_DisciplineIncidentParticipationCodeDescriptor FOREIGN KEY (DisciplineIncidentParticipationCodeDescriptorId) REFERENCES edfi.DisciplineIncidentParticipationCodeDescriptor (DisciplineIncidentParticipationCodeDescriptorId),
+    CONSTRAINT FK_ae6a21_StudentDisciplineIncidentBehaviorAssociation FOREIGN KEY (BehaviorDescriptorId, IncidentIdentifier, SchoolId, StudentUSI) REFERENCES edfi.StudentDisciplineIncidentBehaviorAssociation (BehaviorDescriptorId, IncidentIdentifier, SchoolId, StudentUSI) ON DELETE CASCADE
 );
 
 
-CREATE  INDEX FK_DisciplineIncidentParticipationCode_DisciplineIncidentParticipationCodeDescriptor
-    ON edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode(DisciplineIncidentParticipationCodeDescriptorId );
+CREATE  INDEX FK_ae6a21_DisciplineIncidentParticipationCodeDescriptor
+    ON edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21(DisciplineIncidentParticipationCodeDescriptorId );
 
 
-CREATE  INDEX FK_DisciplineIncidentParticipationCode_StudentDisciplineIncidentBehaviorAssociation
-    ON edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode(BehaviorDescriptorId , IncidentIdentifier , SchoolId , StudentUSI );
+CREATE  INDEX FK_ae6a21_StudentDisciplineIncidentBehaviorAssociation
+    ON edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21(BehaviorDescriptorId , IncidentIdentifier , SchoolId , StudentUSI );
 
 
 CREATE TABLE edfi.StudentDisciplineIncidentNonOffenderAssociation (
@@ -210,23 +210,23 @@ CREATE UNIQUE INDEX ux_4b43da_id
     ON edfi.StudentDisciplineIncidentNonOffenderAssociation(Id );
 
 
-CREATE TABLE edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode (
+CREATE TABLE edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a (
     DisciplineIncidentParticipationCodeDescriptorId INT           NOT NULL,
     IncidentIdentifier                              VARCHAR (20) NOT NULL,
     SchoolId                                        INT           NOT NULL,
     StudentUSI                                      INT           NOT NULL,
     CreateDate                      TIMESTAMP    DEFAULT current_timestamp NOT NULL,
-    CONSTRAINT SDINADIPC_PK PRIMARY KEY  (DisciplineIncidentParticipationCodeDescriptorId , IncidentIdentifier , SchoolId , StudentUSI ),
-    CONSTRAINT FK_SDINADIPC_DisciplineIncidentParticipationCodeDescrip FOREIGN KEY (DisciplineIncidentParticipationCodeDescriptorId) REFERENCES edfi.DisciplineIncidentParticipationCodeDescriptor (DisciplineIncidentParticipationCodeDescriptorId),
-    CONSTRAINT FK_SDINADIPC_StudentDisciplineIncidentNonOffenderAssoci FOREIGN KEY (IncidentIdentifier, SchoolId, StudentUSI) REFERENCES edfi.StudentDisciplineIncidentNonOffenderAssociation (IncidentIdentifier, SchoolId, StudentUSI) ON DELETE CASCADE
+    CONSTRAINT StudentDisciplineIncidentNonOffenderAssociationDis_4c979a_PK PRIMARY KEY  (DisciplineIncidentParticipationCodeDescriptorId , IncidentIdentifier , SchoolId , StudentUSI ),
+    CONSTRAINT FK_4c979a_DisciplineIncidentParticipationCodeDescriptor FOREIGN KEY (DisciplineIncidentParticipationCodeDescriptorId) REFERENCES edfi.DisciplineIncidentParticipationCodeDescriptor (DisciplineIncidentParticipationCodeDescriptorId),
+    CONSTRAINT FK_4c979a_StudentDisciplineIncidentNonOffenderAssociation FOREIGN KEY (IncidentIdentifier, SchoolId, StudentUSI) REFERENCES edfi.StudentDisciplineIncidentNonOffenderAssociation (IncidentIdentifier, SchoolId, StudentUSI) ON DELETE CASCADE
 );
 
 
-CREATE  INDEX FK_SDINADIPC_DisciplineIncidentParticipationCodeDescrip
-    ON edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode(DisciplineIncidentParticipationCodeDescriptorId );
+CREATE  INDEX FK_4c979a_DisciplineIncidentParticipationCodeDescriptor
+    ON edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a(DisciplineIncidentParticipationCodeDescriptorId );
 
-CREATE  INDEX FK_SDINADIPC_StudentDisciplineIncidentNonOffenderAssoci
-    ON edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode(IncidentIdentifier , SchoolId , StudentUSI );
+CREATE  INDEX FK_4c979a_StudentDisciplineIncidentNonOffenderAssociation
+    ON edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a(IncidentIdentifier , SchoolId , StudentUSI );
 
 CREATE TABLE edfi.StudentEducationOrganizationAssociationAncestryEthnicOrigin (
     AncestryEthnicOriginDescriptorId INT           NOT NULL,

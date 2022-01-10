@@ -145,22 +145,22 @@ COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociation.StudentUSI I
 COMMENT ON TABLE edfi.StudentDisciplineIncidentBehaviorAssociation IS 'This association describes the behavior of students involved in a discipline incident.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode.BehaviorDescriptorId IS 'Describes behavior by catery.';
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.BehaviorDescriptorId IS 'Describes behavior by catery.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode.DisciplineIncidentParticipationCodeDescriptorId IS 'The role or type of participation of a student in a discipline incident.';
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.DisciplineIncidentParticipationCodeDescriptorId IS 'The role or type of participation of a student in a discipline incident.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode.IncidentIdentifier IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.IncidentIdentifier IS 
 'A locally assigned unique identifier (within the school or school district) to identify each specific DisciplineIncident or occurrence. The same identifier should be used to document the entire DisciplineIncident even if it included multiple offenses and multiple offenders.';
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode.SchoolId IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.SchoolId IS 
 'The identifier assigned to a school.';
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode.StudentUSI IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.StudentUSI IS 
 'A unique alphanumeric code assigned to a student.';
 
-COMMENT ON TABLE edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIncidentParticipationCode IS 
+COMMENT ON TABLE edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21 IS 
 'The role or type of participation of a student in a discipline incident.';
 
 
@@ -177,22 +177,22 @@ COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociation.StudentUS
 COMMENT ON TABLE edfi.StudentDisciplineIncidentNonOffenderAssociation IS 'This association indicates those students who were involved and not perpetrators for a discipline incident.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode.DisciplineIncidentParticipationCodeDescriptorId IS 'The role or type of participation of a student in a discipline incident.';
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a.DisciplineIncidentParticipationCodeDescriptorId IS 'The role or type of participation of a student in a discipline incident.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode.IncidentIdentifier IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a.IncidentIdentifier IS 
 'A locally assigned unique identifier (within the school or school district) to identify each specific DisciplineIncident or occurrence. The same identifier should be used to document the entire DisciplineIncident even if it included multiple offenses and multiple offenders.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode.SchoolId IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a.SchoolId IS 
 'The identifier assigned to a school.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode.StudentUSI IS 
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a.StudentUSI IS 
 'A unique alphanumeric code assigned to a student.';
 
 
-COMMENT ON TABLE edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplineIncidentParticipationCode IS 
+COMMENT ON TABLE edfi.StudentDisciplineIncidentNonOffenderAssociationDisciplin_4c979a IS 
 'The role or type of participation of a student in a discipline incident.';
 
 
