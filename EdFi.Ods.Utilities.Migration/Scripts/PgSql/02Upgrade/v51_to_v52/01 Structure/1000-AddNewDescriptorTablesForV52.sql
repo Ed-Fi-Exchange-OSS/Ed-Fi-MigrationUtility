@@ -6,6 +6,6 @@
 CREATE TABLE edfi.AncestryEthnicOriginDescriptor (
     AncestryEthnicOriginDescriptorId INT NOT NULL,
     CONSTRAINT AncestryEthnicOriginDescriptor_PK PRIMARY KEY (AncestryEthnicOriginDescriptorId),
-    CONSTRAINT FK_AncestryEthnicOriginDescriptor_Descriptor FOREIGN KEY (AncestryEthnicOriginDescriptorId) REFERENCES edfi.Descriptor (DescriptorId) ON DELETE CASCADE
+    CONSTRAINT fk_a21217_descriptor FOREIGN KEY (AncestryEthnicOriginDescriptorId) REFERENCES edfi.Descriptor (DescriptorId) ON DELETE CASCADE
 );
 

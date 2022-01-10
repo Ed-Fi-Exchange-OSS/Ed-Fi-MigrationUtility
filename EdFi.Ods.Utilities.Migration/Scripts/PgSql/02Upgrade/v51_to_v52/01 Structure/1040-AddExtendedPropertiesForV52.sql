@@ -49,6 +49,9 @@ IS 'A unique number or alphanumeric code assigned to the score range associated 
 COMMENT ON TABLE edfi.AssessmentScoreRangeLearningStandardLearningStandard
 IS 'LearningStandard associated with the score range.';
 
+COMMENT ON TABLE edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation
+IS 'A reference to the behavior(s) by the student that led or contributed to this specific action.';
+
 COMMENT ON COLUMN edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation.BehaviorDescriptorId
 IS 'Describes behavior by catery.';
 
@@ -67,8 +70,6 @@ IS 'The identifier assigned to a school.';
 COMMENT ON COLUMN edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation.StudentUSI 
 IS 'A unique alphanumeric code assigned to a student.';
 
-COMMENT ON TABLE edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation
-IS 'A reference to the behavior(s) by the student that led or contributed to this specific action.';
 
 COMMENT ON COLUMN edfi.GeneralStudentProgramAssociationProgramParticipationStatus.BeginDate
 IS 'The earliest date the student is involved with the program. Typically, this is the date the student becomes eligible for the program.';

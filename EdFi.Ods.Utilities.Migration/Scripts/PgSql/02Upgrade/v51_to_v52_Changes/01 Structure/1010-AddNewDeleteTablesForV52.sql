@@ -5,9 +5,9 @@
 
 CREATE TABLE tracked_deletes_edfi.AncestryEthnicOriginDescriptor (
     AncestryEthnicOriginDescriptorId INT              NOT NULL,
-    Id                               UUID CONSTRAINT AncestryEthnicOriginDescriptor_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                               UUID             NOT NULL,
     ChangeVersion                    BIGINT           NOT NULL,
-    CONSTRAINT PK_AncestryEthnicOriginDescriptor PRIMARY KEY  (ChangeVersion )
+    CONSTRAINT AncestryEthnicOriginDescriptor_PK PRIMARY KEY  (ChangeVersion )
 );
 
 
@@ -15,17 +15,17 @@ CREATE TABLE tracked_deletes_edfi.AssessmentScoreRangeLearningStandard (
     AssessmentIdentifier VARCHAR (60)    NOT NULL,
     Namespace            VARCHAR (255)   NOT NULL,
     ScoreRangeId         VARCHAR (60)    NOT NULL,
-    Id                   UUID CONSTRAINT AssessmentScoreRangeLearningStandard_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                   UUID            NOT NULL,
     ChangeVersion        BIGINT           NOT NULL,
-    CONSTRAINT PK_AssessmentScoreRangeLearningStandard PRIMARY KEY  (ChangeVersion )
+    CONSTRAINT AssessmentScoreRangeLearningStandard_PK PRIMARY KEY  (ChangeVersion )
 );
 
 
 CREATE TABLE tracked_deletes_edfi.OrganizationDepartment (
     OrganizationDepartmentId INT              NOT NULL,
-    Id                       UUID CONSTRAINT OrganizationDepartment_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                       UUID             NOT NULL,
     ChangeVersion            BIGINT           NOT NULL,
-    CONSTRAINT PK_OrganizationDepartment PRIMARY KEY  (ChangeVersion )
+    CONSTRAINT OrganizationDepartment_PK PRIMARY KEY  (ChangeVersion )
 );
 
 
@@ -34,9 +34,9 @@ CREATE TABLE tracked_deletes_edfi.StudentDisciplineIncidentBehaviorAssociation (
     IncidentIdentifier   VARCHAR (20)    NOT NULL,
     SchoolId             INT              NOT NULL,
     StudentUSI           INT              NOT NULL,
-    Id                   UUID CONSTRAINT StudentDisciplineIncidentBehaviorAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                   UUID             NOT NULL,
     ChangeVersion        BIGINT           NOT NULL,
-    CONSTRAINT PK_StudentDisciplineIncidentBehaviorAssociation PRIMARY KEY  (ChangeVersion )
+    CONSTRAINT StudentDisciplineIncidentBehaviorAssociation_PK PRIMARY KEY  (ChangeVersion )
 );
 
 
@@ -44,8 +44,7 @@ CREATE TABLE tracked_deletes_edfi.StudentDisciplineIncidentNonOffenderAssociatio
     IncidentIdentifier VARCHAR (20)    NOT NULL,
     SchoolId           INT              NOT NULL,
     StudentUSI         INT              NOT NULL,
-    Id                                UUID CONSTRAINT StudentDisciplineIncidentNonOffenderAssociation_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                 UUID              NOT NULL,
     ChangeVersion      BIGINT           NOT NULL,
-    CONSTRAINT PK_StudentDisciplineIncidentNonOffenderAssociation PRIMARY KEY  (ChangeVersion )
+    CONSTRAINT StudentDisciplineIncidentNonOffenderAssociation_PK PRIMARY KEY  (ChangeVersion )
 );
-

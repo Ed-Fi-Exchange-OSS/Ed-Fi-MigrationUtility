@@ -8,7 +8,7 @@ ALTER TABLE edfi.AssessmentScoreRangeLearningStandard
     ADD ChangeVersion BIGINT DEFAULT nextval('changes.ChangeVersionSequence') NOT NULL;
 
 
-CREATE  INDEX UX_AssessmentScoreRangeLearningStandard_ChangeVersion
+CREATE  INDEX ux_a20588_changeversion
     ON edfi.AssessmentScoreRangeLearningStandard(ChangeVersion );
 
 
@@ -33,20 +33,19 @@ CREATE TABLE changes.Snapshot (
     SnapshotDateTime   TIMESTAMP   DEFAULT current_timestamp NOT NULL,
     CreateDate         TIMESTAMP   DEFAULT current_timestamp NOT NULL ,
     LastModifiedDate   TIMESTAMP   DEFAULT current_timestamp NOT NULL ,
-    Id                 UUID CONSTRAINT AssessmentScoreRangeLearningStandard_DF_Id DEFAULT gen_random_uuid() NOT NULL,
+    Id                 UUID DEFAULT gen_random_uuid() NOT NULL,
     CONSTRAINT Snapshot_PK PRIMARY KEY  (SnapshotIdentifier )
 );
 
 
-CREATE  INDEX UX_Snapshot_Id
+CREATE  INDEX ux_6ad27b_id
     ON changes.Snapshot(Id ) ;
+
+COMMENT ON TABLE changes.Snapshot
+IS 'Contains information about a snapshot used to create isolation from oning changes for API client synchronization.';
 
 COMMENT ON COLUMN changes.Snapshot.SnapshotDateTime 
 IS 'The date and time that the snapshot was initiated.';
 
 COMMENT ON COLUMN changes.Snapshot.SnapshotIdentifier 
 IS 'The unique identifier of the snapshot.';
-
-COMMENT ON TABLE changes.Snapshot
-IS 'Contains information about a snapshot used to create isolation from oning changes for API client synchronization.';
-

@@ -11,11 +11,12 @@ ALTER TABLE edfi.Parent
 ADD COLUMN HighestCompletedLevelOfEducationDescriptorId INT NULL;
  
 
-CREATE  INDEX FK_Parent_LevelOfEducationDescriptor
+CREATE  INDEX fk_5f7953_levelofeducationdescriptor
 ON edfi.Parent(HighestCompletedLevelOfEducationDescriptorId );
 
 
-ALTER TABLE edfi.Parent ADD CONSTRAINT FK_Parent_LevelOfEducationDescriptor 
+ALTER TABLE edfi.Parent 
+ADD CONSTRAINT fk_5f7953_levelofeducationdescriptor 
 FOREIGN KEY (HighestCompletedLevelOfEducationDescriptorId)
 REFERENCES edfi.LevelOfEducationDescriptor (LevelOfEducationDescriptorId);
 
@@ -24,6 +25,7 @@ ALTER TABLE edfi.StudentEducationOrganizationAssociationStudentIndicator
 ALTER COLUMN Indicator  TYPE character varying(60) ,
 ALTER COLUMN Indicator SET NOT NULL;
 
-ALTER TABLE edfi.StudentParentAssociation 
-ADD COLUMN LegalGuardian  BIT NULL;
-
+ALTER TABLE edfi.StudentParentAssociation
+ADD COLUMN LegalGuardian bit(1),
+ALTER COLUMN legalguardian SET NOT NULL,
+ALTER COLUMN legalguardian SET STORAGE EXTENDED;
