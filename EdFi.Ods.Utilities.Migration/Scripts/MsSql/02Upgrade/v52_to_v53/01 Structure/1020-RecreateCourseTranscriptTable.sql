@@ -3,7 +3,8 @@ ALTER TABLE [edfi].[CourseTranscript] DROP CONSTRAINT [CourseTranscript_DF_Creat
 
 GO
 
-ALTER TABLE [edfi].[CourseTranscript] DROP CONSTRAINT [DF__CourseTra__Chang__782AAB3C];
+IF OBJECT_ID('dbo.[DF__CourseTra__Chang__782AAB3C]', 'C') IS NOT NULL 
+	ALTER TABLE [edfi].[CourseTranscript] DROP CONSTRAINT [DF__CourseTra__Chang__782AAB3C];
 
 
 GO
