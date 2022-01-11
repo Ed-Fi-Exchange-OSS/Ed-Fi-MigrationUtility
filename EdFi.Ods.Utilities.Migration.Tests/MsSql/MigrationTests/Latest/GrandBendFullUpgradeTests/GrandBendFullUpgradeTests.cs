@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Enumerations;
-using EdFi.Ods.Utilities.Migration.Tests.Models.v51;
+using EdFi.Ods.Utilities.Migration.Tests.Models.v53;
 using NUnit.Framework;
 using Shouldly;
 
@@ -15,7 +15,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.Latest.GrandBe
     public class GrandBendFullUpgradeTests : GrandBendTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V2UpTo24;
-        protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V51;
+        protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V53;
 
         protected override void UpdateBackupData()
         {
