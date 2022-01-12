@@ -1,3 +1,8 @@
+-- SPDX-License-Identifier: Apache-2.0
+-- Licensed to the Ed-Fi Alliance under one or more agreements.
+-- The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+-- See the LICENSE and NOTICES files in the project root for more information.
+
 CREATE TABLE [auth].[EducationOrganizationIdToEducationOrganizationId] (
     [SourceEducationOrganizationId] INT NOT NULL,
     [TargetEducationOrganizationId] INT NOT NULL,
@@ -128,61 +133,61 @@ ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod]
 
 GO
 
-ALTER TABLE [edfi].[BarrierToInternetAccessInResidenceDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[BarrierToInternetAccessInResidenceDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_BarrierToInternetAccessInResidenceDescriptor_Descriptor] FOREIGN KEY ([BarrierToInternetAccessInResidenceDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[CourseTranscriptPartialCourseTranscriptAwards] WITH NOCHECK
+ALTER TABLE [edfi].[CourseTranscriptPartialCourseTranscriptAwards] WITH CHECK
     ADD CONSTRAINT [FK_CourseTranscriptPartialCourseTranscriptAwards_CourseTranscript] FOREIGN KEY ([CourseAttemptResultDescriptorId], [CourseCode], [CourseEducationOrganizationId], [EducationOrganizationId], [SchoolYear], [StudentUSI], [TermDescriptorId]) REFERENCES [edfi].[CourseTranscript] ([CourseAttemptResultDescriptorId], [CourseCode], [CourseEducationOrganizationId], [EducationOrganizationId], [SchoolYear], [StudentUSI], [TermDescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[CourseTranscriptPartialCourseTranscriptAwards] WITH NOCHECK
+ALTER TABLE [edfi].[CourseTranscriptPartialCourseTranscriptAwards] WITH CHECK
     ADD CONSTRAINT [FK_CourseTranscriptPartialCourseTranscriptAwards_MethodCreditEarnedDescriptor] FOREIGN KEY ([MethodCreditEarnedDescriptorId]) REFERENCES [edfi].[MethodCreditEarnedDescriptor] ([MethodCreditEarnedDescriptorId]);
 
 
 GO
 
-ALTER TABLE [edfi].[InternetAccessTypeInResidenceDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[InternetAccessTypeInResidenceDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_InternetAccessTypeInResidenceDescriptor_Descriptor] FOREIGN KEY ([InternetAccessTypeInResidenceDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[InternetPerformanceInResidenceDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[InternetPerformanceInResidenceDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_InternetPerformanceInResidenceDescriptor_Descriptor] FOREIGN KEY ([InternetPerformanceInResidenceDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[PrimaryLearningDeviceAccessDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[PrimaryLearningDeviceAccessDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_PrimaryLearningDeviceAccessDescriptor_Descriptor] FOREIGN KEY ([PrimaryLearningDeviceAccessDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[PrimaryLearningDeviceAwayFromSchoolDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[PrimaryLearningDeviceAwayFromSchoolDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_PrimaryLearningDeviceAwayFromSchoolDescriptor_Descriptor] FOREIGN KEY ([PrimaryLearningDeviceAwayFromSchoolDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[PrimaryLearningDeviceProviderDescriptor] WITH NOCHECK
+ALTER TABLE [edfi].[PrimaryLearningDeviceProviderDescriptor] WITH CHECK
     ADD CONSTRAINT [FK_PrimaryLearningDeviceProviderDescriptor_Descriptor] FOREIGN KEY ([PrimaryLearningDeviceProviderDescriptorId]) REFERENCES [edfi].[Descriptor] ([DescriptorId]) ON DELETE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod] WITH NOCHECK
+ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod] WITH CHECK
     ADD CONSTRAINT [FK_StudentSectionAttendanceEventClassPeriod_ClassPeriod] FOREIGN KEY ([ClassPeriodName], [SchoolId]) REFERENCES [edfi].[ClassPeriod] ([ClassPeriodName], [SchoolId]) ON UPDATE CASCADE;
 
 
 GO
 
-ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod] WITH NOCHECK
+ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod] WITH CHECK
     ADD CONSTRAINT [FK_StudentSectionAttendanceEventClassPeriod_StudentSectionAttendanceEvent] FOREIGN KEY ([AttendanceEventCategoryDescriptorId], [EventDate], [LocalCourseCode], [SchoolId], [SchoolYear], [SectionIdentifier], [SessionName], [StudentUSI]) REFERENCES [edfi].[StudentSectionAttendanceEvent] ([AttendanceEventCategoryDescriptorId], [EventDate], [LocalCourseCode], [SchoolId], [SchoolYear], [SectionIdentifier], [SessionName], [StudentUSI]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
@@ -204,15 +209,6 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'A collectio
 GO
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The date the partial credits and/or grades were awarded or earned.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'CourseTranscriptPartialCourseTranscriptAwards', @level2type = N'COLUMN', @level2name = N'AwardDate';
-
-
-GO
-
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The result from the student''s attempt to take the course, for example:
-        Pass
-        Fail
-        Incomplete
-        Withdrawn.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'CourseTranscriptPartialCourseTranscriptAwards', @level2type = N'COLUMN', @level2name = N'CourseAttemptResultDescriptorId';
 
 
 GO
