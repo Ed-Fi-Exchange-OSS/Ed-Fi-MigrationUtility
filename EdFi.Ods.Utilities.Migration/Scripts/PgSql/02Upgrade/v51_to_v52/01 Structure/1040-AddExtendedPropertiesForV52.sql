@@ -227,4 +227,9 @@ COMMENT ON COLUMN edfi.StudentParentAssociation.LegalGuardian IS
 COMMENT ON COLUMN edfi.StudentParentAssociation.RelationDescriptorId IS 
 'The nature of an individual''s relationship to a student, primarily used to capture family relationships.';
 
-
+COMMENT ON COLUMN edfi.studentdisciplineincidentassociation.studentparticipationcodedescriptorid is 'The role or type of participation of a student in a discipline incident;
+        for example:
+        Victim
+        Perpetrator
+        Witness
+        Reporter.';
