@@ -53,7 +53,7 @@ COMMENT ON TABLE edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociati
 IS 'A reference to the behavior(s) by the student that led or contributed to this specific action.';
 
 COMMENT ON COLUMN edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation.BehaviorDescriptorId
-IS 'Describes behavior by catery.';
+IS 'Describes behavior by category.';
 
 COMMENT ON COLUMN edfi.DisciplineActionStudentDisciplineIncidentBehaviorAssociation.DisciplineActionIdentifier
 IS 'Identifier assigned by the education organization to the DisciplineAction.';
@@ -127,7 +127,7 @@ COMMENT ON COLUMN edfi.StaffAncestryEthnicOrigin.StaffUSI IS 'A unique alphanume
 COMMENT ON TABLE edfi.StaffAncestryEthnicOrigin IS 'The original peoples or cultures with which the individual identifies.' ;
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociation.BehaviorDescriptorId IS 'Describes behavior by catery.';
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociation.BehaviorDescriptorId IS 'Describes behavior by category.';
 
 
 COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociation.BehaviorDetailedDescription IS 'Specifies a more granular level of detail of a behavior involved in the incident.';
@@ -145,7 +145,7 @@ COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociation.StudentUSI I
 COMMENT ON TABLE edfi.StudentDisciplineIncidentBehaviorAssociation IS 'This association describes the behavior of students involved in a discipline incident.';
 
 
-COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.BehaviorDescriptorId IS 'Describes behavior by catery.';
+COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.BehaviorDescriptorId IS 'Describes behavior by category.';
 
 
 COMMENT ON COLUMN edfi.StudentDisciplineIncidentBehaviorAssociationDisciplineIn_ae6a21.DisciplineIncidentParticipationCodeDescriptorId IS 'The role or type of participation of a student in a discipline incident.';

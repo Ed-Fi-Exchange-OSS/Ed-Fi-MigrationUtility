@@ -33,7 +33,7 @@ CREATE TABLE changes.Snapshot (
     SnapshotDateTime   TIMESTAMP   DEFAULT current_timestamp NOT NULL,
     CreateDate         TIMESTAMP   DEFAULT current_timestamp NOT NULL ,
     LastModifiedDate   TIMESTAMP   DEFAULT current_timestamp NOT NULL ,
-    Id                 UUID DEFAULT gen_random_uuid() NOT NULL,
+    Id                 UUID DEFAULT public.gen_random_uuid() NOT NULL,
     CONSTRAINT Snapshot_PK PRIMARY KEY  (SnapshotIdentifier )
 );
 
