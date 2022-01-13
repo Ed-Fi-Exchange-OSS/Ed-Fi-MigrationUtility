@@ -27,16 +27,6 @@ ALTER TABLE edfi.credential
 COMMENT ON COLUMN edfi.credential.teachingcredentialdescriptorid
     IS 'An indication of the category of a legal document giving authorization to perform teaching assignment services.';
 
-COMMENT ON COLUMN edfi.coursetranscriptpartialcoursetranscriptawards.courseattemptresultdescriptorid
-    IS 'The result from the student''s attempt to take the course, for example:
-        Pass
-        Fail
-        Incomplete
-        Withdrawn.';
-
-COMMENT ON TABLE edfi.internetaccesstypeinresidencedescriptor
-  IS 'The primary type of internet service used in the student’s primary place of residence.';
-
 COMMENT ON TABLE edfi.staffeducationorganizationassignmentassociation
   IS 'This association indicates the education organization to which a staff member provides services.';
 
