@@ -193,7 +193,7 @@ ALTER TABLE [edfi].[StudentSectionAttendanceEventClassPeriod] WITH CHECK
 
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'An indication of the barrier to having internet access in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'BarrierToInternetAccessInResidenceDescriptor';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'An indication of the barrier to having internet access in the studentâ€™s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'BarrierToInternetAccessInResidenceDescriptor';
 
 
 GO
@@ -263,7 +263,7 @@ EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The indicat
 
 GO
 
-EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The primary type of internet service used in the student’s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'InternetAccessTypeInResidenceDescriptor';
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'The primary type of internet service used in the studentâ€™s primary place of residence.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'InternetAccessTypeInResidenceDescriptor';
 
 
 GO

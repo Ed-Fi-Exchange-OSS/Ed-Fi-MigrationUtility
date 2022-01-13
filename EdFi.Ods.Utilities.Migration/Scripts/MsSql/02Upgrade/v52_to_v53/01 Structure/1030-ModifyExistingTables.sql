@@ -7,6 +7,9 @@ ALTER TABLE [edfi].[CourseTranscript] ADD
 [ExternalEducationOrganizationNameOfInstitution] [nvarchar] (75) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
 GO
 
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Name of the external institution where the student completed the course; to be used only when the reference ExternalEducationOrganization is not available.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'CourseTranscript', @level2type = N'COLUMN', @level2name = N'ExternalEducationOrganizationNameOfInstitution';
+GO
+
 DROP INDEX [FK_Credential_CredentialFieldDescriptor] ON [edfi].[Credential]
 GO
 
@@ -128,11 +131,11 @@ EXEC sp_updateextendedproperty N'MS_Description', N'Month, day, and year of the 
 EXEC sp_addextendedproperty N'MS_Description', N'The ratio between the hours of work expected in a position and the hours of work normally expected in a full-time position in the same setting.', 'SCHEMA', N'edfi', 'TABLE', N'StaffEducationOrganizationAssignmentAssociation', 'COLUMN', N'FullTimeEquivalency'
 
 
-EXEC sp_addextendedproperty N'MS_Description', N'An indication of the barrier to having internet access in the student’s primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'BarrierToInternetAccessInResidenceDescriptorId'
+EXEC sp_addextendedproperty N'MS_Description', N'An indication of the barrier to having internet access in the studentâ€™s primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'BarrierToInternetAccessInResidenceDescriptorId'
 
 EXEC sp_addextendedproperty N'MS_Description', N'An indication of whether the student is able to access the internet in their primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'InternetAccessInResidence'
 
-EXEC sp_addextendedproperty N'MS_Description', N'The primary type of internet service used in the student’s primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'InternetAccessTypeInResidenceDescriptorId'
+EXEC sp_addextendedproperty N'MS_Description', N'The primary type of internet service used in the studentâ€™s primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'InternetAccessTypeInResidenceDescriptorId'
 
 EXEC sp_addextendedproperty N'MS_Description', N'An indication of whether the student can complete the full range of learning activities, including video streaming and assignment upload, without interruptions caused by poor internet performance in their primary place of residence.', 'SCHEMA', N'edfi', 'TABLE', N'StudentEducationOrganizationAssociation', 'COLUMN', N'InternetPerformanceInResidenceDescriptorId'
 
