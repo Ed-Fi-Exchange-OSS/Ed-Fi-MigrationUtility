@@ -47,7 +47,7 @@ ALTER TABLE edfi.studenteducationorganizationassociation
     ADD COLUMN barriertointernetaccessinresidencedescriptorid integer;
 
 COMMENT ON COLUMN edfi.studenteducationorganizationassociation.barriertointernetaccessinresidencedescriptorid
-    IS 'An indication of the barrier to having internet access in the student’s primary place of residence.';
+    IS 'An indication of the barrier to having internet access in the studentâ€™s primary place of residence.';
 
 ALTER TABLE edfi.studenteducationorganizationassociation
     ADD COLUMN internetaccessinresidence boolean;
@@ -59,7 +59,7 @@ ALTER TABLE edfi.studenteducationorganizationassociation
     ADD COLUMN internetaccesstypeinresidencedescriptorid integer;
 
 COMMENT ON COLUMN edfi.studenteducationorganizationassociation.internetaccesstypeinresidencedescriptorid
-    IS 'The primary type of internet service used in the student’s primary place of residence.';
+    IS 'The primary type of internet service used in the studentâ€™s primary place of residence.';
 
 ALTER TABLE edfi.studenteducationorganizationassociation
     ADD COLUMN internetperformanceinresidencedescriptorid integer;
@@ -171,8 +171,11 @@ CREATE INDEX fk_69dd58_termdescriptor
     (termdescriptorid ASC NULLS LAST)
     TABLESPACE pg_default;
 
+ ALTER TABLE edfi.studentschoolassociation
+	ALTER COLUMN fulltimeequivalency TYPE numeric(5, 4) using cast(fulltimeequivalency as numeric);
+
 COMMENT ON COLUMN edfi.studentschoolassociation.fulltimeequivalency
-    IS 'The full-time equivalent ratio for the student’s assignment to a school for services or instruction. For example, a full-time student would have an FTE value of 1 while a half-time student would have an FTE value of 0.5.';
+    IS 'The full-time equivalent ratio for the studentâ€™s assignment to a school for services or instruction. For example, a full-time student would have an FTE value of 1 while a half-time student would have an FTE value of 0.5.';
 COMMENT ON COLUMN edfi.studentsectionattendanceeventclassperiod.attendanceeventcategorydescriptorid
     IS 'A code describing the attendance event, for example:
         Present

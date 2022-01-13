@@ -54,8 +54,8 @@ CREATE TABLE edfi.coursetranscriptpartialcoursetranscriptawards
     numericgradeearned character varying(20) COLLATE pg_catalog."default",
     createdate timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT coursetranscriptpartialcoursetranscriptawards_pk PRIMARY KEY (awarddate, courseattemptresultdescriptorid, coursecode, courseeducationorganizationid, educationorganizationid, schoolyear, studentusi, termdescriptorid),
-    CONSTRAINT fk_e811ad_coursetranscript FOREIGN KEY (termdescriptorid, courseattemptresultdescriptorid, schoolyear, coursecode, studentusi, courseeducationorganizationid, educationorganizationid)
-        REFERENCES edfi.coursetranscript (termdescriptorid, courseattemptresultdescriptorid, schoolyear, coursecode, studentusi, courseeducationorganizationid, educationorganizationid) MATCH SIMPLE
+    CONSTRAINT fk_e811ad_coursetranscript FOREIGN KEY (courseattemptresultdescriptorid, coursecode, courseeducationorganizationid, educationorganizationid, schoolyear, studentusi, termdescriptorid)
+        REFERENCES edfi.coursetranscript (courseattemptresultdescriptorid, coursecode, courseeducationorganizationid, educationorganizationid, schoolyear, studentusi, termdescriptorid) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
     CONSTRAINT fk_e811ad_methodcreditearneddescriptor FOREIGN KEY (methodcreditearneddescriptorid)
@@ -255,8 +255,8 @@ CREATE TABLE edfi.studentsectionattendanceeventclassperiod
         REFERENCES edfi.classperiod (classperiodname, schoolid) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE NO ACTION,
-    CONSTRAINT fk_80c6c1_studentsectionattendanceevent FOREIGN KEY (attendanceeventcategorydescriptorid, localcoursecode, schoolid, eventdate, studentusi, sectionidentifier, schoolyear, sessionname)
-        REFERENCES edfi.studentsectionattendanceevent (attendanceeventcategorydescriptorid, localcoursecode, schoolid, eventdate, studentusi, sectionidentifier, schoolyear, sessionname) MATCH SIMPLE
+    CONSTRAINT fk_80c6c1_studentsectionattendanceevent FOREIGN KEY (attendanceeventcategorydescriptorid, eventdate, localcoursecode, schoolid, schoolyear, sectionidentifier, sessionname, studentusi)
+        REFERENCES edfi.studentsectionattendanceevent (attendanceeventcategorydescriptorid, eventdate, localcoursecode, schoolid, schoolyear, sectionidentifier, sessionname, studentusi) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 )
