@@ -222,3 +222,11 @@ GO
 
 EXECUTE sp_updateextendedproperty @name = N'MS_Description', @value = N'The nature of an individual''s relationship to a student, primarily used to capture family relationships.', @level0type = N'SCHEMA', @level0name = N'edfi', @level1type = N'TABLE', @level1name = N'StudentParentAssociation', @level2type = N'COLUMN', @level2name = N'RelationDescriptorId';
 GO
+
+EXECUTE sp_updateextendedproperty @name=N'MS_Description', @value=N'The role or type of participation of a student in a discipline incident; 
+        for example:
+        Victim
+        Perpetrator
+        Witness
+        Reporter.', @level0type=N'SCHEMA', @level0name=N'edfi', @level1type=N'TABLE', @level1name=N'StudentDisciplineIncidentAssociation', @level2type=N'COLUMN', @level2name=N'StudentParticipationCodeDescriptorId'
+GO
