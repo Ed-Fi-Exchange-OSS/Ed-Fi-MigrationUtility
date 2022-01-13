@@ -1,94 +1,57 @@
-DROP VIEW auth.CommunityOrganizationIdToCommunityProviderId;
+DROP VIEW IF EXISTS auth.CommunityOrganizationIdToCommunityProviderId;
 
+DROP VIEW IF EXISTS auth.CommunityOrganizationIdToEducationOrganizationId;
 
-DROP VIEW auth.CommunityOrganizationIdToEducationOrganizationId;
+DROP VIEW IF EXISTS auth.CommunityProviderIdToEducationOrganizationId;
 
+DROP VIEW IF EXISTS auth.CommunityProviderIdToStaffUSI;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToEducationServiceCenterId;
 
-DROP VIEW auth.CommunityProviderIdToEducationOrganizationId;
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStateAgencyId;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToLocalEducationAgencyId;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToPostSecondaryInstitutionId;
 
-DROP VIEW auth.CommunityProviderIdToStaffUSI;
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToSchoolId;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStaffUSI ;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToStaffUSI;
 
-DROP VIEW auth.EducationOrganizationIdToEducationServiceCenterId;
+DROP VIEW IF EXISTS auth.PostSecondaryInstitutionIdToStaffUSI;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationToStaffUSI_Employment;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgency;
 
-DROP VIEW auth.EducationOrganizationIdToStateAgencyId;
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToOrganizationDepartmentId;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToParentUSI;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToSchoolId;
 
-DROP VIEW auth.EducationOrganizationIdToLocalEducationAgencyId;
+DROP VIEW IF EXISTS auth.EducationOrganizationIdToStudentUSI;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToStudentUSI;
 
+DROP VIEW IF EXISTS auth.LocalEducationAgencyIdToStudentUSIThroughEdOrgAssociation;
 
-DROP VIEW auth.EducationOrganizationIdToPostSecondaryInstitutionId;
+DROP VIEW IF EXISTS auth.OrganizationDepartmentIdToSchoolId;
 
+DROP VIEW IF EXISTS auth.ParentUSIToSchoolId;
 
+DROP VIEW IF EXISTS auth.ParentUSIToStudentUSI;
 
-DROP VIEW auth.EducationOrganizationIdToSchoolId;
+DROP VIEW IF EXISTS auth.School;
 
+DROP VIEW IF EXISTS auth.SchoolIdToStaffUSI;
 
-DROP VIEW auth.EducationOrganizationIdToStaffUSI ;
+DROP VIEW IF EXISTS auth.SchoolIdToStudentUSI;
 
-DROP VIEW auth.LocalEducationAgencyIdToStaffUSI;
+DROP VIEW IF EXISTS auth.SchoolIdToStudentUSIThroughEdOrgAssociation;
 
+DROP VIEW IF EXISTS auth.EducationOrganizationIdentifiers;
 
-
-DROP VIEW auth.PostSecondaryInstitutionIdToStaffUSI;
-
-
-
-DROP VIEW auth.EducationOrganizationToStaffUSI_Employment;
-
-
-DROP VIEW auth.LocalEducationAgency;
-
-
-DROP VIEW auth.LocalEducationAgencyIdToOrganizationDepartmentId;
-
-
-DROP VIEW auth.LocalEducationAgencyIdToParentUSI;
-
-
-
-DROP VIEW auth.LocalEducationAgencyIdToSchoolId;
-
-DROP VIEW auth.EducationOrganizationIdToStudentUSI;
-DROP VIEW auth.LocalEducationAgencyIdToStudentUSI;
-
-
-
-DROP VIEW auth.LocalEducationAgencyIdToStudentUSIThroughEdOrgAssociation;
-
-
-
-DROP VIEW auth.OrganizationDepartmentIdToSchoolId;
-
-
-
-DROP VIEW auth.ParentUSIToSchoolId;
-
-DROP VIEW auth.ParentUSIToStudentUSI;
-
-DROP VIEW auth.School;
-
-
-
-DROP VIEW auth.SchoolIdToStaffUSI;
-
-
-DROP VIEW auth.SchoolIdToStudentUSI;
-
-
-
-DROP VIEW auth.SchoolIdToStudentUSIThroughEdOrgAssociation;
-
-
-
-DROP VIEW auth.EducationOrganizationIdentifiers;
-
-DROP VIEW auth.EducationOrganizationToStaffUSI_Assignment;
+DROP VIEW IF EXISTS auth.EducationOrganizationToStaffUSI_Assignment;
