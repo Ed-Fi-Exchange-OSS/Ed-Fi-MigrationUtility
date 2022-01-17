@@ -15,7 +15,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest.GrandBe
     public class PostgresGrandBendFullUpgradeTests : PostgresGrandBendTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V34;
-        protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V53;
+        protected override EdFiOdsVersion ToVersion => PostgreSqlMigrationTestsGlobalSetup.OdsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(FromVersion, DatabaseEngine.PostgreSQL);
 
         protected override void UpdateBackupData()
         {
