@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EdFi.Ods.Utilities.Migration.Enumerations;
-using EdFi.Ods.Utilities.Migration.Tests.Models.v52;
+using EdFi.Ods.Utilities.Migration.Tests.Models.v53;
 using NUnit.Framework;
 using Shouldly;
 
@@ -15,7 +15,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.Latest.GrandBe
     public class PostgresGrandBendFullUpgradeTests : PostgresGrandBendTests
     {
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V34;
-        protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V52;
+        protected override EdFiOdsVersion ToVersion => PostgreSqlMigrationTestsGlobalSetup.OdsMigrationManagerResolver.GetLatestSupportedUpgradeVersion(FromVersion, DatabaseEngine.PostgreSQL);
 
         protected override void UpdateBackupData()
         {
