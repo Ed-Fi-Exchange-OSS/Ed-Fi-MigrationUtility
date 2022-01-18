@@ -248,6 +248,13 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests
                 .Where(se => se.DatabaseEngine == "PgSql" && se.IsFeature == false)
                 .Select(x => x.JournalScriptEntry)
                 .ToList();
+
+            foreach (var feature in FeaturesBeforeUpgrade)
+            {
+                databaseReferencesJournalEntries.AddRange(journalEntries.Where(se => se.DatabaseEngine == "PgSql" && se.IsFeature == true && se.Feature == feature.SubTypeFolderName)
+                .Select(x => x.JournalScriptEntry).ToList());
+            }
+
             return databaseReferencesJournalEntries;
         }
 
