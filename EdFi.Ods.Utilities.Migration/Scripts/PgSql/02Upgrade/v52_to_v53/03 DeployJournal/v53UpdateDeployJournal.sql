@@ -16,18 +16,12 @@ VALUES
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.0050-ExtendedProperties.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1002-AuthViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1003-CompositesHierarchicalViews.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1004-ViewIndexes.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1005-AddSQLTypes.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1020-Interoperability-Extension.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1021-OperationalContextView.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1022-SetVersion.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1030-AddSessionCascadeSupport.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1031-Create-SetSchoolYear-stored-procedure.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1034-RemoveDatesFromAuthViews.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1035-UpdateViewsToGoThroughStudendEdOrgResponsibiltyAssociation.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1070-RemoveDatesFromAuthViews.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1080-UpdateViewsToGoThroughStudendEdOrgResponsibiltyAssociation.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1090-MissingSecurityViews.sql'),
+('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1040-MissingSecurityViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1100-AddMoreContextToEducationIdentifiersView.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1100-CorrectCommunityOrganizationAuthViews.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1120-RemoveCompositesHierarchicalViews.sql'),
@@ -47,7 +41,6 @@ VALUES
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.1320-UpdateVersionTo53.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Data.Ods.0020-SchoolYears.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Data.Ods.1010-OperationalContexts.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Data.Ods.1020-Assign-Discriminator-Values.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Data.Ods.1040-Set-Default-SchoolYear.sql');
 
 INSERT INTO public."DeployJournal" (scriptname, applied)
