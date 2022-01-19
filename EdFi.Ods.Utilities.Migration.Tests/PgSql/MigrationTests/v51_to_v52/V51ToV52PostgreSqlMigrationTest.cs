@@ -50,7 +50,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.PgSql.MigrationTests.v51_to_v52
             PerformTestMigration();
 
             var deployJournalFullList = GetTableContents<DeployJournal>("public.\"DeployJournal\"").Select(
-                x => x.ScriptName).ToList().ToHashSet();
+                x => x.ScriptName).OrderBy(q => q).ToList().ToHashSet();
 
             bool isSubset = databaseReferencesJournalEntries.IsSubsetOf(deployJournalFullList);
 

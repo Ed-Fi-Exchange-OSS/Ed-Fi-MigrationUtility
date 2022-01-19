@@ -7,6 +7,7 @@ using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v51_to_v52;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
 {
@@ -16,5 +17,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.FullRestoreBeforeEveryTest;
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V51;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V52;
+        protected override List<EdFiOdsFeature> FeaturesBeforeUpgrade =>  new List<EdFiOdsFeature> { EdFiOdsFeature.ChangeQueries };
     }
 }

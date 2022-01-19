@@ -55,7 +55,8 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v51_to_v52
             PerformTestMigration();
 
             var deployJournalFullList = GetTableContents<DeployJournal>("[dbo].[DeployJournal]").Select(
-                x => x.ScriptName).ToList().ToHashSet();
+                x => x.ScriptName).OrderBy(q => q).ToList().ToHashSet();
+
 
             bool isSubset = databaseReferencesJournalEntries.IsSubsetOf(deployJournalFullList);
 
