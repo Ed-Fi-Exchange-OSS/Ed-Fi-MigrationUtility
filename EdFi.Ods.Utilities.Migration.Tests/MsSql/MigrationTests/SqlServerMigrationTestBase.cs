@@ -179,7 +179,7 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests
 
             foreach(var feature in FeaturesBeforeUpgrade)
             {
-                databaseReferencesJournalEntries.AddRange(journalEntries.Where(se => se.DatabaseEngine == "MsSql" && se.IsFeature == true && se.Feature == feature.SubTypeFolderName)
+                databaseReferencesJournalEntries.AddRange(journalEntries.Where(se => se.DatabaseEngine == "MsSql" && se.IsFeature && se.Feature == feature.SubTypeFolderName)
                 .Select(x => x.JournalScriptEntry).ToList());
             }
 
