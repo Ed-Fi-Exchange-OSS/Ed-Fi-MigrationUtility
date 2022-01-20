@@ -20,7 +20,9 @@ VALUES
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.0110-AddSnapshot-Tables.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.0120-AddSnapshotIdColumnUniqueIndexes.sql'),
 ('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.0130-AddSnapshotExtendedProperties.sql'),
-('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.1010-CreateGetMaxChangeVersionFunction.sql');
+('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.1010-CreateGetMaxChangeVersionFunction.sql'),
+('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.1060-AddNewDeleteTablesForV53.sql'),
+('EdFi.Ods.Standard.Artifacts.PgSql.Structure.Ods.Changes.1070-CreateDeletedForTrackingTriggersForV53.sql');
 
 INSERT INTO public."DeployJournal" (scriptname, applied)
 SELECT e.scriptname, NOW()
