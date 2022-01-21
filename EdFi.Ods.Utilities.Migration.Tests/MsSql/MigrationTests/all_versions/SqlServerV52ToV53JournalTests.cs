@@ -3,6 +3,7 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System.Collections.Generic;
 using EdFi.Ods.Utilities.Migration.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.Enumerations;
 using EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.v52_to_v53;
@@ -16,5 +17,6 @@ namespace EdFi.Ods.Utilities.Migration.Tests.MsSql.MigrationTests.all_versions
         protected override DatabaseRestoreSetupOption DatabaseRestoreSetupOption { get; } = DatabaseRestoreSetupOption.FullRestoreBeforeEveryTest;
         protected override EdFiOdsVersion FromVersion => EdFiOdsVersion.V52;
         protected override EdFiOdsVersion ToVersion => EdFiOdsVersion.V53;
+        protected override List<EdFiOdsFeature> FeaturesBeforeUpgrade => new List<EdFiOdsFeature> { EdFiOdsFeature.ChangeQueries };
     }
 }
