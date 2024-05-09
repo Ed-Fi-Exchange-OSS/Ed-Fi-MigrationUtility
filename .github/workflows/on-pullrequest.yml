@@ -33,6 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build
-        runs: dotnet build
+        run: dotnet build
 
       # Do not run the test project, as it requires database setup
