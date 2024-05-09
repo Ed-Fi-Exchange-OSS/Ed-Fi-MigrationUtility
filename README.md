@@ -1,6 +1,6 @@
 # Ed-Fi-MigrationUtility
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Ed-Fi-Alliance-OSS/Data-Management-Service/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Ed-Fi-Alliance-OSS/Data-Management-Service)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Ed-Fi-Alliance-OSS/Ed-Fi-MigrationUtility)
 
 The migration utility is a command-line tool built to upgrade the schema of an ODS instance to the latest version.
 
